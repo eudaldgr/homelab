@@ -1,0 +1,30 @@
+{
+	"name": "Debian",
+	"build": {
+		"dockerfile": "Dockerfile"
+	},
+	"features": {
+		"ghcr.io/robbert229/devcontainer-features/opentofu:1": {
+			"version": "1.9.0"
+		},
+		"ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {
+			"version": "latest"
+		}
+	},
+	"customizations": {
+		"vscode": {
+			"settings": {
+				"files.associations": {
+					"*.tofu": "terraform"
+				}
+			},
+			"extensions": [
+				"hashicorp.terraform",
+				"hashicorp.hcl",
+				"ms-azuretools.vscode-docker",
+				"ms-kubernetes-tools.vscode-kubernetes-tools",
+				"redhat.vscode-yaml"
+			]
+		}
+	}
+}
