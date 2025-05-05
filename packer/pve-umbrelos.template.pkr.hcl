@@ -1,51 +1,6 @@
 /*
  * Creates a UmbrelOS template for Proxmox
  */
-packer {
-  required_plugins {
-    proxmox = {
-      version = ">= 1.2.2"
-      source  = "github.com/hashicorp/proxmox"
-    }
-  }
-}
-
-variable "proxmox_nodes" {
-  description = "List of Proxmox nodes"
-  type = list(object({
-    name        = string
-    host        = string
-    port        = number
-    tls         = bool
-    username    = string
-    password    = string
-    token       = string
-    storage     = string
-    iso_storage = string
-  }))
-}
-
-variable "alpine_version" {
-  type    = string
-  default = "3.21.3"
-}
-
-variable "umbrelos_version" {
-  type    = string
-  default = "1.4.0"
-}
-
-locals {
-  alpine_iso_file     = "alpine-virt-${var.alpine_version}-x86_64.iso"
-  alpine_iso_url      = "https://dl-cdn.alpinelinux.org/alpine/latest-stable/releases/x86_64/${local.alpine_iso_file}"
-  alpine_iso_checksum = "file:${local.alpine_iso_url}.sha256"
-
-  umbrelos_base_url          = "https://download.umbrel.com/release/${var.umbrelos_version}"
-  umbrelos_img_name          = "umbrelos-amd64.img"
-  umbrelos_img_url           = "${local.umbrelos_base_url}/${local.umbrelos_img_name}.xz"
-  umbrelos_img_checksum_name = "SHA256SUMS"
-  umbrelos_img_checksum_url  = "${local.umbrelos_base_url}/${local.umbrelos_img_checksum_name}"
-}
 
 source "proxmox-iso" "umbrelOS" {
   node                     = var.proxmox_nodes[0].name
@@ -69,10 +24,10 @@ source "proxmox-iso" "umbrelOS" {
     pre_enrolled_keys      = false
   }
   machine                  = "q35"
-  # tpm_config {
-  #   tpm_version            = "v2.0"
-  #   tpm_storage_pool       = var.proxmox_nodes[0].storage
-  # }
+  tpm_config {
+    tpm_version            = "v2.0"
+    tpm_storage_pool       = var.proxmox_nodes[0].storage
+  }
   boot_command             = [
     // Login as root
     "root<enter><wait10>",
@@ -132,6 +87,7 @@ source "proxmox-iso" "umbrelOS" {
 }
 
 build {
+  name    = "umbrelOS"
   sources = ["source.proxmox-iso.umbrelOS"]
 
   provisioner "shell" {
