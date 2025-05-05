@@ -185,121 +185,121 @@ locals {
   EOT
 }
 
-# MicroOS
+// MicroOS
 source "proxmox-iso" "microOS" {
-  node                     = var.proxmox_nodes[0].name
-  proxmox_url              = "https://${var.proxmox_nodes[0].host}:${var.proxmox_nodes[0].port}/api2/json"
-  insecure_skip_tls_verify = true
-  username                 = var.proxmox_nodes[0].username
-  # password                 = var.proxmox_nodes[0].password
-  token                    = var.proxmox_nodes[0].token
-
-  vm_id                    = 9010
-  vm_name                  = "microOS"
-  tags                     = "microos"
-  memory                   = 4096
-  cores                    = 1
-  cpu_type                 = "host"
-  os                       = "l26"
-  bios                     = "ovmf"
-  efi_config {
-    efi_storage_pool       = var.proxmox_nodes[0].storage
-    efi_type               = "4m"
-    pre_enrolled_keys      = false
-  }
-  machine                  = "q35"
-  tpm_config {
-    tpm_version            = "v2.0"
-    tpm_storage_pool       = var.proxmox_nodes[0].storage
-  }
-  boot_command             = [
-    // Login as root
-    "<wait10>", "root", "<enter>", "<wait3>",
-
-    // Set root password
-    // "echo 'root:${var.password}' | chpasswd", "<enter>", "<wait3>",
-    
-    // Set doas for user
-    // "apk add doas", "<enter>", "<wait3>",
-    "adduser ${var.user} wheel", "<enter>", "<wait3>",
-    "echo 'permit nopass :wheel' >> /etc/doas.conf", "<enter>", "<wait3>",
-    
-    // Setup networking with DHCP
-    "setup-interfaces -a", "<enter>", "<wait5>",
-    "rc-service networking restart", "<enter>", "<wait10>",
-    
-    // Setup community repository
-    "setup-apkrepos -c", "<enter>", "<wait5>",
-    "<enter>", "<wait5>",
-
-    // Install and enable qemu-guest-agent
-    "apk update", "<enter>", "<wait5>",
-    "apk add qemu-guest-agent", "<enter>", "<wait10>",
-    "rc-service qemu-guest-agent start", "<enter>", "<wait5>",
-
-    // Install utilities
-    "apk add wget qemu-img sudo", "<enter>", "<wait10>",
-
-    // Install and configure SSH
-    "apk add openssh", "<enter>", "<wait10>",
-    "echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config", "<enter>",
-    "rc-service sshd restart", "<enter>", "<wait5>"
-  ]
-  vga {
-    type                   = "serial0"
-  }
-  network_adapters {
-    model                  = "virtio"
-    bridge                 = "vmbr1"
-    vlan_tag               = 20
-    firewall               = true
-  }
-  disks {
-    disk_size              = "40G"
-    storage_pool           = var.proxmox_nodes[0].storage
-    type                   = "scsi"
-    ssd                    = true
-    discard                = true
-  }
-  serials = [
-    "socket"
-  ]
-  qemu_agent               = true
-  scsi_controller          = "virtio-scsi-pci"
-  template_description     = "MicroOS, generated on ${timestamp()}"
-  cloud_init               = true
-  cloud_init_storage_pool  = var.proxmox_nodes[0].storage
-  cloud_init_disk_type     = "scsi"
-  boot_iso {
-    type                   = "ide"
-    index                  = 0
-    # iso_file               = "${var.proxmox_nodes[0].iso_storage}:iso/${local.alpine_iso_file}"
-    iso_url                = local.alpine_iso_url
-    iso_storage_pool       = var.proxmox_nodes[0].iso_storage
-    unmount                = true
-    iso_checksum           = local.alpine_iso_checksum
-  }
-  # Add cloud-init ISO with SSH keys
-  additional_iso_files {
-    # cd_files                 = ["vendor-data"]
-    cd_content = {
-      "meta-data" = local.cloud_init_meta_data
-      "user-data" = local.cloud_init_user_data
-    }
-    cd_label                 = "cidata"
-    iso_storage_pool         = var.proxmox_nodes[0].iso_storage
-    type                     = "ide"
-    index                    = 1
-    unmount                  = true
-    # iso_checksum             = "none"
-  }
-  ssh_username              = var.user
-  # ssh_password              = var.password
-  ssh_private_key_file      = var.ssh_private_key_file
 }
 
 build {
-  sources = ["proxmox-iso.microOS"]
+  dynamic "source" {
+    for_each = var.proxmox_nodes
+    labels   = ["proxmox-iso.microOS"]
+    content {
+      node                     = source.value.name
+      proxmox_url              = "https://${source.value.host}:${source.value.port}/api2/json"
+      insecure_skip_tls_verify = true
+      username                 = source.value.username
+      # password                 = source.value.password
+      token                    = source.value.token
+
+      vm_id                    = 9011
+      vm_name                  = "microOS"
+      tags                     = "microos"
+      memory                   = 4096
+      cores                    = 1
+      cpu_type                 = "host"
+      os                       = "l26"
+      bios                     = "ovmf"
+      efi_config {
+        efi_storage_pool       = source.value.storage
+        efi_type               = "4m"
+        pre_enrolled_keys      = false
+      }
+      machine                  = "q35"
+      tpm_config {
+        tpm_version            = "v2.0"
+        tpm_storage_pool       = source.value.storage
+      }
+      boot_command             = [
+        // Login as root
+        "<wait10>", "root", "<enter>", "<wait3>",
+
+        // Set doas for user
+        "adduser ${var.user} wheel", "<enter>", "<wait3>",
+        "echo 'permit nopass :wheel' >> /etc/doas.conf", "<enter>", "<wait3>",
+        
+        // Setup networking with DHCP
+        "setup-interfaces -a", "<enter>", "<wait5>",
+        "rc-service networking restart", "<enter>", "<wait10>",
+        
+        // Setup community repository
+        "setup-apkrepos -c", "<enter>", "<wait5>",
+        "<enter>", "<wait5>",
+
+        // Install and enable qemu-guest-agent
+        "apk update", "<enter>", "<wait5>",
+        "apk add qemu-guest-agent", "<enter>", "<wait10>",
+        "rc-service qemu-guest-agent start", "<enter>", "<wait5>",
+
+        // Install utilities
+        "apk add wget qemu-img", "<enter>", "<wait10>",
+
+        // Install and configure SSH
+        "apk add openssh", "<enter>", "<wait10>",
+        "rc-service sshd restart", "<enter>", "<wait5>"
+      ]
+      vga {
+        type                   = "serial0"
+      }
+      network_adapters {
+        model                  = "virtio"
+        bridge                 = "vmbr1"
+        vlan_tag               = 20
+        firewall               = true
+      }
+      disks {
+        disk_size              = "40G"
+        storage_pool           = source.value.storage
+        type                   = "scsi"
+        ssd                    = true
+        discard                = true
+      }
+      serials = [
+        "socket"
+      ]
+      qemu_agent               = true
+      scsi_controller          = "virtio-scsi-pci"
+      template_description     = "MicroOS, generated on ${timestamp()}"
+      cloud_init               = true
+      cloud_init_storage_pool  = source.value.storage
+      cloud_init_disk_type     = "scsi"
+      boot_iso {
+        type                   = "ide"
+        index                  = 0
+        # iso_file               = "${source.value.iso_storage}:iso/${local.alpine_iso_file}"
+        iso_url                = local.alpine_iso_url
+        iso_storage_pool       = source.value.iso_storage
+        unmount                = true
+        iso_checksum           = local.alpine_iso_checksum
+      }
+      # Add cloud-init ISO with SSH keys
+      additional_iso_files {
+        # cd_files                 = ["vendor-data"]
+        cd_content = {
+          "meta-data" = local.cloud_init_meta_data
+          "user-data" = local.cloud_init_user_data
+        }
+        cd_label                 = "cidata"
+        iso_storage_pool         = source.value.iso_storage
+        type                     = "ide"
+        index                    = 1
+        unmount                  = true
+        # iso_checksum             = "none"
+      }
+      ssh_username              = var.user
+      # ssh_password              = var.password
+      ssh_private_key_file      = var.ssh_private_key_file
+    }
+  }
 
   # Download the MicroOS image
   provisioner "shell" {
