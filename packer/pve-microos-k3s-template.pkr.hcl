@@ -205,7 +205,7 @@ build {
       token                    = source.value.token
 
       vm_id                    = 9010
-      vm_name                  = "microOS+k3s"
+      vm_name                  = "microOS-k3s"
       tags                     = "microos;k3s"
       memory                   = 4096
       cores                    = 1
