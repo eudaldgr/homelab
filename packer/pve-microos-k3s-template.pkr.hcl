@@ -146,7 +146,7 @@ locals {
         ssh_authorized_keys:
           - ${file("${var.ssh_public_key_file}")}
     write_files:
-      - path: /etc/sysctl.d/90-rke2-net.conf
+      - path: /etc/sysctl.d/90-k8s-net.conf
         content: |
           net.ipv4.conf.all.forwarding=1
           net.ipv6.conf.all.forwarding=1
@@ -181,7 +181,10 @@ locals {
       mode: auto
       devices: ['/', '/var']
     runcmd:
-      - transactional-update run sh -c "$(cat /tmp/install)" && reboot
+      |
+        transactional-update run sh -c "$(cat /tmp/install)" && \
+        curl -sfL https://get.k3s.io | INSTALL_K3S_SKIP_START=true INSTALL_K3S_SKIP_SELINUX_RPM=true sh - && \
+        reboot
   EOT
 }
 
@@ -201,9 +204,9 @@ build {
       # password                 = source.value.password
       token                    = source.value.token
 
-      vm_id                    = 9011
-      vm_name                  = "microOS"
-      tags                     = "microos"
+      vm_id                    = 9010
+      vm_name                  = "microOS+k3s"
+      tags                     = "microos;k3s"
       memory                   = 4096
       cores                    = 1
       cpu_type                 = "host"
@@ -222,6 +225,11 @@ build {
       boot_command             = [
         // Login as root
         "<wait10>", "root", "<enter>", "<wait3>",
+
+        // Stop tiny-cloud-early, main and final services
+        "rc-service tiny-cloud-early stop", "<enter>", "<wait3>",
+        "rc-service tiny-cloud-main  stop", "<enter>", "<wait3>",
+        "rc-service tiny-cloud-final stop", "<enter>", "<wait3>",
 
         // Set doas for user
         "adduser ${var.user} wheel", "<enter>", "<wait3>",
@@ -268,7 +276,7 @@ build {
       ]
       qemu_agent               = true
       scsi_controller          = "virtio-scsi-pci"
-      template_description     = "MicroOS, generated on ${timestamp()}"
+      template_description     = "MicroOS + k3s, generated on ${timestamp()}"
       cloud_init               = true
       cloud_init_storage_pool  = source.value.storage
       cloud_init_disk_type     = "scsi"
