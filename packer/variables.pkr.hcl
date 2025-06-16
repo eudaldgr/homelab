@@ -1,5 +1,6 @@
 // variables.pkr.hcl
 
+# proxmox variables
 variable "proxmox_nodes" {
   description = "List of Proxmox nodes"
   type = list(object({
@@ -15,12 +16,14 @@ variable "proxmox_nodes" {
   }))
 }
 
-variable "packages_to_install" {
-  type    = list(string)
-  description = "List of packages to install on the MicroOS template"
-  default = []
+# hcloud variables
+variable "hcloud_token" {
+  type      = string
+  default   = env("HCLOUD_TOKEN")
+  sensitive = true
 }
 
+# ssh variables
 variable "ssh_public_key_file" {
   type        = string
   description = "List of SSH public keys to add to the root user via cloud-init"
@@ -39,13 +42,31 @@ variable "user" {
   default     = "packer"
 }
 
+variable "password" {
+  type        = string
+  description = "Password for the user"
+  default     = "packer"
+}
+
+# microOS variables
+variable "packages_to_install" {
+  type    = list(string)
+  description = "List of packages to install on the MicroOS template"
+  default = []
+}
+
+# alpine variables
 variable "alpine_version" {
   type    = string
-  default = "3.21.3"
+  default = "3.22.0"
 }
 
 locals {
+  # alpine local variables
   alpine_iso_file     = "alpine-virt-${var.alpine_version}-x86_64.iso"
-  alpine_iso_url      = "https://dl-cdn.alpinelinux.org/alpine/latest-stable/releases/x86_64/${local.alpine_iso_file}"
+  alpine_iso_url      = "https://dl-cdn.alpinelinux.org/alpine/v${join(".", slice(split(".", var.alpine_version), 0, 2))}/releases/x86_64/${local.alpine_iso_file}"
   alpine_iso_checksum = "file:${local.alpine_iso_url}.sha256"
+
+  # utils
+  download_image = "wget --timeout=5 --waitretry=5 --tries=5 --retry-connrefused --inet4-only"
 }

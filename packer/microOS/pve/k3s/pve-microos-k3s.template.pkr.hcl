@@ -108,8 +108,13 @@ build {
       additional_iso_files {
         # cd_files                 = ["vendor-data"]
         cd_content = {
-          "meta-data" = local.cloud_init_meta_data
-          "user-data" = local.cloud_init_user_data
+          "meta-data" = templatefile("${abspath(path.root)}/config/meta-data.pkrtpl.hcl", {
+                                        instance_id = "microOS-k3s"
+                                    })
+          "user-data" = templatefile("${abspath(path.root)}/config/user-data.pkrtpl.hcl", {
+                                        user    = var.user
+                                        ssh_key = file("${abspath(path.cwd)}/ssh/packer.pub")
+                                    })
         }
         cd_label                 = "cidata"
         iso_storage_pool         = source.value.iso_storage
@@ -127,8 +132,9 @@ build {
   # Download the MicroOS image
   provisioner "shell" {
     inline = [
-      "${local.download_image} ${local.microos_img_url}          -O /tmp/${local.microos_img_name}        >/dev/null",
-      "${local.download_image} ${local.microos_img_checksum_url} -O /tmp/${local.microos_img_name}.sha256 >/dev/null",
+      "echo 'Downloading MicroOS image...'",
+      "${local.download_image} ${local.microos_img_url}          -O /tmp/${local.microos_img_name}        >/dev/null 2>&1",
+      "${local.download_image} ${local.microos_img_checksum_url} -O /tmp/${local.microos_img_name}.sha256 >/dev/null 2>&1",
     ]
   }
 
@@ -143,20 +149,13 @@ build {
     expect_disconnect = true
   }
 
-  # Wait for cloudinit runcmd to finish
-  provisioner "shell" {
-    pause_before      = "15s"
-    inline            = [local.wait_for_cloudinit]
-    expect_disconnect = true
-  }
-
   # Install packages
   provisioner "shell" {
     pause_before      = "15s"
     inline            = [local.install_packages]
     expect_disconnect = true
   }
-  
+
   # Do house-keeping
   provisioner "shell" {
     pause_before = "15s"
