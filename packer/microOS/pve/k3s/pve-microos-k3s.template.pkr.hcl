@@ -6,7 +6,7 @@ source "proxmox-iso" "microOS" {
 }
 
 build {
-  name = "microOS-k3s"
+  name = "pve-microOS-k3s"
 
   dynamic "source" {
     for_each = var.proxmox_nodes
@@ -133,8 +133,8 @@ build {
   provisioner "shell" {
     inline = [
       "echo 'Downloading MicroOS image...'",
-      "${local.download_image} ${local.microos_img_url}          -O /tmp/${local.microos_img_name}        >/dev/null 2>&1",
-      "${local.download_image} ${local.microos_img_checksum_url} -O /tmp/${local.microos_img_name}.sha256 >/dev/null 2>&1",
+      "${local.download_image} ${local.microos_x86_img_url}          -O /tmp/${local.microos_x86_img_name}        >/dev/null 2>&1",
+      "${local.download_image} ${local.microos_x86_img_checksum_url} -O /tmp/${local.microos_x86_img_name}.sha256 >/dev/null 2>&1",
     ]
   }
 

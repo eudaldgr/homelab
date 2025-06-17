@@ -95,9 +95,9 @@ build {
       "apk update",
       "apk add wget xz",
       
-      "echo 'Downloading MicroOS image...'",
-      "wget --timeout=5 --waitretry=5 --tries=5 --retry-connrefused --inet4-only ${local.umbrelos_img_url}          -O /tmp/${local.umbrelos_img_name}.xz",
-      "wget --timeout=5 --waitretry=5 --tries=5 --retry-connrefused --inet4-only ${local.umbrelos_img_checksum_url} -O /tmp/${local.umbrelos_img_checksum_name}",
+      "echo 'Downloading umbrelOS image...'",
+      "${local.download_image} ${local.umbrelos_img_url}          -O /tmp/${local.umbrelos_img_name}.xz       >/dev/null 2>&1",
+      "${local.download_image} ${local.umbrelos_img_checksum_url} -O /tmp/${local.umbrelos_img_checksum_name} >/dev/null 2>&1",
       
       "echo 'Verifying download...'",
       "cd /tmp",

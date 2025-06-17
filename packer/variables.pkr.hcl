@@ -66,6 +66,14 @@ locals {
   alpine_iso_file     = "alpine-virt-${var.alpine_version}-x86_64.iso"
   alpine_iso_url      = "https://dl-cdn.alpinelinux.org/alpine/v${join(".", slice(split(".", var.alpine_version), 0, 2))}/releases/x86_64/${local.alpine_iso_file}"
   alpine_iso_checksum = "file:${local.alpine_iso_url}.sha256"
+  
+  microos_x86_img_name         = "openSUSE-MicroOS.x86_64-ContainerHost-OpenStack-Cloud.qcow2"
+  microos_x86_img_url          = "https://download.opensuse.org/tumbleweed/appliances/${local.microos_x86_img_name}"
+  microos_x86_img_checksum_url = "${local.microos_x86_img_url}.sha256"
+
+  microos_arm_img_name         = "openSUSE-MicroOS.aarch64-ContainerHost-OpenStack-Cloud.qcow2"
+  microos_arm_img_url          = "https://download.opensuse.org/ports/aarch64/tumbleweed/appliances/${local.microos_arm_img_name}"
+  microos_arm_img_checksum_url = "${local.microos_arm_img_url}.sha256"
 
   # utils
   download_image = "wget --timeout=5 --waitretry=5 --tries=5 --retry-connrefused --inet4-only"
