@@ -58,7 +58,6 @@ locals {
         restorecon -Rv /var/lib
         setenforce 1
     EOF
-    curl -sfL https://get.k3s.io | INSTALL_K3S_SKIP_START=true INSTALL_K3S_SKIP_SELINUX_RPM=true sh -
     sleep 1 && sudo udevadm settle && sudo reboot
   EOT
 
