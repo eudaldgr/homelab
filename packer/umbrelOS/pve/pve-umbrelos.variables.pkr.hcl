@@ -2,7 +2,7 @@
 
 variable "umbrelos_version" {
   type    = string
-  default = "1.4.0"
+  default = "1.4.2"
 }
 
 locals {

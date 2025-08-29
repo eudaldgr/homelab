@@ -10,11 +10,12 @@ source "proxmox-iso" "umbrelOS" {
   # password                 = var.proxmox_nodes[0].password
   token                    = var.proxmox_nodes[0].token
 
-  vm_name                  = "umbrelOS-${var.umbrelos_version}"
+  vm_name                  = "umbrelOS"
   vm_id                    = 92140
-  tags                     = "umbrel;bitcoin"
-  memory                   = 16384
-  cores                    = 4
+  tags                     = "umbrelOS"
+  template_description     = "umbrelOS - ${var.umbrelos_version}, generated on ${timestamp()}"
+  memory                   = 6144
+  cores                    = 1
   cpu_type                 = "host"
   os                       = "l26"
   bios                     = "ovmf"
@@ -60,7 +61,7 @@ source "proxmox-iso" "umbrelOS" {
     model                  = "virtio"
     bridge                 = "vmbr1"
     vlan_tag               = 20
-    firewall               = true
+    firewall                = true
   }
   disks {
     disk_size              = "32G"
@@ -73,7 +74,6 @@ source "proxmox-iso" "umbrelOS" {
     "socket"
   ]
   scsi_controller          = "virtio-scsi-pci"
-  template_description     = "umbrelOS, generated on ${timestamp()}"
   boot_iso {
     type                   = "scsi"
     //iso_file               = "${var.proxmox_nodes[0].iso_storage}:iso/${local.alpine_iso_file}"
