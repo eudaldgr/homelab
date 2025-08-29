@@ -27,13 +27,13 @@ variable "hcloud_token" {
 variable "ssh_public_key_file" {
   type        = string
   description = "List of SSH public keys to add to the root user via cloud-init"
-  default     = "./ssh/packer.pub"
+  default     = "~/.ssh/id_ed25519.pub"
 }
 
 variable "ssh_private_key_file" {
   type        = string
   description = "Path to the SSH private key file"
-  default     = "./ssh/packer"
+  default     = "~/.ssh/id_ed25519"
 }
 
 variable "user" {
@@ -45,7 +45,7 @@ variable "user" {
 variable "password" {
   type        = string
   description = "Password for the user"
-  default     = "packer"
+  default     = "changeme"
 }
 
 # microOS variables
@@ -58,15 +58,16 @@ variable "packages_to_install" {
 # alpine variables
 variable "alpine_version" {
   type    = string
-  default = "3.22.0"
+  default = "3.22.1"
 }
 
 locals {
   # alpine local variables
-  alpine_iso_file     = "alpine-virt-${var.alpine_version}-x86_64.iso"
+  alpine_iso_file      = "alpine-virt-${var.alpine_version}-x86_64.iso"
   alpine_iso_url      = "https://dl-cdn.alpinelinux.org/alpine/v${join(".", slice(split(".", var.alpine_version), 0, 2))}/releases/x86_64/${local.alpine_iso_file}"
   alpine_iso_checksum = "file:${local.alpine_iso_url}.sha256"
   
+  # microOS local variables
   microos_x86_img_name         = "openSUSE-MicroOS.x86_64-ContainerHost-OpenStack-Cloud.qcow2"
   microos_x86_img_url          = "https://download.opensuse.org/tumbleweed/appliances/${local.microos_x86_img_name}"
   microos_x86_img_checksum_url = "${local.microos_x86_img_url}.sha256"
