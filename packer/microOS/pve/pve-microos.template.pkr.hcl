@@ -6,7 +6,7 @@ source "proxmox-iso" "microOS" {
 }
 
 build {
-  name = "pve-microOS-k3s"
+  name = "pve-microOS"
 
   dynamic "source" {
     for_each = var.proxmox_nodes
@@ -20,16 +20,16 @@ build {
       token                    = source.value.token
 
       vm_id                    = 9010
-      vm_name                  = "microOS-k3s"
-      tags                     = "microos;k3s"
+      vm_name                  = "microOS"
+      tags                     = "microos"
       memory                   = 4096
       cores                    = 1
       cpu_type                 = "host"
       os                       = "l26"
       bios                     = "ovmf"
       efi_config {
-        efi_storage_pool       = source.value.storage
-        efi_type               = "4m"
+        efi_storage_pool        = source.value.storage
+        efi_type                = "4m"
         pre_enrolled_keys      = false
       }
       machine                  = "q35"
@@ -44,7 +44,7 @@ build {
         // Stop tiny-cloud-early, main and final services
         "rc-service tiny-cloud-early stop", "<enter>", "<wait3>",
         "rc-service tiny-cloud-main  stop", "<enter>", "<wait3>",
-        "rc-service tiny-cloud-final stop", "<enter>", "<wait3>",
+        "rc-service tiny-cloud-final  stop", "<enter>", "<wait3>",
 
         // Set doas for user
         "adduser ${var.user} wheel", "<enter>", "<wait3>",
@@ -77,7 +77,7 @@ build {
         model                  = "virtio"
         bridge                 = "vmbr1"
         vlan_tag               = 20
-        firewall               = true
+        firewall                = true
       }
       disks {
         disk_size              = "40G"
@@ -91,7 +91,7 @@ build {
       ]
       qemu_agent               = true
       scsi_controller          = "virtio-scsi-pci"
-      template_description     = "MicroOS + k3s, generated on ${timestamp()}"
+      template_description     = "MicroOS, generated on ${timestamp()}"
       cloud_init               = true
       cloud_init_storage_pool  = source.value.storage
       cloud_init_disk_type     = "scsi"
@@ -109,11 +109,11 @@ build {
         # cd_files                 = ["vendor-data"]
         cd_content = {
           "meta-data" = templatefile("${abspath(path.root)}/config/meta-data.pkrtpl.hcl", {
-                                        instance_id = "microOS-k3s"
+                                        instance_id = "microOS"
                                     })
           "user-data" = templatefile("${abspath(path.root)}/config/user-data.pkrtpl.hcl", {
                                         user    = var.user
-                                        ssh_key = file("${abspath(path.cwd)}/ssh/packer.pub")
+                                        ssh_key = file(var.ssh_public_key_file)
                                     })
         }
         cd_label                 = "cidata"
@@ -125,7 +125,7 @@ build {
       }
       ssh_username              = var.user
       # ssh_password              = var.password
-      ssh_private_key_file      = var.ssh_private_key_file
+      ssh_private_key_file       = var.ssh_private_key_file
     }
   }
 

@@ -49,15 +49,6 @@ locals {
         grub2-mkconfig > /boot/grub2/grub.cfg
     EOF
     sudo transactional-update --continue pkg install -y ${local.needed_packages}
-    sudo transactional-update --continue shell <<- EOF
-        setenforce 0
-        rpm --import https://rpm.rancher.io/public.key
-        zypper install -y https://github.com/k3s-io/k3s-selinux/releases/download/v1.6.stable.1/k3s-selinux-1.6-1.sle.noarch.rpm
-        zypper addlock k3s-selinux
-        restorecon -Rv /etc/selinux/targeted/policy
-        restorecon -Rv /var/lib
-        setenforce 1
-    EOF
     sleep 1 && sudo udevadm settle && sudo reboot
   EOT
 
@@ -65,7 +56,7 @@ locals {
     set -ex
     echo 'Reboot successful, cleaning-up...'
     echo 'Removing SSH host keys...'
-    sudo rm -rf /etc/ssh/ssh_host_*
+    sudo rm -rf /etc/ssh/ssh_host_* /home/${var.user}/.ssh/authorized_keys
     echo 'Make sure to use NetworkManager'
     sudo touch /etc/NetworkManager/NetworkManager.conf
     sudo userdel -r ${var.user} || true

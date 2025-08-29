@@ -7,10 +7,6 @@ users:
     ssh_authorized_keys:
       - ${ssh_key}
 write_files:
-  - path: /etc/sysctl.d/90-k8s-net.conf
-    content: |
-      net.ipv4.conf.all.forwarding=1
-      net.ipv6.conf.all.forwarding=1
   - path: /etc/cloud/cloud.cfg.d/99-default-user.cfg
     content: |
       #cloud-config
