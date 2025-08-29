@@ -8,9 +8,5 @@ packer {
       source  = "github.com/hetznercloud/hcloud"
       version = "~> 1"
     }
-    hyperv = {
-      source  = "github.com/hashicorp/hyperv"
-      version = "~> 1"
-    }
   }
 }
