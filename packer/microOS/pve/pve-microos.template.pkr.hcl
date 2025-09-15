@@ -16,7 +16,6 @@ build {
       proxmox_url              = "https://${source.value.host}:${source.value.port}/api2/json"
       insecure_skip_tls_verify = true
       username                 = source.value.username
-      # password                 = source.value.password
       token                    = source.value.token
 
       vm_id                    = 9010
@@ -41,14 +40,11 @@ build {
         // Login as root
         "<wait10>", "root", "<enter>", "<wait3>",
 
-        // Stop tiny-cloud-early, main and final services
-        "rc-service tiny-cloud-early stop", "<enter>", "<wait3>",
-        "rc-service tiny-cloud-main  stop", "<enter>", "<wait3>",
-        "rc-service tiny-cloud-final  stop", "<enter>", "<wait3>",
-
-        // Set doas for user
-        "adduser ${var.user} wheel", "<enter>", "<wait3>",
-        "echo 'permit nopass :wheel' >> /etc/doas.conf", "<enter>", "<wait3>",
+        // Add ssh key for root
+        "mkdir -p /root/.ssh", "<enter>", "<wait3>",
+        "echo '${replace(file(var.ssh_public_key_file), "\n", "")}' > /root/.ssh/authorized_keys", "<enter>", "<wait3>",
+        "chmod 700 /root/.ssh", "<enter>", "<wait3>",
+        "chmod 600 /root/.ssh/authorized_keys", "<enter>", "<wait3>",
         
         // Setup networking with DHCP
         "setup-interfaces -a", "<enter>", "<wait5>",
@@ -66,7 +62,7 @@ build {
         // Install utilities
         "apk add wget qemu-img", "<enter>", "<wait10>",
 
-        // Install and configure SSH
+        // Install SSH
         "apk add openssh", "<enter>", "<wait10>",
         "rc-service sshd restart", "<enter>", "<wait5>"
       ]
@@ -98,21 +94,17 @@ build {
       boot_iso {
         type                   = "ide"
         index                  = 0
-        # iso_file               = "${source.value.iso_storage}:iso/${local.alpine_iso_file}"
         iso_url                = local.alpine_iso_url
         iso_storage_pool       = source.value.iso_storage
         unmount                = true
         iso_checksum           = local.alpine_iso_checksum
       }
-      # Add cloud-init ISO with SSH keys
       additional_iso_files {
-        # cd_files                 = ["vendor-data"]
         cd_content = {
           "meta-data" = templatefile("${abspath(path.root)}/config/meta-data.pkrtpl.hcl", {
                                         instance_id = "microOS"
                                     })
           "user-data" = templatefile("${abspath(path.root)}/config/user-data.pkrtpl.hcl", {
-                                        user    = var.user
                                         ssh_key = file(var.ssh_public_key_file)
                                     })
         }
@@ -121,10 +113,8 @@ build {
         type                     = "ide"
         index                    = 1
         unmount                  = true
-        # iso_checksum             = "none"
       }
-      ssh_username              = var.user
-      # ssh_password              = var.password
+      ssh_username              = "root"
       ssh_private_key_file       = var.ssh_private_key_file
     }
   }

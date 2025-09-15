@@ -35,31 +35,38 @@ locals {
   write_image = <<-EOT
     set -ex
     echo 'MicroOS image loaded, writing to disk...'
-    doas qemu-img dd -f qcow2 -O raw bs=4M if=/tmp/${local.microos_x86_img_name} of=/dev/sda
+    qemu-img dd -f qcow2 -O raw bs=4M if=/tmp/${local.microos_x86_img_name} of=/dev/sda
     echo 'Image successfully written to disk, rebooting...'
-    sleep 1 && doas sync && doas reboot
+    sleep 1 && sync && reboot
   EOT
 
   install_packages = <<-EOT
     set -ex
     echo 'Reboot successful, installing needed packages and doing some configurations...'
-    sudo timedatectl set-timezone Europe/Madrid
-    sudo sed -i "s/GRUB_TIMEOUT=10/GRUB_TIMEOUT=1/g" /etc/default/grub
-    sudo transactional-update --continue shell <<-EOF
+    timedatectl set-timezone Europe/Madrid
+    sed -i "s/GRUB_TIMEOUT=10/GRUB_TIMEOUT=1/g" /etc/default/grub
+    transactional-update --continue shell <<-EOF
         grub2-mkconfig > /boot/grub2/grub.cfg
     EOF
-    sudo transactional-update --continue pkg install -y ${local.needed_packages}
-    sleep 1 && sudo udevadm settle && sudo reboot
+    transactional-update --continue pkg install -y ${local.needed_packages}
+    sleep 1 && udevadm settle && reboot
   EOT
 
   clean_up = <<-EOT
     set -ex
     echo 'Reboot successful, cleaning-up...'
     echo 'Removing SSH host keys...'
-    sudo rm -rf /etc/ssh/ssh_host_* /home/${var.user}/.ssh/authorized_keys
+    rm -rf /etc/ssh/ssh_host_* /root/.ssh /root/.bash_history
+    echo 'Clearing machine-id...'
+    truncate -s 0 /etc/machine-id
+    echo 'Clearing audit logs...'
+    auditctl -D
+    rm -f /var/log/audit/audit.log*
+    echo 'Clearing journal logs...'
+    journalctl --rotate
+    journalctl --vacuum-time=1s
     echo 'Make sure to use NetworkManager'
-    sudo touch /etc/NetworkManager/NetworkManager.conf
-    sudo userdel -r ${var.user} || true
-    sleep 1 && sudo udevadm settle
+    touch /etc/NetworkManager/NetworkManager.conf
+    sleep 1 && udevadm settle
   EOT
 }
