@@ -1,0 +1,7 @@
+# basic PAM configuration for Alpine.
+auth     sufficient pam_rootok.so
+auth     include   base-auth
+account  include   base-account
+password include   base-password
+session  include   base-session
+auth     required  pam_wheel.so use_uid
