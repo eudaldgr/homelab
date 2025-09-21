@@ -1,0 +1,170 @@
+---
+- name: Setting subuid and subgid
+  ansible.builtin.blockinfile:
+    dest: "{{ item }}"
+    owner: root
+    group: root
+    mode: "0644"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - komodo_mongo_1"
+    content: |
+      {{ rootless_user }}:{{ mongo_gid | default(999) }}:1
+  with_items:
+    - /etc/subuid
+    - /etc/subgid
+  register: subid_changes
+  tags: komodo, user
+
+- name: Run podman system migrate if needed
+  become: true
+  become_method: community.general.machinectl # noqa: schema
+  become_user: "{{ rootless_user }}"
+  vars:
+    ansible_pipelining: true
+  ansible.builtin.command: podman system migrate
+  environment:
+    XDG_RUNTIME_DIR: "/run/user/{{ rootless_uid.stdout | trim }}"
+  when: subid_changes.changed # noqa: no-handler
+  changed_when: false
+  tags: podman
+
+- name: Crear directori pare per a Komodo Stack
+  ansible.builtin.file:
+    path: "{{ nfs_mount_point | default('/mnt/nfs') }}/komodo"
+    state: directory
+    owner: "{{ rootless_user }}"
+    group: "{{ rootless_user }}"
+    mode: "0755"
+  tags: komodo
+
+- name: Crear subdirectoris per a Komodo Stack
+  ansible.builtin.file:
+    path: "{{ nfs_mount_point | default('/mnt/nfs') }}/komodo/{{ item }}"
+    state: directory
+    owner: "{{ rootless_user }}"
+    group: "{{ rootless_user }}"
+    mode: "0755"
+  with_items:
+    - data
+    - data/core
+    - data/mongo
+    - data/mongo/config
+    - data/mongo/data
+    - data/periphery
+    - quadlets
+  tags: komodo
+
+- name: Change ownership of mongo directory to mongo user and group
+  ansible.builtin.file:
+    path: "{{ nfs_mount_point | default('/mnt/nfs') }}/komodo/data/mongo"
+    state: directory
+    owner: "{{ mongo_uid | default('999') }}"
+    group: "{{ mongo_gid | default('999') }}"
+    recurse: true
+  tags: komodo, mongo
+
+- name: Copiar fitxers de configuració de Komodo Stack
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/{{ item }}.j2"
+    dest: "{{ nfs_mount_point | default('/mnt/nfs') }}/komodo/quadlets/{{ item }}"
+    owner: "{{ rootless_user }}"
+    group: "{{ rootless_user }}"
+    mode: "0644"
+  with_items:
+    - komodo_core_1.container
+    - komodo_mongo_1.container
+    - komodo_periphery_1.container
+  tags: komodo
+
+- name: Copiar fitxers de configuració de Komodo Stack
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/{{ item }}"
+    dest: "{{ nfs_mount_point | default('/mnt/nfs') }}/komodo/quadlets/{{ item }}"
+    owner: "{{ rootless_user }}"
+    group: "{{ rootless_user }}"
+    mode: "0644"
+  with_items:
+    - komodo.env
+    - komodo.network
+    - komodo_periphery_1.cil
+  tags: komodo
+
+- name: Assegurar que el directori ~/.config/containers/systemd existeix
+  ansible.builtin.file:
+    path: "/home/{{ rootless_user }}/.config/containers/systemd"
+    state: directory
+    owner: "{{ rootless_user }}"
+    group: "{{ rootless_user }}"
+    mode: "0755"
+  tags: podman
+
+- name: Crear enllaços symlink quadlets de Komodo Stack
+  ansible.builtin.file:
+    src: "{{ nfs_mount_point | default('/mnt/nfs') }}/komodo/quadlets/{{ item }}"
+    dest: "/home/{{ rootless_user }}/.config/containers/systemd/{{ item }}"
+    state: link
+    owner: "{{ rootless_user }}"
+    group: "{{ rootless_user }}"
+    mode: "0644"
+  with_items:
+    - komodo_core_1.container
+    - komodo_mongo_1.container
+    - komodo_periphery_1.container
+    - komodo.env
+    - komodo.network
+  tags: komodo
+
+- name: Install periphery SELinux policy
+  ansible.builtin.command: |
+    semodule -i {{ nfs_mount_point | default('/mnt/nfs') }}/komodo/quadlets/komodo_periphery_1.cil /usr/share/udica/templates/base_container.cil
+  args:
+    creates: /var/lib/selinux/targeted/active/modules/400/komodo_periphery_1
+  tags: komodo, selinux
+
+- name: Check existing Komodo secrets
+  become: true
+  become_method: community.general.machinectl # noqa: schema
+  become_user: "{{ rootless_user }}"
+  vars:
+    ansible_pipelining: true
+  containers.podman.podman_secret_info:
+  environment:
+    XDG_RUNTIME_DIR: "/run/user/{{ rootless_uid.stdout | trim }}"
+  register: existing_secrets
+  tags: komodo
+
+- name: Create missing secrets for Komodo stack
+  become: true
+  become_method: community.general.machinectl # noqa: schema
+  become_user: "{{ rootless_user }}"
+  vars:
+    ansible_pipelining: true
+  containers.podman.podman_secret:
+    state: present
+    name: "{{ item }}"
+    data: "{{ lookup('ansible.builtin.password', '/dev/null length=32 chars=ascii_letters,digits') }}"
+  environment:
+    XDG_RUNTIME_DIR: "/run/user/{{ rootless_uid.stdout | trim }}"
+  loop:
+    - komodo_core_1_jwt
+    - komodo_core_1_passkey
+    - komodo_core_1_webhook_secret
+    - komodo_mongo_1_passwd
+  when: item not in (existing_secrets.secrets | map(attribute='Spec.Name') | list)
+  tags: komodo
+
+- name: Start and enable Komodo containers
+  become: true
+  become_method: community.general.machinectl # noqa: schema
+  become_user: "{{ rootless_user }}"
+  vars:
+    ansible_pipelining: true
+  ansible.builtin.systemd_service:
+    name: komodo_periphery_1
+    state: started
+    enabled: true
+    scope: user
+    daemon_reload: true
+  environment:
+    XDG_RUNTIME_DIR: "/run/user/{{ rootless_uid.stdout | trim }}"
+  changed_when: false
+  tags: komodo

@@ -1,0 +1,154 @@
+---
+- name: Setting subuid and subgid
+  ansible.builtin.blockinfile:
+    dest: "{{ item }}"
+    owner: root
+    group: root
+    mode: "0644"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - forgejo_postgres_1"
+    content: |
+      {{ rootless_user }}:{{ postgres_uid | default(70) }}:1
+  with_items:
+    - /etc/subuid
+    - /etc/subgid
+  register: subid_changes
+  tags: forgejo, user
+
+- name: Run podman system migrate if needed
+  become: true
+  become_method: community.general.machinectl # noqa: schema
+  become_user: "{{ rootless_user }}"
+  vars:
+    ansible_pipelining: true
+  ansible.builtin.command: podman system migrate
+  environment:
+    XDG_RUNTIME_DIR: "/run/user/{{ rootless_uid.stdout | trim }}"
+  when: subid_changes.changed # noqa: no-handler
+  changed_when: false
+  tags: podman
+
+- name: Crear directori pare per a Forgejo Stack
+  ansible.builtin.file:
+    path: "{{ nfs_mount_point | default('/mnt/nfs') }}/forgejo"
+    state: directory
+    owner: "{{ rootless_user }}"
+    group: "{{ rootless_user }}"
+    mode: "0755"
+  tags: forgejo
+
+- name: Crear subdirectoris per a Forgejo Stack
+  ansible.builtin.file:
+    path: "{{ nfs_mount_point | default('/mnt/nfs') }}/forgejo/{{ item }}"
+    state: directory
+    owner: "{{ rootless_user }}"
+    group: "{{ rootless_user }}"
+    mode: "0755"
+  with_items:
+    - data
+    - data/forgejo
+    - data/forgejo/conf
+    - data/forgejo/data
+    - data/postgres
+    - quadlets
+  tags: forgejo
+
+- name: Change ownership of postgres directory to postgres user and group
+  ansible.builtin.file:
+    path: "{{ nfs_mount_point | default('/mnt/nfs') }}/forgejo/data/postgres"
+    state: directory
+    owner: "{{ postgres_uid | default('70') }}"
+    group: "{{ postgres_gid | default('70') }}"
+    recurse: true
+  tags: forgejo, postgres
+
+- name: Copiar fitxers de configuració de Forgejo Stack
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/{{ item }}.j2"
+    dest: "{{ nfs_mount_point | default('/mnt/nfs') }}/forgejo/quadlets/{{ item }}"
+    owner: "{{ rootless_user }}"
+    group: "{{ rootless_user }}"
+    mode: "0644"
+  with_items:
+    - forgejo_app_1.container
+    - forgejo_postgres_1.container
+  tags: forgejo
+
+- name: Copiar fitxers de configuració de Forgejo Stack
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/{{ item }}"
+    dest: "{{ nfs_mount_point | default('/mnt/nfs') }}/forgejo/quadlets/{{ item }}"
+    owner: "{{ rootless_user }}"
+    group: "{{ rootless_user }}"
+    mode: "0644"
+  with_items:
+    - forgejo.network
+  tags: forgejo
+
+- name: Assegurar que el directori ~/.config/containers/systemd existeix
+  ansible.builtin.file:
+    path: "/home/{{ rootless_user }}/.config/containers/systemd"
+    state: directory
+    owner: "{{ rootless_user }}"
+    group: "{{ rootless_user }}"
+    mode: "0755"
+  tags: podman
+
+- name: Crear enllaços symlink quadlets de Forgejo Stack
+  ansible.builtin.file:
+    src: "{{ nfs_mount_point | default('/mnt/nfs') }}/forgejo/quadlets/{{ item }}"
+    dest: "/home/{{ rootless_user }}/.config/containers/systemd/{{ item }}"
+    state: link
+    owner: "{{ rootless_user }}"
+    group: "{{ rootless_user }}"
+    mode: "0644"
+  with_items:
+    - forgejo_app_1.container
+    - forgejo_postgres_1.container
+    - forgejo.network
+  tags: forgejo
+
+- name: Check existing forgejo secrets
+  become: true
+  become_method: community.general.machinectl # noqa: schema
+  become_user: "{{ rootless_user }}"
+  vars:
+    ansible_pipelining: true
+  containers.podman.podman_secret_info:
+  environment:
+    XDG_RUNTIME_DIR: "/run/user/{{ rootless_uid.stdout | trim }}"
+  register: existing_secrets
+  tags: forgejo
+
+- name: Create missing secrets for Forgejo stack
+  become: true
+  become_method: community.general.machinectl # noqa: schema
+  become_user: "{{ rootless_user }}"
+  vars:
+    ansible_pipelining: true
+  containers.podman.podman_secret:
+    state: present
+    name: "{{ item }}"
+    data: "{{ lookup('ansible.builtin.password', '/dev/null length=32 chars=ascii_letters,digits') }}"
+  environment:
+    XDG_RUNTIME_DIR: "/run/user/{{ rootless_uid.stdout | trim }}"
+  loop:
+    - forgejo_postgres_1_passwd
+  when: item not in (existing_secrets.secrets | map(attribute='Spec.Name') | list)
+  tags: forgejo
+
+- name: Start and enable Forgejo containers
+  become: true
+  become_method: community.general.machinectl # noqa: schema
+  become_user: "{{ rootless_user }}"
+  vars:
+    ansible_pipelining: true
+  ansible.builtin.systemd_service:
+    name: forgejo_app_1
+    state: started
+    enabled: true
+    scope: user
+    daemon_reload: true
+  environment:
+    XDG_RUNTIME_DIR: "/run/user/{{ rootless_uid.stdout | trim }}"
+  changed_when: false
+  tags: forgejo

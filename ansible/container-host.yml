@@ -1,0 +1,9 @@
+---
+- name: Prepare node
+  hosts: container_hosts
+  gather_facts: false # fact gathering is slow and not needed for any of our tasks
+  become: true
+  roles:
+    - prepare-microOS
+    - komodo-stack
+    - forgejo-stack

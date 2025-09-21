@@ -39,7 +39,6 @@ inventory.ini
 group_vars/vault.yml
 host_vars/*/vault.yml
 *.vault
-collections/
 roles/*/tests/test.yml
 roles/*/tests/inventory
 .molecule/

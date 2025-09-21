@@ -1,0 +1,6 @@
+[container_hosts]
+host01 ansible_host=192.168.1.10
+
+[container_hosts:vars]
+ansible_user=myuser
+rootless_user=rootless
