@@ -2,7 +2,7 @@ terraform {
   required_providers {
     proxmox = {
       source  = "Telmate/proxmox"
-      version = "3.0.2-rc03"
+      version = "3.0.2-rc04"
     }
   }
 }
@@ -14,4 +14,6 @@ provider "proxmox" {
   pm_api_token_id     = each.value.username
   pm_api_token_secret = each.value.token
   pm_tls_insecure     = !each.value.tls
+
+  pm_minimum_permission_check = false
 }

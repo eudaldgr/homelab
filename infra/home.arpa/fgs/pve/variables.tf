@@ -13,8 +13,8 @@ variable "proxmox_nodes" {
   }))
 }
 
-variable "authorized_ssh_key" {
-  description = "SSH public key for authorized access"
+variable "ssh_public_key_path" {
+  description = "Path to SSH public key used to connect to Proxmox node"
   type        = string
-  default     = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMtFEdSmdo2wOh1CLWQ7deWuCpvuGceoP9pD6lDRfPVc root@eudald.gr"
+  default     = "~/.ssh/id_ed25519.pub"
 }

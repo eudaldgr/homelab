@@ -1,5 +1,5 @@
 locals {
-  os_template      = "microOS-k3s"
+  os_template      = "microOS"
   ciuser           = "eudaldgr"
   id_servers       = 5001
   id_longhorns     = 5031
