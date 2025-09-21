@@ -66,6 +66,12 @@
 
 - name: Unconditionally reboot the machine with all defaults
   ansible.builtin.reboot:
+    connect_timeout: 5
+    reboot_command: "{{ custom_reboot_command | default(omit) }}"
+    reboot_timeout: 600
+    pre_reboot_delay: 0
+    post_reboot_delay: 30
+    test_command: uptime
   when: update.changed # noqa: no-handler
   tags: reboot
 
@@ -90,6 +96,12 @@
 
 - name: Unconditionally reboot the machine with all defaults
   ansible.builtin.reboot:
+    connect_timeout: 5
+    reboot_command: "{{ custom_reboot_command | default(omit) }}"
+    reboot_timeout: 600
+    pre_reboot_delay: 0
+    post_reboot_delay: 30
+    test_command: uptime
   when: packages.changed # noqa: no-handler
   tags: reboot
 
@@ -185,6 +197,12 @@
 
 - name: Unconditionally reboot the machine with all defaults
   ansible.builtin.reboot:
+    connect_timeout: 5
+    reboot_command: "{{ custom_reboot_command | default(omit) }}"
+    reboot_timeout: 600
+    pre_reboot_delay: 0
+    post_reboot_delay: 30
+    test_command: uptime
   tags: reboot
 
 - name: Start and enable services
@@ -275,6 +293,12 @@
 
 - name: Unconditionally reboot the machine with all defaults
   ansible.builtin.reboot:
+    connect_timeout: 5
+    reboot_command: "{{ custom_reboot_command | default(omit) }}"
+    reboot_timeout: 600
+    pre_reboot_delay: 0
+    post_reboot_delay: 30
+    test_command: uptime
   tags: reboot
 
 - name: Mount NFS share

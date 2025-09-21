@@ -113,11 +113,20 @@
     - komodo.network
   tags: komodo
 
-- name: Install periphery SELinux policy
+- name: Check periphery SELinux policy installed
   ansible.builtin.command: |
-    semodule -i {{ nfs_mount_point | default('/mnt/nfs') }}/komodo/quadlets/komodo_periphery_1.cil /usr/share/udica/templates/base_container.cil
+    semodule -l | grep -w komodo_periphery_1
+  register: selinux_policy_check
+  failed_when: false
+  changed_when: false
+  tags: komodo, selinux
+
+- name: Install periphery SELinux policy
+  ansible.builtin.shell: |
+    semodule -i {{ nfs_mount_point | default('/mnt/nfs') }}/komodo/quadlets/komodo_periphery_1.cil /usr/share/udica/templates/*
   args:
     creates: /var/lib/selinux/targeted/active/modules/400/komodo_periphery_1
+  when: selinux_policy_check.rc != 0
   tags: komodo, selinux
 
 - name: Check existing Komodo secrets
