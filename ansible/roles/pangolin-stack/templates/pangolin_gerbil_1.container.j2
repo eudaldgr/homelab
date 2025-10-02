@@ -1,0 +1,20 @@
+[Unit]
+Description=Gerbil Service
+After=pangolin_app_1.service network.target
+Requires=pangolin_app_1.service
+
+[Container]
+Network=pangolin.network
+Image=docker.io/fosrl/gerbil:1.2.1@sha256:52888961717c027bfc9ddea4dd55f57fd54d326fb1a9f9959e9d47e7500ad418
+ContainerName=pangolin_gerbil_1
+Mount=type=bind,src={{ app_data_dir | default('/mnt/nfs') }}/pangolin/data/config,dst=/var/config,relabel=shared
+AddCapability=CAP_NET_ADMIN CAP_NET_RAW CAP_SYS_MODULE
+PublishPort=51820:51820/udp
+PublishPort=21820:21820/udp
+Exec=--reachableAt=http://pangolin_gerbil_1:3003 --generateAndSaveKeyTo=/var/config/key --remoteConfig=http://pangolin_app_1:3001/api/v1/gerbil/get-config --reportBandwidthTo=http://pangolin_app_1:3001/api/v1/gerbil/receive-bandwidth
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

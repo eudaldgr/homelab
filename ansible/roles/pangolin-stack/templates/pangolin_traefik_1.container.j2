@@ -1,0 +1,20 @@
+[Unit]
+Description=Traefik Reverse Proxy
+After=pangolin_app_1.service pangolin_gerbil_1.service network.target
+Requires=pangolin_app_1.service pangolin_gerbil_1.service
+
+[Container]
+Image=docker.io/library/traefik:v3.5.1@sha256:c56901603318ee375477ee5c3f50d175d3ec42dc102efc2f1158f0756ba4dffa
+ContainerName=pangolin_traefik_1
+Network=pangolin.network
+Mount=type=bind,src={{ app_data_dir | default('/mnt/nfs') }}/pangolin/data/config/traefik,dst=/etc/traefik,ro=true
+Mount=type=bind,src={{ app_data_dir | default('/mnt/nfs') }}/pangolin/data/config/letsencrypt,dst=/letsencrypt
+Exec=--configFile=/etc/traefik/traefik_config.yml
+PublishPort=80:80
+PublishPort=443:443
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

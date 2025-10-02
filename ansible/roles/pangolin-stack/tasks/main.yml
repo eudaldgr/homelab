@@ -1,0 +1,150 @@
+---
+- name: Crear directori pare per a Pangolin Stack
+  ansible.builtin.file:
+    path: "{{ app_data_dir | default('/mnt/nfs') }}/pangolin"
+    state: directory
+    owner: "{{ rootless_user }}"
+    group: "{{ rootless_user }}"
+    mode: "0755"
+  tags: pangolin
+
+- name: Crear subdirectoris per a Pangolin Stack
+  ansible.builtin.file:
+    path: "{{ app_data_dir | default('/mnt/nfs') }}/pangolin/{{ item }}"
+    state: directory
+    owner: "{{ rootless_user }}"
+    group: "{{ rootless_user }}"
+    mode: "0755"
+  with_items:
+    - data
+    - data/config
+    - data/config/db
+    - data/config/letsencrypt
+    - data/config/logs
+    - data/config/traefik
+    - quadlets
+  tags: pangolin
+
+- name: Copiar fitxers de configuració de Pangolin Stack
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/{{ item }}.j2"
+    dest: "{{ app_data_dir | default('/mnt/nfs') }}/pangolin/quadlets/{{ item }}"
+    owner: "{{ rootless_user }}"
+    group: "{{ rootless_user }}"
+    mode: "0644"
+  with_items:
+    - pangolin_app_1.container
+    - pangolin_gerbil_1.container
+    - pangolin_traefik_1.container
+  tags: pangolin
+
+- name: Copiar fitxers de configuració de Pangolin Stack
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/{{ item }}"
+    dest: "{{ app_data_dir | default('/mnt/nfs') }}/pangolin/quadlets/{{ item }}"
+    owner: "{{ rootless_user }}"
+    group: "{{ rootless_user }}"
+    mode: "0644"
+  with_items:
+    - pangolin_traefik_1.cil
+    - pangolin.network
+  tags: pangolin
+
+- name: Copiar fitxers de configuració de Pangolin Stack
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/{{ item.name }}.j2"
+    dest: "{{ app_data_dir | default('/mnt/nfs') }}/pangolin/{{ item.dir }}/{{ item.name }}"
+    owner: "{{ rootless_user }}"
+    group: "{{ rootless_user }}"
+    mode: "0644"
+  with_items:
+    - name: config.yml
+      dir: data/config
+    - name: traefik_config.yml
+      dir: data/config/traefik
+    - name: dynamic_config.yml
+      dir: data/config/traefik
+  tags: pangolin
+
+- name: Assegurar que el directori ~/.config/containers/systemd existeix
+  ansible.builtin.file:
+    path: "/home/{{ rootless_user }}/.config/containers/systemd"
+    state: directory
+    owner: "{{ rootless_user }}"
+    group: "{{ rootless_user }}"
+    mode: "0755"
+  tags: podman
+
+- name: Crear enllaços symlink quadlets de Pangolin Stack
+  ansible.builtin.file:
+    src: "{{ app_data_dir | default('/mnt/nfs') }}/pangolin/quadlets/{{ item }}"
+    dest: "/home/{{ rootless_user }}/.config/containers/systemd/{{ item }}"
+    state: link
+    owner: "{{ rootless_user }}"
+    group: "{{ rootless_user }}"
+    mode: "0644"
+  with_items:
+    - pangolin_app_1.container
+    - pangolin_gerbil_1.container
+    - pangolin_traefik_1.container
+    - pangolin.network
+  tags: pangolin
+
+- name: Check periphery SELinux policy installed
+  ansible.builtin.command: |
+    semodule -l | grep -w pangolin_traefik_1
+  register: selinux_policy_check
+  failed_when: false
+  changed_when: false
+  tags: pangolin, selinux
+
+- name: Install periphery SELinux policy
+  ansible.builtin.shell: |
+    semodule -i {{ app_data_dir | default('/mnt/nfs') }}/pangolin/quadlets/pangolin_traefik_1.cil /usr/share/udica/templates/base_container.cil
+  args:
+    creates: /var/lib/selinux/targeted/active/modules/400/pangolin_traefik_1
+  when: selinux_policy_check.rc != 0
+  tags: pangolin, selinux
+
+- name: Start and enable pangolin containers
+  become: true
+  become_method: community.general.machinectl # noqa: schema
+  become_user: "{{ rootless_user }}"
+  vars:
+    ansible_pipelining: true
+  ansible.builtin.systemd_service:
+    name: pangolin_traefik_1
+    state: started
+    enabled: true
+    scope: user
+    daemon_reload: true
+  environment:
+    XDG_RUNTIME_DIR: "/run/user/{{ rootless_uid.stdout | trim }}"
+  changed_when: false
+  tags: pangolin
+
+- name: Register pangolin token
+  become: true
+  become_method: community.general.machinectl # noqa: schema
+  become_user: "{{ rootless_user }}"
+  vars:
+    ansible_pipelining: true
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      journalctl --user -u pangolin_app_1 -n 300 | \
+      awk -F'Token: ' '/Token:/ {print $2}' | \
+      tail -n1
+  register: pangolin_token_result
+  environment:
+    XDG_RUNTIME_DIR: "/run/user/{{ rootless_uid.stdout | trim }}"
+  changed_when: false
+  retries: 30
+  delay: 10
+  until: pangolin_token_result.stdout | trim | length > 0
+  tags: pangolin
+
+- name: Show pangolin token
+  ansible.builtin.debug:
+    msg: "Pangolin token: {{ pangolin_token_result.stdout | trim }}"
+  tags: pangolin
