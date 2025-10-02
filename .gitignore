@@ -114,3 +114,11 @@ temp/
 kubeconfig
 *.kubeconfig
 .kube/
+
+# BIOS dumps
+*.rom
+
+# Misc
+*.bk
+*.backup
+*.old
