@@ -36,18 +36,6 @@ variable "ssh_private_key_file" {
   default     = "~/.ssh/id_ed25519"
 }
 
-variable "user" {
-  type        = string
-  description = "User for cloud-init"
-  default     = "packer"
-}
-
-variable "password" {
-  type        = string
-  description = "Password for the user"
-  default     = "changeme"
-}
-
 # microOS variables
 variable "packages_to_install" {
   type    = list(string)
