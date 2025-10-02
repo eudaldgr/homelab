@@ -58,7 +58,7 @@
   tags: user
 
 - name: Update all packages
-  community.general.zypper:
+  community.general.zypper: # noqa: unknown-module
     name: "*"
     state: latest
   register: update
@@ -281,15 +281,14 @@
   changed_when: false
   tags: selinux
 
-- name: Create mount point directory if it doesn't exist
+- name: Create APP_DATA_DIR directory if it doesn't exist
   ansible.builtin.command: |
     transactional-update --continue run bash -c '
-      mkdir -p "{{ nfs_mount_point | default('/mnt/nfs') }}" &&
-      chown root:root "{{ nfs_mount_point | default('/mnt/nfs') }}" &&
-      chmod 0755 "{{ nfs_mount_point | default('/mnt/nfs') }}"'
-  when: nfs_server is defined and nfs_path is defined
+      mkdir -p "{{ app_data_dir | default('/mnt/nfs') }}" &&
+      chown root:root "{{ app_data_dir | default('/mnt/nfs') }}" &&
+      chmod 0755 "{{ app_data_dir | default('/mnt/nfs') }}"'
   changed_when: false
-  tags: nfs
+  tags: podman
 
 - name: Unconditionally reboot the machine with all defaults
   ansible.builtin.reboot:
@@ -304,17 +303,19 @@
 - name: Mount NFS share
   ansible.builtin.mount:
     src: "{{ nfs_server }}:{{ nfs_path }}"
-    path: "{{ nfs_mount_point | default('/mnt/nfs') }}"
+    path: "{{ app_data_dir | default('/mnt/nfs') }}"
     fstype: nfs
     opts: "{{ nfs_options | default('nofail,x-systemd.automount,x-systemd.requires=network-online.target,x-systemd.mount-timeout=10s') }}"
     state: mounted
-  when: nfs_server is defined and nfs_path is defined
+  when:
+    - nfs_server is defined
+    - nfs_path is defined
   register: nfs_mount
   tags: nfs
 
 - name: Change ownership of NFS mount point
   ansible.builtin.file:
-    path: "{{ nfs_mount_point | default('/mnt/nfs') }}"
+    path: "{{ app_data_dir | default('/mnt/nfs') }}"
     state: directory
     owner: "{{ rootless_user }}"
     group: "{{ rootless_user }}"
@@ -328,7 +329,7 @@
 
 - name: Create directory for secrets on NFS share
   ansible.builtin.file:
-    path: "{{ nfs_mount_point | default('/mnt/nfs') }}/secrets"
+    path: "{{ app_data_dir | default('/mnt/nfs') }}/secrets"
     state: directory
     owner: "{{ rootless_user }}"
     group: "{{ rootless_user }}"
@@ -337,11 +338,13 @@
     - nfs_server is defined
     - nfs_path is defined
     - nfs_mount is succeeded
-  tags: nfs, podman
+  tags:
+    - nfs
+    - podman
 
 - name: Symlink secrets directory to podman storage
   ansible.builtin.file:
-    src: "{{ nfs_mount_point | default('/mnt/nfs') }}/secrets"
+    src: "{{ app_data_dir | default('/mnt/nfs') }}/secrets"
     dest: "/var/lib/containers/user/{{ rootless_user }}/storage/secrets"
     state: link
     owner: "{{ rootless_user }}"
@@ -352,7 +355,9 @@
     - nfs_server is defined
     - nfs_path is defined
     - nfs_mount is succeeded
-  tags: nfs, podman
+  tags:
+    - nfs
+    - podman
 
 - name: Append .bashrc for user -> {{ rootless_user }}
   ansible.builtin.blockinfile:
@@ -367,7 +372,9 @@
     owner: "{{ rootless_user }}"
     group: "{{ rootless_user }}"
     mode: "0644"
-  tags: user, podman
+  tags:
+    - user
+    - podman
 
 - name: Create containers storage.conf
   ansible.builtin.blockinfile:
@@ -381,7 +388,9 @@
     owner: "{{ rootless_user }}"
     group: "{{ rootless_user }}"
     mode: "0644"
-  tags: user, podman
+  tags:
+    - user
+    - podman
 
 - name: Enable Linger for user -> {{ rootless_user }}
   ansible.builtin.command:
@@ -403,7 +412,9 @@
     owner: "{{ rootless_user }}"
     group: "{{ rootless_user }}"
     mode: "0700"
-  tags: user, podman
+  tags:
+    - user
+    - podman
 
 - name: Start and enable podman.socket for user -> {{ rootless_user }}
   become: true
@@ -419,4 +430,6 @@
   environment:
     XDG_RUNTIME_DIR: "/run/user/{{ rootless_uid.stdout | trim }}"
   changed_when: false
-  tags: user, podman
+  tags:
+    - user
+    - podman
