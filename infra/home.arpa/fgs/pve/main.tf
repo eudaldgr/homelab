@@ -16,12 +16,12 @@ resource "proxmox_vm_qemu" "container-host" {
   scsihw      = "virtio-scsi-single"
   tags        = "microOS,podman"
   agent       = 1
-  ciuser    = local.ciuser
-  ciupgrade = true
-  sshkeys   = file(var.ssh_public_key_path)
-  ipconfig0  = "ip=dhcp,ip6=auto"
-  ipconfig1  = ""
-  ipconfig2  = ""
+  ciuser      = local.ciuser
+  ciupgrade   = true
+  sshkeys     = file(var.ssh_public_key_path)
+  ipconfig0    = "ip=dhcp,ip6=auto"
+  ipconfig1    = ""
+  ipconfig2    = ""
   network {
     id      = 0
     model   = "virtio"
