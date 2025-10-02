@@ -89,21 +89,7 @@ resource "hcloud_server" "homelab" {
   user_data = templatefile("${path.module}/files/cloud-init.yml", {
     hostname            = var.hostname
     timezone            = var.timezone
-    base_domain         = var.base_domain
-    pangolin_domain     = var.pangolin_domain
-    letsencrypt_mail    = var.letsencrypt_mail
+    ciuser              = "eudaldgr"
     ssh_authorized_keys = file(var.ssh_public_key_path)
-    smtp_host           = var.smtp_host
-    smtp_port           = var.smtp_port
-    smtp_user           = var.smtp_user
-    smtp_pass           = var.smtp_pass
-    smtp_secure         = var.smtp_secure
-    no_reply_email      = var.no_reply_email
   })
-}
-
-# Wait for Pangolin token to appear in logs and output it
-data "external" "pangolin_token" {
-  program = ["bash", "-c", "${path.module}/files/script.sh ${hcloud_server.homelab.ipv4_address}"]
-  depends_on = [hcloud_server.homelab]
 }
