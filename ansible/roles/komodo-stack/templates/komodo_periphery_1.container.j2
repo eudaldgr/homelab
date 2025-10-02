@@ -9,7 +9,7 @@ ContainerName=komodo_periphery_1
 Network=komodo.network
 Label=komodo.skip=
 PublishPort=8120:8120
-Mount=type=bind,src={{ nfs_mount_point | default('/mnt/nfs') }}/komodo/data/periphery,dst=/etc/komodo
+Mount=type=bind,src={{ app_data_dir | default('/mnt/nfs') }}/komodo/data/periphery,dst=/etc/komodo
 Volume=/%t/podman/podman.sock:/var/run/docker.sock
 #Environment=DOCKER_HOST=unix://%t/podman/podman.sock
 Environment=COMPOSE_KOMODO_IMAGE_TAG=latest

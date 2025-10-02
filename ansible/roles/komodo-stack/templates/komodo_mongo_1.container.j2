@@ -9,8 +9,8 @@ Label=komodo.skip=
 PublishPort=27017:27017
 User={{ mongo_uid | default(999) }}:{{ mongo_gid | default(999) }}
 #Exec=--quiet --wiredTigerCacheSizeGB 0.25
-Mount=type=bind,src={{ nfs_mount_point | default('/mnt/nfs') }}/komodo/data/mongo/data,dst=/data/db
-Mount=type=bind,src={{ nfs_mount_point | default('/mnt/nfs') }}/komodo/data/mongo/config,dst=/data/configdb
+Mount=type=bind,src={{ app_data_dir | default('/mnt/nfs') }}/komodo/data/mongo/data,dst=/data/db
+Mount=type=bind,src={{ app_data_dir | default('/mnt/nfs') }}/komodo/data/mongo/config,dst=/data/configdb
 Environment=MONGO_INITDB_ROOT_USERNAME=admin
 Secret=komodo_mongo_1_passwd,type=env,target=MONGO_INITDB_ROOT_PASSWORD
 PodmanArgs=--uidmap +{{ mongo_uid | default(999) }}:@{{ mongo_uid | default(999) }}:1 --gidmap +{{ mongo_gid | default(999) }}:@{{ mongo_gid | default(999) }}:1

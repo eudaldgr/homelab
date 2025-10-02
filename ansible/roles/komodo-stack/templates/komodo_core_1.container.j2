@@ -9,7 +9,7 @@ ContainerName=komodo_core_1
 Network=komodo.network
 Label=komodo.skip=
 PublishPort=9120:9120
-Mount=type=bind,src={{ nfs_mount_point | default('/mnt/nfs') }}/komodo/data/core,dst=/backups
+Mount=type=bind,src={{ app_data_dir | default('/mnt/nfs') }}/komodo/data/core,dst=/backups
 Environment=TZ=Europe/Madrid
 Environment=KOMODO_DATABASE_ADDRESS=komodo_mongo_1:27017
 Environment=KOMODO_DATABASE_USERNAME=admin
@@ -18,7 +18,7 @@ Secret=komodo_core_1_passkey,type=env,target=KOMODO_PASSKEY
 Environment=KOMODO_FIRST_SERVER=https://komodo_periphery_1:8120
 Secret=komodo_core_1_jwt,type=env,target=KOMODO_JWT_SECRET
 Secret=komodo_core_1_webhook_secret,type=env,target=KOMODO_WEBHOOK_SECRET
-EnvironmentFile={{ nfs_mount_point | default('/mnt/nfs') }}/komodo/quadlets/komodo.env
+EnvironmentFile={{ app_data_dir | default('/mnt/nfs') }}/komodo/quadlets/komodo.env
 
 [Service]
 Restart=always
