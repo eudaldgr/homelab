@@ -1,56 +1,58 @@
 resource "proxmox_vm_qemu" "container-host" {
-  provider    = proxmox.pve[var.proxmox_nodes[0].name]
-  name        = "container-host-01"
-  target_node = var.proxmox_nodes[0].name
+  for_each = { for node in var.proxmox_nodes : node.name => node }
+
+  provider    = proxmox.pve[each.key]
+  name        = "container-host-0${index(var.proxmox_nodes[*].name, each.key) + 1}"
+  target_node = each.key
   vmid        = 1000
   bios        = "ovmf"
   onboot      = true
   clone       = local.os_template
   full_clone  = true
-  memory      = 32768
+  memory      = [32768, 16384][index(var.proxmox_nodes[*].name, each.key)]
   balloon     = 0
   cpu {
-    cores = 6
+    cores = [6, 3][index(var.proxmox_nodes[*].name, each.key)]
     type  = "host"
   }
-  scsihw      = "virtio-scsi-single"
-  tags        = "microOS,podman"
-  agent       = 1
-  ciuser      = local.ciuser
-  ciupgrade   = true
-  sshkeys     = file(var.ssh_public_key_path)
-  ipconfig0    = "ip=dhcp,ip6=auto"
-  ipconfig1    = ""
-  ipconfig2    = ""
+  scsihw    = "virtio-scsi-single"
+  tags      = "microOS,podman"
+  agent     = 1
+  ciuser    = local.ciuser
+  ciupgrade = true
+  sshkeys   = file(var.ssh_public_key_path)
+  ipconfig0 = "ip=dhcp,ip6=auto"
+  ipconfig1 = ""
+  ipconfig2 = ""
   network {
-    id      = 0
-    model   = "virtio"
-    macaddr = "BC:24:14:34:CD:01"
-    bridge  = "vmbr1"
-    tag     = 90
+    id       = 0
+    model    = "virtio"
+    macaddr  = "BC:24:14:34:CD:0${index(var.proxmox_nodes[*].name, each.key) + 1}"
+    bridge   = "vmbr1"
+    tag      = 90
     firewall = true
   }
   network {
-    id      = 1
-    model   = "virtio"
-    macaddr = "BC:24:14:34:CD:11"
-    bridge  = "vmbr1"
-    tag     = 20
+    id       = 1
+    model    = "virtio"
+    macaddr  = "BC:24:14:34:CD:1${index(var.proxmox_nodes[*].name, each.key) + 1}"
+    bridge   = "vmbr1"
+    tag      = 20
     firewall = true
   }
   network {
-    id      = 2
-    model   = "virtio"
-    macaddr = "BC:24:14:34:CD:12"
-    bridge  = "vmbr1"
-    tag     = 99
+    id       = 2
+    model    = "virtio"
+    macaddr  = "BC:24:14:34:CD:1${index(var.proxmox_nodes[*].name, each.key) + 1}"
+    bridge   = "vmbr1"
+    tag      = 99
     firewall = true
   }
   disks {
     ide {
       ide0 {
         cloudinit {
-          storage = local.storage
+          storage = each.value.storage
         }
       }
     }
@@ -61,7 +63,7 @@ resource "proxmox_vm_qemu" "container-host" {
           emulatessd = true
           size       = "64G"
           replicate  = true
-          storage    = local.storage
+          storage    = each.value.storage
         }
       }
     }
