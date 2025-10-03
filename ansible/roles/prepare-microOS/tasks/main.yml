@@ -57,7 +57,7 @@
     - /etc/subgid
   tags: user
 
-- name: Update all packages
+- name: Update all packages # noqa: unknown-module
   community.general.zypper: # noqa: unknown-module
     name: "*"
     state: latest
