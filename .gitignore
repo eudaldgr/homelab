@@ -27,6 +27,7 @@ output-*/
 crash.log
 .packer/
 packer/downloaded_iso_path
+*.pkrvars.hcl
 
 # Ansible
 *.retry
