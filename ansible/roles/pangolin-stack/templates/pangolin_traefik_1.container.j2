@@ -12,6 +12,7 @@ Mount=type=bind,src={{ app_data_dir | default('/mnt/nfs') }}/pangolin/data/confi
 Exec=--configFile=/etc/traefik/traefik_config.yml
 PublishPort=80:80
 PublishPort=443:443
+SecurityLabelType=pangolin_traefik_1.process
 
 [Service]
 Restart=always
