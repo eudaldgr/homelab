@@ -57,10 +57,10 @@ make_coreboot()
 {
     docker run --rm -it \
         --user "$(id -u):$(id -g)" \
-        -v "$PWD/$MODEL:$COREBOOT_CONFIG_DIR:ro" \
-        -v "$PWD/$MODEL/build:$COREBOOT_BUILD_DIR" \
-        -v "$PWD/$MODEL/stock_bios:$COREBOOT_STOCK_BIOS_DIR:ro" \
-        -v "$PWD/$MODEL/out:$COREBOOT_ROOT_DIR/out" \
+        -v "$PWD/../coreboot/$MODEL:$COREBOOT_CONFIG_DIR:ro" \
+        -v "$PWD/../coreboot/$MODEL/build:$COREBOOT_BUILD_DIR" \
+        -v "$PWD/../coreboot/$MODEL/stock_bios:$COREBOOT_STOCK_BIOS_DIR:ro" \
+        -v "$PWD/../coreboot/$MODEL/out:$COREBOOT_ROOT_DIR/out" \
         -e _DEBUG="${_DEBUG:-0}" \
         -e MAINBOARD="$MAINBOARD" \
         -e MODEL="$MODEL" \
