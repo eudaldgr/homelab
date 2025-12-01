@@ -1,0 +1,16 @@
+[Unit]
+Description=One-shot: run homelab setup
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/sbin/transactional-update --non-interactive --continue setup-selinux
+ExecStartPost=/usr/bin/systemctl disable homelab.service || true
+ExecStartPost=/usr/bin/systemctl --no-block reboot
+TimeoutStartSec=0
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

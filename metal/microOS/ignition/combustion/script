@@ -1,0 +1,103 @@
+#!/bin/bash
+# combustion: network
+# script generated with https://opensuse.github.io/fuel-ignition/
+
+# Redirect output to the console
+exec > >(exec tee -a /dev/tty0) 2>&1
+
+#[ -z "$TTY" ] && TTY=/dev/tty0
+
+# Grub
+sed -i "s/GRUB_TIMEOUT=10/GRUB_TIMEOUT=1/g" /etc/default/grub
+grub2-mkconfig -o /boot/grub2/grub.cfg
+
+# eth0
+ln -s /dev/null /etc/systemd/network/99-default.link
+
+# Timezone
+systemd-firstboot --force --timezone=Europe/Madrid
+
+# Pkg's
+zypper --non-interactive install \
+    restorecond \
+    policycoreutils \
+    policycoreutils-python-utils \
+    setools-console \
+    audit \
+    bind-utils \
+    wireguard-tools \
+    fuse \
+    open-iscsi \
+    nfs-client \
+    xfsprogs \
+    cryptsetup \
+    lvm2 \
+    git \
+    cifs-utils \
+    bash-completion \
+    mtr \
+    tcpdump \
+    rebootmgr \
+    fail2ban \
+    open-iscsi \
+    nfs-client \
+    util-linux \
+    e2fsprogs \
+    xfsprogs \
+    lvm2 \
+    cryptsetup \
+    k3s-selinux \
+    helm \
+    python313-PyYAML \
+    python313-jsonpatch \
+    python313-kubernetes
+
+# root password lock
+passwd -l root
+
+# sshd
+echo "PasswordAuthentication no" > /etc/ssh/sshd_config.d/50-homelab.conf
+
+# sudoers
+echo 'Defaults    secure_path = /usr/sbin:/usr/bin:/sbin:/bin:/usr/local/bin' > /etc/sudoers.d/50-homelab
+
+# fail2ban
+cp ./files/fail2ban-jail.local /etc/fail2ban/jail.local
+systemctl enable fail2ban
+
+# sysctl and modules
+cp ./files/k3s-modules.conf /etc/modules-load.d/50-homelab.conf
+cp ./files/k3s-sysctl.conf /etc/sysctl.d/50-homelab.conf
+
+# systemd
+cp ./files/homelab-systemd.service /etc/systemd/system/homelab.service
+systemctl enable homelab.service
+
+# SELinux
+#transactional-update --non-interactive --continue setup-selinux
+echo "-F" > /etc/selinux/.autorelabel
+checkmodule -M -m -o /tmp/k3s_homelab_selinux.mod ./files/k3s_homelab_selinux.te
+semodule_package -o /tmp/k3s_homelab_selinux.pp -m /tmp/k3s_homelab_selinux.mod
+semodule -i /tmp/k3s_homelab_selinux.pp
+setsebool -P virt_use_samba 1
+setsebool -P domain_kernel_load_modules 1
+rm -f /tmp/k3s_homelab_selinux.*
+
+# k3s
+mkdir -p /etc/rancher/k3s /var/lib/rancher/k3s
+
+# kured
+mkdir -p /etc/transactional-update.conf.d
+echo 'REBOOT_METHOD=kured' > /etc/transactional-update.conf.d/50-homelab.conf
+systemctl disable rebootmgr
+systemctl enable transactional-update.timer
+
+# ISCsi
+systemctl enable iscsid
+
+# Leave a marker
+echo "Configured with combustion" > /etc/issue.d/85-combustion.conf
+echo "Configured with combustion" > /etc/issue.d/85-combustion.issue
+
+# Close outputs and wait for tee to finish.
+exec 1>&- 2>&-; wait;
