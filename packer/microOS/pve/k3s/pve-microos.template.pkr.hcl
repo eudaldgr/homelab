@@ -48,13 +48,6 @@ build {
         vlan_tag               = 20
         firewall                = true
       }
-      # disks {
-      #   disk_size              = "40G"
-      #   storage_pool           = source.value.storage
-      #   type                   = "scsi"
-      #   ssd                    = true
-      #   discard                = true
-      # }
       serials = [
         "socket"
       ]
