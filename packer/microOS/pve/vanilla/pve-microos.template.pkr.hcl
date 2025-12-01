@@ -20,8 +20,9 @@ build {
 
       vm_id                    = 9010
       vm_name                  = "microOS"
-      tags                     = "microos"
+      tags                     = "microos;vanilla"
       memory                   = 4096
+      ballooning_minimum       = 0
       cores                    = 1
       cpu_type                 = "host"
       os                       = "l26"

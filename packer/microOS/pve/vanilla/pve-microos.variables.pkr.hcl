@@ -21,7 +21,6 @@ locals {
     "mtr",
     "tcpdump",
     "rebootmgr",
-    "podman",
     "qemu-guest-agent"
   ], var.packages_to_install))
 
@@ -44,9 +43,17 @@ locals {
     set -ex
     echo 'Reboot successful, installing needed packages and doing some configurations...'
     timedatectl set-timezone Europe/Madrid
-    sed -i "s/GRUB_TIMEOUT=10/GRUB_TIMEOUT=1/g" /etc/default/grub
-    transactional-update --continue shell <<-EOF
-        grub2-mkconfig > /boot/grub2/grub.cfg
+    transactional-update --continue shell <<'EOF'
+        set -ex
+        sed -i "s/GRUB_TIMEOUT=10/GRUB_TIMEOUT=1/g" /etc/default/grub
+        if grep -q '^GRUB_CMDLINE_LINUX_DEFAULT=' /etc/default/grub; then
+            if ! grep -q 'net.ifnames=0' /etc/default/grub; then
+                sed -i "s/^GRUB_CMDLINE_LINUX_DEFAULT=\"/GRUB_CMDLINE_LINUX_DEFAULT=\"net.ifnames=0 biosdevname=0 /" /etc/default/grub
+            fi
+        else
+            echo 'GRUB_CMDLINE_LINUX_DEFAULT="net.ifnames=0 biosdevname=0"' >> /etc/default/grub
+        fi
+        grub2-mkconfig -o /boot/grub2/grub.cfg
     EOF
     transactional-update --continue pkg install -y ${local.needed_packages}
     sleep 1 && udevadm settle && reboot
