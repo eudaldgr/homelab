@@ -7,7 +7,7 @@ variable "hcloud_token" {
 variable "hostname" {
   description = "Name of the Hetzner server"
   type        = string
-  default     = "pangolin-01"
+  default     = "k3s-server-03"
 }
 
 variable "ssh_key_name" {

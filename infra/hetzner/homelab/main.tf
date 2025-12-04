@@ -18,9 +18,9 @@ resource "hcloud_firewall" "homelab" {
 
   # SSH access
   rule {
-    direction  = "in"
-    port       = "22"
-    protocol   = "tcp"
+    direction = "in"
+    port      = "22"
+    protocol  = "tcp"
     source_ips = [
       "0.0.0.0/0",
       "::/0"
@@ -29,9 +29,9 @@ resource "hcloud_firewall" "homelab" {
 
   # HTTP - només si no fas servir wildcard (Let’s Encrypt HTTP-01)
   rule {
-    direction  = "in"
-    port       = "80"
-    protocol   = "tcp"
+    direction = "in"
+    port      = "80"
+    protocol  = "tcp"
     source_ips = [
       "0.0.0.0/0",
       "::/0"
@@ -40,9 +40,9 @@ resource "hcloud_firewall" "homelab" {
 
   # HTTPS (obligatori per Pangolin)
   rule {
-    direction  = "in"
-    port       = "443"
-    protocol   = "tcp"
+    direction = "in"
+    port      = "443"
+    protocol  = "tcp"
     source_ips = [
       "0.0.0.0/0",
       "::/0"
@@ -51,9 +51,9 @@ resource "hcloud_firewall" "homelab" {
 
   # Pangolin/Gerbil site tunnels (Newt -> Gerbil)
   rule {
-    direction  = "in"
-    port       = "51820"
-    protocol   = "udp"
+    direction = "in"
+    port      = "51820"
+    protocol  = "udp"
     source_ips = [
       "0.0.0.0/0",
       "::/0"
@@ -62,9 +62,9 @@ resource "hcloud_firewall" "homelab" {
 
   # Pangolin/Gerbil client tunnels (Client -> Gerbil -> Newt)
   rule {
-    direction  = "in"
-    port       = "21820"
-    protocol   = "udp"
+    direction = "in"
+    port      = "21820"
+    protocol  = "udp"
     source_ips = [
       "0.0.0.0/0",
       "::/0"
@@ -74,16 +74,17 @@ resource "hcloud_firewall" "homelab" {
 
 # Homelab pangolin server
 resource "hcloud_server" "homelab" {
-  name        = var.hostname
-  image       = data.hcloud_image.microos.id
-  server_type = var.server_type
-  location    = var.location
-  ssh_keys    = [hcloud_ssh_key.homelab.id]
+  name         = var.hostname
+  image        = data.hcloud_image.microos.id
+  server_type  = var.server_type
+  location     = var.location
+  ssh_keys     = [hcloud_ssh_key.homelab.id]
   firewall_ids = [hcloud_firewall.homelab.id]
 
   labels = {
     type = "homelab"
-    role = "pangolin"
+    type = "k3s"
+    role = "control-plane"
   }
 
   user_data = templatefile("${path.module}/files/cloud-init.yml", {
