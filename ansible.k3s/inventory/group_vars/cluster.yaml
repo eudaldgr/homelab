@@ -1,0 +1,10 @@
+---
+ansible_become: true
+ansible_become_method: sudo
+
+k3s_version: v1.34.1+k3s1
+
+cluster_endpoint: "10.1.20.50"
+kubeconfig_path: /etc/rancher/k3s/k3s.yaml
+
+lb_range: "10.1.20.100-10.1.20.199"

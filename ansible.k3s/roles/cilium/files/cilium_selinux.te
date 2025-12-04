@@ -1,0 +1,10 @@
+module cilium_selinux 1.0;
+
+require {
+	type unconfined_service_t;
+	type spc_t;
+	class process transition;
+}
+
+#============= unconfined_service_t ==============
+allow unconfined_service_t spc_t:process transition;

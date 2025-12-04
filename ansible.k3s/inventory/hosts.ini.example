@@ -1,0 +1,40 @@
+[proxmox_servers]
+k3s-server-01 ansible_host=192.168.1.11
+k3s-server-02 ansible_host=192.168.1.12
+
+[proxmox_agents]
+k3s-agent-01 ansible_host=192.168.1.71 gpu=true
+k3s-agent-02 ansible_host=192.168.1.72 gpu=false
+k3s-longhorn-01 ansible_host=192.168.1.61
+k3s-longhorn-02 ansible_host=192.168.1.62
+
+[synology_servers]
+k3s-server-03 ansible_host=192.168.1.53
+
+[proxmox:children]
+proxmox_servers
+proxmox_agents
+
+[synology:children]
+synology_servers
+
+[servers:children]
+proxmox_servers
+synology_servers
+
+[agents]
+k3s-agent-01
+k3s-agent-02
+k3s-longhorn-01
+k3s-longhorn-02
+
+[longhorns]
+k3s-longhorn-01
+k3s-longhorn-02
+
+[cluster:children]
+servers
+agents
+
+[all:vars]
+ansible_user=eudaldgr
