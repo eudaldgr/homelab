@@ -1,0 +1,34 @@
+#!/bin/sh
+# Usage: ./manage-keys [backup|restore] [file_path]
+
+ACTION=$1
+FILE_PATH=${2:-"sealed-secrets-master-keys.yaml"}
+NAMESPACE="sealed-secrets"
+LABEL="sealedsecrets.bitnami.com/sealed-secrets-key"
+
+print()
+{
+    printf "%s\n" "$@"
+}
+
+if [ "$ACTION" = "backup" ]; then
+    print "Backing up Sealed Secrets master keys to $FILE_PATH..."
+    kubectl get secret -n "$NAMESPACE" -l "$LABEL" -o yaml > "$FILE_PATH"
+    print "Backup complete."
+elif [ "$ACTION" = "restore" ]; then
+    if [ ! -f "$FILE_PATH" ]; then
+        print "Error: Backup file $FILE_PATH not found."
+        exit 1
+    fi
+    print "Restoring Sealed Secrets master keys from $FILE_PATH..."
+    kubectl apply -f "$FILE_PATH"
+    print "Restore complete. You may need to restart the sealed-secrets-controller pod to pick up the changes immediately:"
+    print "  kubectl delete pod -n $NAMESPACE -l app.kubernetes.io/name=sealed-secrets"
+else
+    print "Usage: ${0##*/} [backup|restore] [file_path]"
+    print
+    print "Examples:"
+    print "  ${0##*/} backup  my-keys.yaml"
+    print "  ${0##*/} restore my-keys.yaml"
+    exit 1
+fi
