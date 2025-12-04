@@ -37,8 +37,10 @@ vault-password-file
 .ansible/
 hosts.ini
 inventory.ini
-group_vars/vault.yml
-host_vars/*/vault.yml
+**/group_vars/vault.yml
+**/group_vars/*/vault.yml
+**/group_vars/*/vault.yml
+**/host_vars/*/vault.yml
 *.vault
 roles/*/tests/test.yml
 roles/*/tests/inventory
@@ -63,7 +65,6 @@ secrets.yml
 secrets.yaml
 config.yml
 config.yaml
-*.conf
 !example.conf
 !*.conf.example
 
@@ -120,6 +121,5 @@ kubeconfig
 *.rom
 
 # Misc
-*.bk
 *.backup
 *.old
