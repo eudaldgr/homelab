@@ -1,0 +1,15 @@
+---
+- name: Update all packages
+  community.general.zypper:
+    name: "*"
+    state: latest
+  register: update
+  tags: update
+
+- name: Unconditionally reboot the machine with all defaults
+  ansible.builtin.reboot:
+    pre_reboot_delay: 10
+    reboot_command: "/usr/bin/systemctl reboot"
+    test_command: uptime
+  when: update.changed # noqa: no-handler
+  tags: reboot

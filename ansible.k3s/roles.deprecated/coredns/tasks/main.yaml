@@ -1,0 +1,14 @@
+---
+- name: Copy coreDNS manifest to temp location
+  ansible.builtin.template:
+    src: coredns-install.yaml.j2
+    dest: /tmp/coredns-install.yaml
+    mode: "0644"
+  tags: coredns
+
+- name: Apply coreDNS manifest
+  kubernetes.core.k8s:
+    state: present
+    namespace: kube-system
+    src: /tmp/coredns-install.yaml
+  tags: coredns
