@@ -1,35 +1,7 @@
 ---
-- name: Setting subuid and subgid
-  ansible.builtin.blockinfile:
-    dest: "{{ item }}"
-    owner: root
-    group: root
-    mode: "0644"
-    marker: "# {mark} ANSIBLE MANAGED BLOCK - komodo_mongo_1"
-    content: |
-      {{ rootless_user }}:{{ mongo_gid | default(999) }}:1
-  with_items:
-    - /etc/subuid
-    - /etc/subgid
-  register: subid_changes
-  tags: komodo, user
-
-- name: Run podman system migrate if needed
-  become: true
-  become_method: community.general.machinectl # noqa: schema
-  become_user: "{{ rootless_user }}"
-  vars:
-    ansible_pipelining: true
-  ansible.builtin.command: podman system migrate
-  environment:
-    XDG_RUNTIME_DIR: "/run/user/{{ rootless_uid.stdout | trim }}"
-  when: subid_changes.changed # noqa: no-handler
-  changed_when: false
-  tags: podman
-
 - name: Crear directori pare per a Komodo Stack
   ansible.builtin.file:
-    path: "{{ app_data_dir | default('/mnt/nfs') }}/komodo"
+    path: "{{ app_data_dir | default('/mnt/nfs') }}/{{ inventory_hostname }}/komodo"
     state: directory
     owner: "{{ rootless_user }}"
     group: "{{ rootless_user }}"
@@ -38,7 +10,7 @@
 
 - name: Crear subdirectoris per a Komodo Stack
   ansible.builtin.file:
-    path: "{{ app_data_dir | default('/mnt/nfs') }}/komodo/{{ item }}"
+    path: "{{ app_data_dir | default('/mnt/nfs') }}/{{ inventory_hostname }}/komodo/{{ item }}"
     state: directory
     owner: "{{ rootless_user }}"
     group: "{{ rootless_user }}"
@@ -53,19 +25,10 @@
     - quadlets
   tags: komodo
 
-- name: Change ownership of mongo directory to mongo user and group
-  ansible.builtin.file:
-    path: "{{ app_data_dir | default('/mnt/nfs') }}/komodo/data/mongo"
-    state: directory
-    owner: "{{ mongo_uid | default('999') }}"
-    group: "{{ mongo_gid | default('999') }}"
-    recurse: true
-  tags: komodo, mongo
-
 - name: Copiar fitxers de configuració de Komodo Stack
   ansible.builtin.template:
     src: "{{ role_path }}/templates/{{ item }}.j2"
-    dest: "{{ app_data_dir | default('/mnt/nfs') }}/komodo/quadlets/{{ item }}"
+    dest: "{{ app_data_dir | default('/mnt/nfs') }}/{{ inventory_hostname }}/komodo/quadlets/{{ item }}"
     owner: "{{ rootless_user }}"
     group: "{{ rootless_user }}"
     mode: "0644"
@@ -78,7 +41,7 @@
 - name: Copiar fitxers de configuració de Komodo Stack
   ansible.builtin.copy:
     src: "{{ role_path }}/files/{{ item }}"
-    dest: "{{ app_data_dir | default('/mnt/nfs') }}/komodo/quadlets/{{ item }}"
+    dest: "{{ app_data_dir | default('/mnt/nfs') }}/{{ inventory_hostname }}/komodo/quadlets/{{ item }}"
     owner: "{{ rootless_user }}"
     group: "{{ rootless_user }}"
     mode: "0644"
@@ -99,7 +62,7 @@
 
 - name: Crear enllaços symlink quadlets de Komodo Stack
   ansible.builtin.file:
-    src: "{{ app_data_dir | default('/mnt/nfs') }}/komodo/quadlets/{{ item }}"
+    src: "{{ app_data_dir | default('/mnt/nfs') }}/{{ inventory_hostname }}/komodo/quadlets/{{ item }}"
     dest: "/home/{{ rootless_user }}/.config/containers/systemd/{{ item }}"
     state: link
     owner: "{{ rootless_user }}"
@@ -123,7 +86,7 @@
 
 - name: Install periphery SELinux policy
   ansible.builtin.shell: |
-    semodule -i {{ app_data_dir | default('/mnt/nfs') }}/komodo/quadlets/komodo_periphery_1.cil /usr/share/udica/templates/*
+    semodule -i {{ app_data_dir | default('/mnt/nfs') }}/{{ inventory_hostname }}/komodo/quadlets/komodo_periphery_1.cil /usr/share/udica/templates/*
   args:
     creates: /var/lib/selinux/targeted/active/modules/400/komodo_periphery_1
   when: selinux_policy_check.rc != 0
@@ -150,7 +113,7 @@
   containers.podman.podman_secret:
     state: present
     name: "{{ item }}"
-    data: "{{ lookup('ansible.builtin.password', '/dev/null length=32 chars=ascii_letters,digits') }}"
+    data: "{{ lookup('ansible.builtin.vars', item) }}"
   environment:
     XDG_RUNTIME_DIR: "/run/user/{{ rootless_uid.stdout | trim }}"
   loop:

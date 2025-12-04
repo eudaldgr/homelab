@@ -4,17 +4,16 @@ After=forgejo_postgres_1.service
 Requires=forgejo_postgres_1.service
 
 [Container]
-Image=docker.io/postgres:17.6-alpine@sha256:d5f196a551b5cef1c70853c6dd588f456d16ca4ea733e3f31c75bc1ae2f65f3f
+Image=docker.io/postgres:{{ forgejo_postgres_version }}
 ContainerName=forgejo_postgres_1
 Network=forgejo.network
 Label=komodo.skip=
 PublishPort=5432:5432
 User={{ postgres_uid | default(70) }}:{{ postgres_gid | default(70) }}
-Mount=type=bind,src={{ nfs_mount_point | default('/mnt/nfs') }}/forgejo/data/postgres,dst=/var/lib/postgresql/data
+Mount=type=bind,src={{ app_data_dir | default('/mnt/nfs') }}/{{ inventory_hostname }}/forgejo/data/postgres,dst=/var/lib/postgresql/data,relabel=private,U=true
 Environment=POSTGRES_DB=forgejo
 Environment=POSTGRES_USER=forgejo
 Secret=forgejo_postgres_1_passwd,type=env,target=POSTGRES_PASSWORD
-PodmanArgs=--uidmap +{{ postgres_uid | default(70) }}:@{{ postgres_uid | default(70) }}:1 --gidmap +{{ postgres_gid | default(70) }}:@{{ postgres_gid | default(70) }}:1
 
 [Service]
 Restart=always

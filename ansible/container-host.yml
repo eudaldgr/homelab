@@ -1,9 +1,30 @@
 ---
-- name: Prepare node
-  hosts: container_hosts
+- name: Prepare container hosts nodes
+  hosts: all:!localhost
   gather_facts: false # fact gathering is slow and not needed for any of our tasks
   become: true
   roles:
     - prepare-microOS
+
+- name: Deploy local stacks
+  hosts: host01
+  gather_facts: false # fact gathering is slow and not needed for any of our tasks
+  become: true
+  roles:
     - komodo-stack
     - forgejo-stack
+
+- name: Deploy periphery stack
+  hosts: host02
+  gather_facts: false # fact gathering is slow and not needed for any of our tasks
+  become: true
+  roles:
+    - komodo-periphery-stack
+
+- name: Deploy fail2ban & pangolin stack
+  hosts: pangolin_hosts
+  gather_facts: false # fact gathering is slow and not needed for any of our tasks
+  become: true
+  roles:
+    - fail2ban
+    - pangolin-stack

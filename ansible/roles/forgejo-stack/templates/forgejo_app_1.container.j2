@@ -4,13 +4,13 @@ After=forgejo_postgres_1.service
 Requires=forgejo_postgres_1.service
 
 [Container]
-Image=codeberg.org/forgejo/forgejo:12.0.4@sha256:dbb0f88677f0c65cd1b66fb83504225aa5a04c4bc4a5ffdf9fc9a3a6d5bb1c68
+Image=codeberg.org/forgejo/forgejo:{{ forgejo_app_version }}
 ContainerName=forgejo_app_1
 Network=forgejo.network
 Label=komodo.skip=
 PublishPort=8101:8101
-Mount=type=bind,src={{ nfs_mount_point | default('/mnt/nfs') }}/forgejo/data/forgejo/conf,dst=/etc/gitea
-Mount=type=bind,src={{ nfs_mount_point | default('/mnt/nfs') }}/forgejo/data/forgejo/data,dst=/var/lib/gitea
+Mount=type=bind,src={{ app_data_dir | default('/mnt/nfs') }}/{{ inventory_hostname }}/forgejo/data/forgejo/conf,dst=/etc/gitea
+Mount=type=bind,src={{ app_data_dir | default('/mnt/nfs') }}/{{ inventory_hostname }}/forgejo/data/forgejo/data,dst=/var/lib/gitea
 Environment=USER_UID={{ forgejo_uid | default(1111) }}
 Environment=USER_GID={{ forgejo_gid | default(1111) }}
 Environment=FORGEJO__database__DB_TYPE=postgres

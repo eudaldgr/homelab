@@ -5,7 +5,7 @@ Requires=pangolin_app_1.service
 
 [Container]
 Network=pangolin.network
-Image=docker.io/fosrl/gerbil:1.2.1@sha256:52888961717c027bfc9ddea4dd55f57fd54d326fb1a9f9959e9d47e7500ad418
+Image=docker.io/fosrl/gerbil:{{ pangolin_gerbil_version }}
 ContainerName=pangolin_gerbil_1
 Mount=type=bind,src={{ app_data_dir | default('/mnt/nfs') }}/pangolin/data/config,dst=/var/config,relabel=shared
 AddCapability=CAP_NET_ADMIN CAP_NET_RAW CAP_SYS_MODULE

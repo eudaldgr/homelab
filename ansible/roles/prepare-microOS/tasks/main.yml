@@ -64,6 +64,14 @@
   register: update
   tags: update
 
+- name: Wait for transactional-update lock to be released
+  ansible.builtin.shell: |
+    while pgrep -x transactional-update > /dev/null; do
+      sleep 5
+    done
+  changed_when: false
+  tags: system
+
 - name: Unconditionally reboot the machine with all defaults
   ansible.builtin.reboot:
     connect_timeout: 5
@@ -74,6 +82,14 @@
     test_command: uptime
   when: update.changed # noqa: no-handler
   tags: reboot
+
+- name: Wait for transactional-update lock to be released
+  ansible.builtin.shell: |
+    while pgrep -x transactional-update > /dev/null; do
+      sleep 5
+    done
+  changed_when: false
+  tags: system
 
 - name: Install base packages
   community.general.zypper:
@@ -183,11 +199,27 @@
     - ipt_TCPMSS
   tags: system
 
+- name: Wait for transactional-update lock to be released
+  ansible.builtin.shell: |
+    while pgrep -x transactional-update > /dev/null; do
+      sleep 5
+    done
+  changed_when: false
+  tags: system
+
 - name: Ensure SELinux is set
   ansible.builtin.command: |
     transactional-update --non-interactive --continue setup-selinux
   changed_when: false
   tags: selinux
+
+- name: Wait for transactional-update lock to be released
+  ansible.builtin.shell: |
+    while pgrep -x transactional-update > /dev/null; do
+      sleep 5
+    done
+  changed_when: false
+  tags: system
 
 - name: Ensure SELinux is set to enforcing
   ansible.builtin.command: |
@@ -281,6 +313,14 @@
   changed_when: false
   tags: selinux
 
+- name: Wait for transactional-update lock to be released
+  ansible.builtin.shell: |
+    while pgrep -x transactional-update > /dev/null; do
+      sleep 5
+    done
+  changed_when: false
+  tags: system
+
 - name: Create APP_DATA_DIR directory if it doesn't exist
   ansible.builtin.command: |
     transactional-update --continue run bash -c '
@@ -327,37 +367,37 @@
     - nfs_mount is succeeded
   tags: nfs
 
-- name: Create directory for secrets on NFS share
-  ansible.builtin.file:
-    path: "{{ app_data_dir | default('/mnt/nfs') }}/secrets"
-    state: directory
-    owner: "{{ rootless_user }}"
-    group: "{{ rootless_user }}"
-    mode: "0700"
-  when:
-    - nfs_server is defined
-    - nfs_path is defined
-    - nfs_mount is succeeded
-  tags:
-    - nfs
-    - podman
+# - name: Create directory for secrets on NFS share
+#   ansible.builtin.file:
+#     path: "{{ app_data_dir | default('/mnt/nfs') }}/secrets"
+#     state: directory
+#     owner: "{{ rootless_user }}"
+#     group: "{{ rootless_user }}"
+#     mode: "0700"
+#   when:
+#     - nfs_server is defined
+#     - nfs_path is defined
+#     - nfs_mount is succeeded
+#   tags:
+#     - nfs
+#     - podman
 
-- name: Symlink secrets directory to podman storage
-  ansible.builtin.file:
-    src: "{{ app_data_dir | default('/mnt/nfs') }}/secrets"
-    dest: "/var/lib/containers/user/{{ rootless_user }}/storage/secrets"
-    state: link
-    owner: "{{ rootless_user }}"
-    group: "{{ rootless_user }}"
-    mode: "0700"
-    force: true
-  when:
-    - nfs_server is defined
-    - nfs_path is defined
-    - nfs_mount is succeeded
-  tags:
-    - nfs
-    - podman
+# - name: Symlink secrets directory to podman storage
+#   ansible.builtin.file:
+#     src: "{{ app_data_dir | default('/mnt/nfs') }}/secrets"
+#     dest: "/var/lib/containers/user/{{ rootless_user }}/storage/secrets"
+#     state: link
+#     owner: "{{ rootless_user }}"
+#     group: "{{ rootless_user }}"
+#     mode: "0700"
+#     force: true
+#   when:
+#     - nfs_server is defined
+#     - nfs_path is defined
+#     - nfs_mount is succeeded
+#   tags:
+#     - nfs
+#     - podman
 
 - name: Append .bashrc for user -> {{ rootless_user }}
   ansible.builtin.blockinfile:

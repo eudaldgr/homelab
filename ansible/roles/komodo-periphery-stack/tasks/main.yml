@@ -1,51 +1,48 @@
 ---
-- name: Crear directori pare per a Forgejo Stack
+- name: Crear directori pare per a Komodo Stack
   ansible.builtin.file:
-    path: "{{ app_data_dir | default('/mnt/nfs') }}/{{ inventory_hostname }}/forgejo"
+    path: "{{ app_data_dir | default('/mnt/nfs') }}/{{ inventory_hostname }}/komodo"
     state: directory
     owner: "{{ rootless_user }}"
     group: "{{ rootless_user }}"
     mode: "0755"
-  tags: forgejo
+  tags: komodo
 
-- name: Crear subdirectoris per a Forgejo Stack
+- name: Crear subdirectoris per a Komodo Stack
   ansible.builtin.file:
-    path: "{{ app_data_dir | default('/mnt/nfs') }}/{{ inventory_hostname }}/forgejo/{{ item }}"
+    path: "{{ app_data_dir | default('/mnt/nfs') }}/{{ inventory_hostname }}/komodo/{{ item }}"
     state: directory
     owner: "{{ rootless_user }}"
     group: "{{ rootless_user }}"
     mode: "0755"
   with_items:
     - data
-    - data/forgejo
-    - data/forgejo/conf
-    - data/forgejo/data
-    - data/postgres
+    - data/periphery
     - quadlets
-  tags: forgejo
+  tags: komodo
 
-- name: Copiar fitxers de configuració de Forgejo Stack
+- name: Copiar fitxers de configuració de Komodo Stack
   ansible.builtin.template:
     src: "{{ role_path }}/templates/{{ item }}.j2"
-    dest: "{{ app_data_dir | default('/mnt/nfs') }}/{{ inventory_hostname }}/forgejo/quadlets/{{ item }}"
+    dest: "{{ app_data_dir | default('/mnt/nfs') }}/{{ inventory_hostname }}/komodo/quadlets/{{ item }}"
     owner: "{{ rootless_user }}"
     group: "{{ rootless_user }}"
     mode: "0644"
   with_items:
-    - forgejo_app_1.container
-    - forgejo_postgres_1.container
-  tags: forgejo
+    - komodo_periphery_1.container
+  tags: komodo
 
-- name: Copiar fitxers de configuració de Forgejo Stack
+- name: Copiar fitxers de configuració de Komodo Stack
   ansible.builtin.copy:
     src: "{{ role_path }}/files/{{ item }}"
-    dest: "{{ app_data_dir | default('/mnt/nfs') }}/{{ inventory_hostname }}/forgejo/quadlets/{{ item }}"
+    dest: "{{ app_data_dir | default('/mnt/nfs') }}/{{ inventory_hostname }}/komodo/quadlets/{{ item }}"
     owner: "{{ rootless_user }}"
     group: "{{ rootless_user }}"
     mode: "0644"
   with_items:
-    - forgejo.network
-  tags: forgejo
+    - komodo.network
+    - komodo_periphery_1.cil
+  tags: komodo
 
 - name: Assegurar que el directori ~/.config/containers/systemd existeix
   ansible.builtin.file:
@@ -56,21 +53,36 @@
     mode: "0755"
   tags: podman
 
-- name: Crear enllaços symlink quadlets de Forgejo Stack
+- name: Crear enllaços symlink quadlets de Komodo Stack
   ansible.builtin.file:
-    src: "{{ app_data_dir | default('/mnt/nfs') }}/{{ inventory_hostname }}/forgejo/quadlets/{{ item }}"
+    src: "{{ app_data_dir | default('/mnt/nfs') }}/{{ inventory_hostname }}/komodo/quadlets/{{ item }}"
     dest: "/home/{{ rootless_user }}/.config/containers/systemd/{{ item }}"
     state: link
     owner: "{{ rootless_user }}"
     group: "{{ rootless_user }}"
     mode: "0644"
   with_items:
-    - forgejo_app_1.container
-    - forgejo_postgres_1.container
-    - forgejo.network
-  tags: forgejo
+    - komodo_periphery_1.container
+    - komodo.network
+  tags: komodo
 
-- name: Check existing forgejo secrets
+- name: Check periphery SELinux policy installed
+  ansible.builtin.command: |
+    semodule -l | grep -w komodo_periphery_1
+  register: selinux_policy_check
+  failed_when: false
+  changed_when: false
+  tags: komodo, selinux
+
+- name: Install periphery SELinux policy
+  ansible.builtin.shell: |
+    semodule -i {{ app_data_dir | default('/mnt/nfs') }}/{{ inventory_hostname }}/komodo/quadlets/komodo_periphery_1.cil /usr/share/udica/templates/*
+  args:
+    creates: /var/lib/selinux/targeted/active/modules/400/komodo_periphery_1
+  when: selinux_policy_check.rc != 0
+  tags: komodo, selinux
+
+- name: Check existing Komodo secrets
   become: true
   become_method: community.general.machinectl # noqa: schema
   become_user: "{{ rootless_user }}"
@@ -80,9 +92,9 @@
   environment:
     XDG_RUNTIME_DIR: "/run/user/{{ rootless_uid.stdout | trim }}"
   register: existing_secrets
-  tags: forgejo
+  tags: komodo
 
-- name: Create missing secrets for Forgejo stack
+- name: Create missing secrets for Komodo stack
   become: true
   become_method: community.general.machinectl # noqa: schema
   become_user: "{{ rootless_user }}"
@@ -95,18 +107,18 @@
   environment:
     XDG_RUNTIME_DIR: "/run/user/{{ rootless_uid.stdout | trim }}"
   loop:
-    - forgejo_postgres_1_passwd
+    - komodo_core_1_passkey
   when: item not in (existing_secrets.secrets | map(attribute='Spec.Name') | list)
-  tags: forgejo
+  tags: komodo
 
-- name: Start and enable Forgejo containers
+- name: Start and enable Komodo containers
   become: true
   become_method: community.general.machinectl # noqa: schema
   become_user: "{{ rootless_user }}"
   vars:
     ansible_pipelining: true
   ansible.builtin.systemd_service:
-    name: forgejo_app_1
+    name: komodo_periphery_1
     state: started
     enabled: true
     scope: user
@@ -114,4 +126,4 @@
   environment:
     XDG_RUNTIME_DIR: "/run/user/{{ rootless_uid.stdout | trim }}"
   changed_when: false
-  tags: forgejo
+  tags: komodo
