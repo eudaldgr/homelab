@@ -7,9 +7,11 @@ source "hcloud" "microos-x86-snapshot" {
   image       = "ubuntu-24.04"
   rescue      = "linux64"
   location    = "fsn1"
-  server_type = "cx22" # >= 40GiB
+  server_type = "cx23" # >= 40GiB
   snapshot_labels = {
     microos-snapshot = "yes"
+    vanilla          = "yes"
+    arch             = "x86"
     creator          = "e17n"
   }
   snapshot_name = "OpenSUSE MicroOS x86 by e17n"
@@ -25,6 +27,8 @@ source "hcloud" "microos-arm-snapshot" {
   server_type = "cax11" # >= 40GiB
   snapshot_labels = {
     microos-snapshot = "yes"
+    vanilla          = "yes"
+    arch             = "arm"
     creator          = "e17n"
   }
   snapshot_name = "OpenSUSE MicroOS ARM by e17n"
