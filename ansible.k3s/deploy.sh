@@ -6,4 +6,4 @@ sed "s/pangolin01 ansible_host=.*/pangolin01 ansible_host=${HCLOUD_IP}/" invento
 mv -f _ inventory/hosts.ini
 
 ANSIBLE_CONFIG=./ansible.cfg \
-ansible-playbook k3s-cluster.yml "$@"
+ansible-playbook k3s-cluster.yaml "$@"

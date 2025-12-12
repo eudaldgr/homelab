@@ -31,7 +31,6 @@
     - data/config/traefik
     - data/config/traefik/logs
     - data/config/crowdsec
-    - data/config/crowdsec/acquis.d
     - data/config/crowdsec/db
     - quadlets
   tags: pangolin
@@ -61,6 +60,15 @@
     - pangolin_traefik_1.cil
     - pangolin_proxy_1.pod
   tags: pangolin
+
+- name: Check for existing Crowdsec API key
+  ansible.builtin.shell: |
+    set -o pipefail
+    grep "crowdsecLapiKey:" {{ app_data_dir }}/pangolin/data/config/traefik/dynamic_config.yml | awk '{print $2}' | tr -d '"'
+  register: existing_crowdsec_key
+  failed_when: false
+  changed_when: false
+  tags: pangolin, crowdsec
 
 - name: Copiar fitxers de configuració de Pangolin Stack
   ansible.builtin.template:
@@ -163,20 +171,6 @@
   when: geolite2_file.files | length > 0
   tags: pangolin, geolite2
 
-- name: Create a journalctl.yaml file under /config/crowdsec/acquis.d with the following content
-  ansible.builtin.copy:
-    dest: "{{ app_data_dir }}/pangolin/data/config/crowdsec/acquis.d/journalctl.yaml"
-    content: |
-      source: journalctl
-      journalctl_filter:
-        - "--directory=/var/log/host/"
-      labels:
-        type: syslog
-    owner: "{{ rootless_user }}"
-    group: "{{ rootless_user }}"
-    mode: "0664"
-  tags: pangolin, crowdsec
-
 # There's an issue with passta that prevents pulling images
 - name: Pull images for pangolin containers based on configured versions
   become: true
@@ -208,6 +202,61 @@
     XDG_RUNTIME_DIR: "/run/user/{{ rootless_uid.stdout | trim }}"
   changed_when: false
   tags: pangolin
+
+- name: Wait for Crowdsec to be ready
+  become: true
+  become_method: community.general.machinectl # noqa: schema
+  become_user: "{{ rootless_user }}"
+  vars:
+    ansible_pipelining: true
+  ansible.builtin.shell: |
+    podman exec pangolin_crowdsec_1 cscli capi status
+  register: crowdsec_status
+  until: crowdsec_status.rc == 0
+  retries: 30
+  delay: 5
+  environment:
+    XDG_RUNTIME_DIR: "/run/user/{{ rootless_uid.stdout | trim }}"
+  changed_when: false
+  when: existing_crowdsec_key.stdout is not defined or existing_crowdsec_key.stdout == '' or existing_crowdsec_key.stdout == '__CROWDSEC_LAPI_KEY__'
+  tags: pangolin, crowdsec
+
+- name: Delete existing bouncer if regenerating
+  become: true
+  become_method: community.general.machinectl # noqa: schema
+  become_user: "{{ rootless_user }}"
+  vars:
+    ansible_pipelining: true
+  ansible.builtin.shell: |
+    podman exec pangolin_crowdsec_1 cscli bouncers delete traefik-bouncer
+  environment:
+    XDG_RUNTIME_DIR: "/run/user/{{ rootless_uid.stdout | trim }}"
+  failed_when: false
+  changed_when: false
+  when: existing_crowdsec_key.stdout is not defined or existing_crowdsec_key.stdout == '' or existing_crowdsec_key.stdout == '__CROWDSEC_LAPI_KEY__'
+  tags: pangolin, crowdsec
+
+- name: Generate Crowdsec Bouncer Key # noqa: no-changed-when
+  become: true
+  become_method: community.general.machinectl # noqa: schema
+  become_user: "{{ rootless_user }}"
+  vars:
+    ansible_pipelining: true
+  ansible.builtin.shell: |
+    podman exec pangolin_crowdsec_1 cscli bouncers add traefik-bouncer
+  register: bouncer_key_gen
+  environment:
+    XDG_RUNTIME_DIR: "/run/user/{{ rootless_uid.stdout | trim }}"
+  when: existing_crowdsec_key.stdout is not defined or existing_crowdsec_key.stdout == '' or existing_crowdsec_key.stdout == '__CROWDSEC_LAPI_KEY__'
+  tags: pangolin, crowdsec
+
+- name: Update dynamic_config.yml with new key
+  ansible.builtin.replace:
+    path: "{{ app_data_dir }}/pangolin/data/config/traefik/dynamic_config.yml"
+    regexp: "__CROWDSEC_LAPI_KEY__"
+    replace: "{{ bouncer_key_gen.stdout_lines | select('match', '^\\s*[a-zA-Z0-9]{32,}\\s*$') | first | trim }}"
+  when: bouncer_key_gen.changed # noqa: no-handler
+  tags: pangolin, crowdsec
 
 - name: Enroll crowdsec bouncer
   become: true
