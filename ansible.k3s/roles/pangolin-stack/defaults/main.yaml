@@ -1,0 +1,7 @@
+---
+app_data_dir: "/home/{{ rootless_user }}/stack"
+pangolin_app_version: "ee-1.12.3@sha256:cce9965f40d38223355ea570b38e9499660d44ab024186f4f4575abcd03e43ac"
+pangolin_gerbil_version: "1.2.2@sha256:c06ae1f3c97adc839d8164a05f0c09991b21cc15b5d4c76a8375e23163ddbcab"
+pangolin_traefik_version: "v3.6.2@sha256:aaf0f6185419a50c74651448c1a5bf4606bd2d2ddb7b8749eed505d55bf8b8ea"
+pangolin_crowdsec_version: "latest"
+pangolin_email: false

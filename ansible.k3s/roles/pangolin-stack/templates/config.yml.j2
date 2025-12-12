@@ -1,0 +1,47 @@
+# To see all available options, please visit the docs:
+# https://docs.pangolin.net/
+
+gerbil:
+  start_port: 51820
+  base_endpoint: "{{ pangolin_domain }}"
+  
+app:
+  dashboard_url: "https://{{ pangolin_domain }}"
+  log_level: "info"
+  telemetry:
+    anonymous_usage: false
+
+domains:
+{% for base_domain in base_domains %}
+  domain{{ loop.index }}:
+    base_domain: "{{ base_domain }}"
+{% endfor %}
+
+server:
+  # Badger middleware uses this to generate apiBaseUrl for Traefik authentication.
+  # Must be 'localhost' when containers share network namespace (e.g., rootless Podman pod).
+  internal_hostname: "localhost"
+
+  secret: "{{ pangolin_server_secret }}"
+  cors:
+    origins: ["https://{{ pangolin_domain }}"]
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"]
+    allowed_headers: ["X-CSRF-Token", "Content-Type"]
+    credentials: false
+  maxmind_db_path: "./config/GeoLite2-Country.mmdb"
+
+{% if pangolin_email %}
+email:
+  smtp_host: "{{ smtp_host }}"
+  smtp_port: {{ smtp_port }}
+  smtp_user: "{{ smtp_user }}"
+  smtp_pass: "{{ smtp_pass }}"
+  smtp_secure: {{ smtp_secure }}
+  no_reply: "{{ no_reply_email }}"
+
+{% endif %}
+flags:
+  require_email_verification: false
+  disable_signup_without_invite: true
+  disable_user_create_org: true
+  allow_raw_resources: true

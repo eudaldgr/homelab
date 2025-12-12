@@ -1,0 +1,31 @@
+[Unit]
+Description=Crowdsec Service
+After=network.target
+Requires=pangolin_traefik_1.service
+
+[Container]
+Pod=pangolin_proxy_1.pod
+ContainerName=pangolin_crowdsec_1
+Image=docker.io/crowdsecurity/crowdsec:{{ pangolin_crowdsec_version }}
+Environment=COLLECTIONS='crowdsecurity/traefik crowdsecurity/appsec-virtual-patching crowdsecurity/appsec-generic-rules'
+Environment=ENROLL_INSTANCE_NAME='pangolin-crowdsec'
+Environment=ENROLL_TAGS='docker'
+Environment=GID='1000'
+Environment=PARSERS='crowdsecurity/whitelists'
+Label="traefik.enable=false"
+Mount=type=bind,src={{ app_data_dir }}/pangolin/data/config/crowdsec,dst=/etc/crowdsec
+Mount=type=bind,src={{ app_data_dir }}/pangolin/data/config/crowdsec/db,dst=/var/lib/crowdsec/data
+Mount=type=bind,src={{ app_data_dir }}/pangolin/data/config/traefik/logs,dst=/var/log/traefik,relabel=shared
+Mount=type=bind,src=/var/log/journal,dst=/var/log/host,ro=true
+Exec='-t'
+Notify=healthy
+HealthCmd="cscli capi status"
+HealthInterval=10s
+HealthRetries=15
+HealthTimeout=10s
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

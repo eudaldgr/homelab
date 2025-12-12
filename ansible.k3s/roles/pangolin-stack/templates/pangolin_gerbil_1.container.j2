@@ -1,0 +1,20 @@
+[Unit]
+Description=Gerbil Service
+After=pangolin_app_1.service network.target
+Requires=pangolin_app_1.service
+
+[Container]
+Pod=pangolin_proxy_1.pod
+ContainerName=pangolin_gerbil_1
+AddCapability=CAP_NET_ADMIN CAP_NET_RAW CAP_SYS_MODULE
+Image=docker.io/fosrl/gerbil:{{ pangolin_gerbil_version }}
+Mount=type=bind,src={{ app_data_dir }}/pangolin/data/config,dst=/var/config,relabel=shared
+Exec='--reachableAt=http://pangolin_gerbil_1:3004' \
+     '--generateAndSaveKeyTo=/var/config/key' \
+     '--remoteConfig=http://pangolin_app_1:3001/api/v1/'
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

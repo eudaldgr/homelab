@@ -1,0 +1,20 @@
+[Unit]
+Description=Pangolin Service
+After=network.target
+
+[Container]
+Pod=pangolin_proxy_1.pod
+ContainerName=pangolin_app_1
+Image=docker.io/fosrl/pangolin:{{ pangolin_app_version }}
+Mount=type=bind,src={{ app_data_dir }}/pangolin/data/config,dst=/app/config,relabel=shared,U=true
+Notify=healthy
+HealthCmd="/usr/bin/curl -f http://localhost:3001/api/v1/"
+HealthInterval=3s
+HealthRetries=15
+HealthTimeout=15s
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target
