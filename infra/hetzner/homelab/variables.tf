@@ -7,7 +7,7 @@ variable "hcloud_token" {
 variable "hostname" {
   description = "Name of the Hetzner server"
   type        = string
-  default     = "k3s-server-03"
+  default     = "pangolin01"
 }
 
 variable "ssh_key_name" {
@@ -37,7 +37,7 @@ variable "timezone" {
 variable "server_type" {
   description = "Hetzner server type"
   type        = string
-  default     = "cx22"
+  default     = "cx23"
 }
 
 variable "location" {

@@ -2,7 +2,7 @@
 
 # Data source to get the MicroOS snapshot
 data "hcloud_image" "microos" {
-  with_selector = "microos-snapshot=yes"
+  with_selector = "microos-snapshot=yes,podman-host=yes"
   most_recent   = true
 }
 
@@ -83,8 +83,7 @@ resource "hcloud_server" "homelab" {
 
   labels = {
     type = "homelab"
-    type = "k3s"
-    role = "control-plane"
+    role = "gateway"
   }
 
   user_data = templatefile("${path.module}/files/cloud-init.yml", {
