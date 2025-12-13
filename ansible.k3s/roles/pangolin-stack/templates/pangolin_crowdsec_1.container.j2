@@ -12,7 +12,6 @@ Environment=ENROLL_INSTANCE_NAME='pangolin-crowdsec'
 Environment=ENROLL_TAGS='docker'
 Environment=GID='1000'
 Environment=PARSERS='crowdsecurity/whitelists'
-Environment=CROWDSEC_FEATURE_APPSEC='true'
 Label="traefik.enable=false"
 Mount=type=bind,src={{ app_data_dir }}/pangolin/data/config/crowdsec,dst=/etc/crowdsec,U=true
 Mount=type=bind,src={{ app_data_dir }}/pangolin/data/config/crowdsec/db,dst=/var/lib/crowdsec/data,U=true

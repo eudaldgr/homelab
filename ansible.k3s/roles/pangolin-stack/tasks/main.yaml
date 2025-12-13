@@ -31,6 +31,7 @@
     - data/config/traefik
     - data/config/traefik/logs
     - data/config/crowdsec
+    - data/config/crowdsec/acquis.d
     - data/config/crowdsec/db
     - quadlets
   tags: pangolin
@@ -85,6 +86,27 @@
     - name: dynamic_config.yml
       dir: data/config/traefik
   tags: pangolin
+
+- name: Copiar fitxers de configuració de Crowdsec
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/crowdsec_{{ item }}.yaml"
+    dest: "{{ app_data_dir }}/pangolin/data/config/crowdsec/acquis.d/{{ item }}.yaml"
+    owner: "{{ rootless_user }}"
+    group: "{{ rootless_user }}"
+    mode: "0664"
+  with_items:
+    - appsec
+    - traefik
+  tags: pangolin, crowdsec
+
+- name: Copiar fitxers de configuració de Crowdsec
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/crowdsec_profiles.yaml"
+    dest: "{{ app_data_dir }}/pangolin/data/config/crowdsec/profiles.yaml"
+    owner: "{{ rootless_user }}"
+    group: "{{ rootless_user }}"
+    mode: "0664"
+  tags: pangolin, crowdsec
 
 - name: Assegurar que el directori ~/.config/containers/systemd existeix
   ansible.builtin.file:
