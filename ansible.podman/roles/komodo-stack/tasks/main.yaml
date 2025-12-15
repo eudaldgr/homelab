@@ -1,7 +1,7 @@
 ---
 - name: Crear directori pare per a Komodo Stack
   ansible.builtin.file:
-    path: "{{ app_data_dir | default('/mnt/nfs') }}/{{ inventory_hostname }}/komodo"
+    path: "{{ app_data_dir }}/{{ inventory_hostname }}/komodo"
     state: directory
     owner: "{{ rootless_user }}"
     group: "{{ rootless_user }}"
@@ -10,7 +10,7 @@
 
 - name: Crear subdirectoris per a Komodo Stack
   ansible.builtin.file:
-    path: "{{ app_data_dir | default('/mnt/nfs') }}/{{ inventory_hostname }}/komodo/{{ item }}"
+    path: "{{ app_data_dir }}/{{ inventory_hostname }}/komodo/{{ item }}"
     state: directory
     owner: "{{ rootless_user }}"
     group: "{{ rootless_user }}"
@@ -28,7 +28,7 @@
 - name: Copiar fitxers de configuració de Komodo Stack
   ansible.builtin.template:
     src: "{{ role_path }}/templates/{{ item }}.j2"
-    dest: "{{ app_data_dir | default('/mnt/nfs') }}/{{ inventory_hostname }}/komodo/quadlets/{{ item }}"
+    dest: "{{ app_data_dir }}/{{ inventory_hostname }}/komodo/quadlets/{{ item }}"
     owner: "{{ rootless_user }}"
     group: "{{ rootless_user }}"
     mode: "0644"
@@ -41,13 +41,14 @@
 - name: Copiar fitxers de configuració de Komodo Stack
   ansible.builtin.copy:
     src: "{{ role_path }}/files/{{ item }}"
-    dest: "{{ app_data_dir | default('/mnt/nfs') }}/{{ inventory_hostname }}/komodo/quadlets/{{ item }}"
+    dest: "{{ app_data_dir }}/{{ inventory_hostname }}/komodo/quadlets/{{ item }}"
     owner: "{{ rootless_user }}"
     group: "{{ rootless_user }}"
     mode: "0644"
   with_items:
     - komodo.env
     - komodo.network
+    - komodo_proxy_1.pod
     - komodo_periphery_1.cil
   tags: komodo
 
@@ -62,7 +63,7 @@
 
 - name: Crear enllaços symlink quadlets de Komodo Stack
   ansible.builtin.file:
-    src: "{{ app_data_dir | default('/mnt/nfs') }}/{{ inventory_hostname }}/komodo/quadlets/{{ item }}"
+    src: "{{ app_data_dir }}/{{ inventory_hostname }}/komodo/quadlets/{{ item }}"
     dest: "/home/{{ rootless_user }}/.config/containers/systemd/{{ item }}"
     state: link
     owner: "{{ rootless_user }}"
@@ -74,6 +75,7 @@
     - komodo_periphery_1.container
     - komodo.env
     - komodo.network
+    - komodo_proxy_1.pod
   tags: komodo
 
 - name: Check periphery SELinux policy installed
@@ -86,7 +88,7 @@
 
 - name: Install periphery SELinux policy
   ansible.builtin.shell: |
-    semodule -i {{ app_data_dir | default('/mnt/nfs') }}/{{ inventory_hostname }}/komodo/quadlets/komodo_periphery_1.cil /usr/share/udica/templates/*
+    semodule -i {{ app_data_dir }}/{{ inventory_hostname }}/komodo/quadlets/komodo_periphery_1.cil /usr/share/udica/templates/*
   args:
     creates: /var/lib/selinux/targeted/active/modules/400/komodo_periphery_1
   when: selinux_policy_check.rc != 0
@@ -122,6 +124,21 @@
     - komodo_core_1_webhook_secret
     - komodo_mongo_1_passwd
   when: item not in (existing_secrets.secrets | map(attribute='Spec.Name') | list)
+  tags: komodo
+
+# There's an issue with passta that prevents pulling images
+- name: Pull images for komodo containers based on configured versions
+  become: true
+  become_method: community.general.machinectl # noqa: schema
+  become_user: "{{ rootless_user }}"
+  vars:
+    ansible_pipelining: true
+  ansible.builtin.shell:
+    cmd: |
+      podman pull $(awk -F'=' '/^Image=/ {print $2}' {{ app_data_dir }}/{{ inventory_hostname }}/komodo/quadlets/*.container)
+  environment:
+    XDG_RUNTIME_DIR: "/run/user/{{ rootless_uid.stdout | trim }}"
+  changed_when: false
   tags: komodo
 
 - name: Start and enable Komodo containers

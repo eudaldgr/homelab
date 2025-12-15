@@ -4,11 +4,11 @@ After=komodo_core_1.service
 Requires=komodo_core_1.service
 
 [Container]
+Pod=komodo_proxy_1.pod
 Image=ghcr.io/moghtech/komodo-periphery:{{ komodo_periphery_version }}
 ContainerName=komodo_periphery_1
-Network=komodo.network
 Label=komodo.skip=
-Mount=type=bind,src={{ app_data_dir | default('/mnt/nfs') }}/{{ inventory_hostname }}/komodo/data/periphery,dst=/etc/komodo
+Mount=type=bind,src={{ app_data_dir }}/{{ inventory_hostname }}/komodo/data/periphery,dst=/etc/komodo
 Volume=/%t/podman/podman.sock:/var/run/docker.sock
 Environment=COMPOSE_KOMODO_IMAGE_TAG=latest
 Secret=komodo_core_1_passkey,type=env,target=KOMODO_PASSKEY

@@ -1,0 +1,9 @@
+---
+- name: Prepare container hosts nodes
+  hosts: host01
+  gather_facts: false # fact gathering is slow and not needed for any of our tasks
+  become: true
+  roles:
+    - prepare-podman-rootless
+    - komodo-stack
+    # - forgejo-stack
