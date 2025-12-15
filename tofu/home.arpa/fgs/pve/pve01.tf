@@ -224,7 +224,7 @@ resource "proxmox_vm_qemu" "container-host" {
     model    = "virtio"
     macaddr  = "BC:24:14:34:CD:01"
     bridge   = "vmbr1"
-    tag      = 90
+    tag      = 20
     firewall = true
   }
   disks {
