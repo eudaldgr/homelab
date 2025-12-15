@@ -10,6 +10,7 @@ locals {
     "xfsprogs",
     "lvm2",
     "cryptsetup",
+    "systemd-container",
     "podman",
     "podman-compose"
   ], var.packages_to_install))
