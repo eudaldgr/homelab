@@ -1,0 +1,12 @@
+module podman_homelab_selinux 1.0;
+
+require {
+	type svirt_lxc_net_t;
+	type container_runtime_t;
+	type container_var_run_t;
+	class unix_stream_socket connectto;
+	class sock_file write;
+}
+
+allow svirt_lxc_net_t container_runtime_t:unix_stream_socket connectto;
+allow svirt_lxc_net_t container_var_run_t:sock_file write;

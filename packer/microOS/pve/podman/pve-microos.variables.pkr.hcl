@@ -38,6 +38,15 @@ EOF
 ${file("${abspath(path.root)}/files/podman-sysctl.conf")}
 EOF
 
+    cat > /tmp/podman_homelab_selinux.te <<'EOF'
+${file("${abspath(path.root)}/files/podman_homelab_selinux.te")}
+EOF
+
+    checkmodule -M -m -o /tmp/podman_homelab_selinux.mod /tmp/podman_homelab_selinux.te
+    semodule_package -o /tmp/podman_homelab_selinux.pp -m /tmp/podman_homelab_selinux.mod
+    semodule -i /tmp/podman_homelab_selinux.pp
+    rm -f /tmp/podman_homelab_selinux.*
+
     cat > /etc/containers/containers.conf <<'EOF'
 [containers]
 events_logger = "journald"
