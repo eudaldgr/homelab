@@ -29,6 +29,14 @@ locals {
     transactional-update --continue run bash -c 'echo "-F" > /etc/selinux/.autorelabel'
     systemctl enable fail2ban
 
+    # Enabling CPU, MEMORY, CPUSET, and I/O delegation
+    # https://rootlesscontaine.rs/getting-started/common/cgroup2/
+    mkdir -p /etc/systemd/system/user@.service.d
+    cat > /etc/systemd/system/user@.service.d/delegate.conf <<'EOF'
+[Service]
+Delegate=cpu cpuset io memory pids
+EOF
+
     # Write configs from Packer host into the guest
     cat > /etc/fail2ban/jail.local <<'EOF'
 ${file("${abspath(path.root)}/files/fail2ban-jail.local")}
