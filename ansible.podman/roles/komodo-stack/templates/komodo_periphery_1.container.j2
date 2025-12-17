@@ -20,6 +20,11 @@ Environment=PERIPHERY_SSL_ENABLED=true
 Environment=PERIPHERY_INCLUDE_DISK_MOUNTS=/etc/hostname
 Environment=PERIPHERY_LOGGING_PRETTY=false
 Environment=PERIPHERY_PRETTY_STARTUP_CONFIG=false
+
+# Set UID and XDG_RUNTIME_DIR for proper Komodo Periphery basic environment variables
+Environment=UID=%U
+Environment=XDG_RUNTIME_DIR=%t
+
 SecurityLabelType=komodo_periphery_1.process
 
 [Service]
