@@ -195,7 +195,7 @@ resource "proxmox_vm_qemu" "k3s-agent-01" {
   # }
 }
 
-resource "proxmox_vm_qemu" "container-host" {
+resource "proxmox_vm_qemu" "container-host-01" {
   provider = proxmox.pve01
 
   name               = "container-host-01"
