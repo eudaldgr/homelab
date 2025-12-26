@@ -8,8 +8,8 @@ ContainerName=komodo_mongo_1
 Label=komodo.skip=
 User={{ mongo_uid }}:{{ mongo_gid }}
 Exec=--quiet --wiredTigerCacheSizeGB 0.25
-Mount=type=bind,src={{ app_data_dir }}/{{ inventory_hostname }}/komodo/data/mongo/data,dst=/data/db,relabel=private,U=true
-Mount=type=bind,src={{ app_data_dir }}/{{ inventory_hostname }}/komodo/data/mongo/config,dst=/data/configdb,relabel=private,U=true
+Volume=komodo_mongo_1_data:/data/db
+Volume=komodo_mongo_1_config:/data/configdb
 Environment=MONGO_INITDB_ROOT_USERNAME=admin
 Secret=komodo_mongo_1_passwd,type=env,target=MONGO_INITDB_ROOT_PASSWORD
 UIDMap={{ mongo_uid }}:0:1

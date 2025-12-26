@@ -14,13 +14,10 @@ Environment=KOMODO_DATABASE_ADDRESS=komodo_mongo_1:27017
 Environment=KOMODO_DATABASE_USERNAME=admin
 Secret=komodo_mongo_1_passwd,type=env,target=KOMODO_DATABASE_PASSWORD
 Secret=komodo_core_1_passkey,type=env,target=KOMODO_PASSKEY
-Environment=KOMODO_FIRST_SERVER=https://komodo_periphery_1:8120
+Environment=KOMODO_FIRST_SERVER=https://host.containers.internal:8120
 Secret=komodo_core_1_jwt,type=env,target=KOMODO_JWT_SECRET
 Secret=komodo_core_1_webhook_secret,type=env,target=KOMODO_WEBHOOK_SECRET
 EnvironmentFile={{ app_data_dir }}/{{ inventory_hostname }}/komodo/quadlets/komodo.env
-
-# Mount the secrets.toml file, temporal solution without a secret management system
-Mount=type=bind,src={{ app_data_dir }}/{{ inventory_hostname }}/komodo/data/secrets.toml,dst=/config/config.toml,ro=true,relabel=private
 
 [Service]
 Restart=always

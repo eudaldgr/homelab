@@ -2,14 +2,10 @@
 ansible_become: true
 ansible_become_method: sudo
 
-# NFS settings
-app_data_dir: /mnt/nfs
-nfs_options: nofail,x-systemd.automount,x-systemd.requires=network-online.target,x-systemd.mount-timeout=10s
-
 # Komodo Stack settings
-komodo_core_version: "1.19.5@sha256:a1cceb4f971443b1e9f2a767788f663d0afb6244ee2135f7fe3fd1036af37ade"
+komodo_core_version: "2.0.0-dev@sha256:1261bf634ab87899d5cb4d8b912c24f24e6168613de45389f854c3c3aa22dd12"
 komodo_mongo_version: "8.2.2@sha256:bf5995bcccb65725aa81fd92e68449323c94b96bf1c1fa9f7acbc2a8ad518114"
-komodo_periphery_version: "1.19.5@sha256:bd79cf960ed054fe8e02384322303e462448679b1149dde48bbef151417255b1"
+komodo_periphery_version: "v2.0.0-dev-102"
 
 komodo_core_1_jwt: "{{ secret_komodo_core_1_jwt }}"
 komodo_core_1_passkey: "{{ secret_komodo_core_1_passkey }}"

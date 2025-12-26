@@ -4,6 +4,7 @@
   gather_facts: false # fact gathering is slow and not needed for any of our tasks
   become: true
   roles:
+    - nfs
     - prepare-podman-rootless
     - komodo-stack
-    # - forgejo-stack
+    - komodo-periphery

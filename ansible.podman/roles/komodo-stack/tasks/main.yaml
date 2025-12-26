@@ -18,10 +18,6 @@
   with_items:
     - data
     - data/core
-    - data/mongo
-    - data/mongo/config
-    - data/mongo/data
-    - data/periphery
     - quadlets
   tags: komodo
 
@@ -35,7 +31,6 @@
   with_items:
     - komodo_core_1.container
     - komodo_mongo_1.container
-    - komodo_periphery_1.container
   tags: komodo
 
 - name: Copiar fitxers de configuració de Komodo Stack
@@ -49,7 +44,6 @@
     - komodo.env
     - komodo.network
     - komodo_proxy_1.pod
-    - komodo_periphery_1.cil
   tags: komodo
 
 - name: Assegurar que el directori ~/.config/containers/systemd existeix
@@ -72,27 +66,26 @@
   with_items:
     - komodo_core_1.container
     - komodo_mongo_1.container
-    - komodo_periphery_1.container
     - komodo.env
     - komodo.network
     - komodo_proxy_1.pod
   tags: komodo
 
-- name: Check periphery SELinux policy installed
-  ansible.builtin.command: |
-    semodule -l | grep -w komodo_periphery_1
-  register: selinux_policy_check
-  failed_when: false
-  changed_when: false
-  tags: komodo, selinux
+# - name: Check periphery SELinux policy installed
+#   ansible.builtin.command: |
+#     semodule -l | grep -w komodo_periphery_1
+#   register: selinux_policy_check
+#   failed_when: false
+#   changed_when: false
+#   tags: komodo, selinux
 
-- name: Install periphery SELinux policy
-  ansible.builtin.shell: |
-    semodule -i {{ app_data_dir }}/{{ inventory_hostname }}/komodo/quadlets/komodo_periphery_1.cil /usr/share/udica/templates/*
-  args:
-    creates: /var/lib/selinux/targeted/active/modules/400/komodo_periphery_1
-  when: selinux_policy_check.rc != 0
-  tags: komodo, selinux
+# - name: Install periphery SELinux policy
+#   ansible.builtin.shell: |
+#     semodule -i {{ app_data_dir }}/{{ inventory_hostname }}/komodo/quadlets/komodo_periphery_1.cil /usr/share/udica/templates/*
+#   args:
+#     creates: /var/lib/selinux/targeted/active/modules/400/komodo_periphery_1
+#   when: selinux_policy_check.rc != 0
+#   tags: komodo, selinux
 
 - name: Check existing Komodo secrets
   become: true
@@ -148,7 +141,7 @@
   vars:
     ansible_pipelining: true
   ansible.builtin.systemd_service:
-    name: komodo_periphery_1
+    name: komodo_core_1
     state: started
     enabled: true
     scope: user

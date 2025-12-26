@@ -1,0 +1,49 @@
+---
+# curl -sSL https://raw.githubusercontent.com/moghtech/komodo/main/scripts/setup-periphery.py | python3 - --user
+- name: Install Komodo Periphery systemd service
+  become: true
+  become_method: community.general.machinectl # noqa: schema
+  become_user: "{{ rootless_user }}"
+  vars:
+    ansible_pipelining: true
+  tags: periphery
+  block:
+    - name: Install Komodo Periphery systemd service
+      ansible.builtin.get_url:
+        url: https://raw.githubusercontent.com/moghtech/komodo/main/scripts/setup-periphery.py
+        dest: /tmp/setup-periphery.py
+        mode: "0755"
+
+    - name: Run Komodo Periphery setup script
+      ansible.builtin.command:
+        cmd: python3 /tmp/setup-periphery.py --user --version={{ komodo_periphery_version }}
+      args:
+        creates: "/home/{{ rootless_user }}/.local/bin/periphery"
+
+    - name: Crear subdirectoris per a Komodo Periphery
+      ansible.builtin.file:
+        path: "{{ app_data_dir }}/{{ inventory_hostname }}/komodo/data/periphery"
+        state: directory
+        owner: "{{ rootless_user }}"
+        group: "{{ rootless_user }}"
+        mode: "0755"
+
+    - name: Modify Komodo Periphery config file
+      ansible.builtin.lineinfile:
+        path: "/home/{{ rootless_user }}/.config/komodo/periphery.config.toml"
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+        backrefs: true
+      loop:
+        - regexp: '^(\s*)root_directory\s*=\s*"/etc/komodo"'
+          line: '\1root_directory = "{{ app_data_dir }}/{{ inventory_hostname }}/komodo/data/periphery"'
+        - regexp: '^(\s*)passkeys\s*=\s*\[\s*\]'
+          line: '\1passkeys = ["{{ komodo_core_1_passkey }}"]'
+
+    - name: Start and enable periphery for user -> {{ rootless_user }}
+      ansible.builtin.systemd_service:
+        name: periphery
+        state: started
+        enabled: true
+        scope: user
+      changed_when: false

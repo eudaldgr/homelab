@@ -1,0 +1,42 @@
+---
+- name: Check if MEDIA_DATA_DIR directory exists
+  ansible.builtin.stat:
+    path: "{{ media_data_dir }}"
+  register: nfs_media_data_dir_stat
+  tags: nfs
+
+- name: Create MEDIA_DATA_DIR directory if it doesn't exist
+  ansible.builtin.command: |
+    transactional-update --continue run bash -c '
+      mkdir -p "{{ media_data_dir }}" &&
+      chown root:root "{{ media_data_dir }}" &&
+      chmod 0755 "{{ media_data_dir }}"'
+  register: nfs_create_media_data_dir
+  when: not nfs_media_data_dir_stat.stat.exists
+  changed_when: nfs_create_media_data_dir.rc == 0
+  failed_when: nfs_create_media_data_dir.rc != 0
+  tags: nfs
+
+- name: Unconditionally reboot the machine with all defaults
+  ansible.builtin.reboot:
+    connect_timeout: 5
+    reboot_command: "{{ custom_reboot_command | default(omit) }}"
+    reboot_timeout: 600
+    pre_reboot_delay: 0
+    post_reboot_delay: 30
+    test_command: uptime
+  when: nfs_create_media_data_dir is changed # noqa: no-handler
+  tags: reboot
+
+- name: Mount NFS share
+  ansible.builtin.mount:
+    src: "{{ nfs_media_server }}:{{ nfs_media_path }}"
+    path: "{{ media_data_dir }}"
+    fstype: nfs
+    opts: "{{ nfs_media_options }}"
+    state: mounted
+  when:
+    - nfs_media_server is defined
+    - nfs_media_path is defined
+  register: nfs_media_mount
+  tags: nfs

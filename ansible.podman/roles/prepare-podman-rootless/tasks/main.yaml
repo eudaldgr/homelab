@@ -138,19 +138,19 @@
   register: nfs_mount
   tags: nfs
 
-- name: Change ownership of NFS mount point
-  ansible.builtin.file:
-    path: "{{ app_data_dir }}"
-    state: directory
-    owner: "{{ rootless_user }}"
-    group: "{{ rootless_user }}"
-    mode: "0755"
-    recurse: true
-  when:
-    - nfs_server is defined
-    - nfs_path is defined
-    - nfs_mount is succeeded
-  tags: nfs
+# - name: Change ownership of NFS mount point
+#   ansible.builtin.file:
+#     path: "{{ app_data_dir }}"
+#     state: directory
+#     owner: "{{ rootless_user }}"
+#     group: "{{ rootless_user }}"
+#     mode: "0755"
+#     recurse: true
+#   when:
+#     - nfs_server is defined
+#     - nfs_path is defined
+#     - nfs_mount is succeeded
+#   tags: nfs
 
 - name: Create directory for secrets on NFS share
   ansible.builtin.file:
@@ -258,3 +258,61 @@
   tags:
     - user
     - podman
+
+- name: Create age secret directory
+  ansible.builtin.file:
+    path: "/home/{{ rootless_user }}/.config/sops/age"
+    state: directory
+    owner: "{{ rootless_user }}"
+    group: "{{ rootless_user }}"
+    mode: "0700"
+  tags:
+    - age
+    - sops
+
+- name: Generate age key for rootless user -> {{ rootless_user }}
+  become: true
+  become_method: community.general.machinectl # noqa: schema
+  become_user: "{{ rootless_user }}"
+  vars:
+    ansible_pipelining: true
+  ansible.builtin.command:
+    argv:
+      [
+        "/usr/bin/age-keygen",
+        "-o",
+        "/home/{{ rootless_user }}/.config/sops/age/keys.txt",
+      ]
+  args:
+    creates: "/home/{{ rootless_user }}/.config/sops/age/keys.txt"
+  tags:
+    - age
+    - sops
+
+- name: Catch public age key and show it
+  become: true
+  become_method: community.general.machinectl # noqa: schema
+  become_user: "{{ rootless_user }}"
+  vars:
+    ansible_pipelining: true
+  ansible.builtin.command:
+    argv:
+      [
+        /usr/bin/age-keygen,
+        "-y",
+        "/home/{{ rootless_user }}/.config/sops/age/keys.txt",
+      ]
+  register: age_public_key
+  changed_when: false
+  tags:
+    - age
+    - sops
+
+- name: Display public age key for rootless user -> {{ rootless_user }}
+  ansible.builtin.debug:
+    msg: >-
+      Public age key for user '{{ rootless_user }}':
+      {{ age_public_key.stdout }}
+  tags:
+    - age
+    - sops
