@@ -1,0 +1,18 @@
+#!/bin/sh
+
+SOPS_AGE_KEY_FILE=./secrets/age-key.txt
+export SOPS_AGE_KEY_FILE
+
+FILEPATH="${1#\'}"
+FILEPATH="${FILEPATH%\'}"
+
+# Detectar l'extensió del fitxer
+case "$FILEPATH" in
+  *.json) EXTENSION="json" ;;
+  *.yaml|*.yml) EXTENSION="yaml" ;;
+  *.env|*.dotenv) EXTENSION="dotenv" ;;
+  *.ini) EXTENSION="ini" ;;
+  *) EXTENSION="binary" ;;
+esac
+
+sops decrypt --input-type "$EXTENSION" --output-type "$EXTENSION" --filename-override "$1" /dev/stdin

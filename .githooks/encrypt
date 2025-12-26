@@ -1,0 +1,15 @@
+#!/bin/sh
+
+FILEPATH="${1#\'}"
+FILEPATH="${FILEPATH%\'}"
+
+# Detectar l'extensió del fitxer
+case "$FILEPATH" in
+  *.json) EXTENSION="json" ;;
+  *.yaml|*.yml) EXTENSION="yaml" ;;
+  *.env|*.dotenv) EXTENSION="dotenv" ;;
+  *.ini) EXTENSION="ini" ;;
+  *) EXTENSION="binary" ;;
+esac
+
+sops encrypt --input-type "$EXTENSION" --output-type "$EXTENSION" --filename-override "$1" /dev/stdin
