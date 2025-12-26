@@ -12,7 +12,10 @@ locals {
     "cryptsetup",
     "systemd-container",
     "podman",
-    "podman-compose"
+    "podman-compose",
+    "podman-docker",
+    "age",
+    "sops"
   ], var.packages_to_install))
 
   install_packages = <<-EOT
