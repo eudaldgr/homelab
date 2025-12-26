@@ -1,0 +1,33 @@
+#!/bin/sh
+
+FILEPATH=${1:-}
+
+case "$(basename "$FILEPATH")" in
+  *.env|*.dotenv)
+    EXTENSION="dotenv"
+  ;;
+  *.json)
+    EXTENSION="json"
+  ;;
+  *.yaml|*.yml)
+    EXTENSION="yaml"
+  ;;
+  *)
+    EXTENSION=""
+    ;;
+esac
+
+SOPS_AGE_KEY_FILE=$(pwd)/secrets/age-key.txt
+export SOPS_AGE_KEY_FILE
+
+INPUT_PATH=${FILEPATH:-/dev/stdin}
+
+if [ -n "$EXTENSION" ]; then
+  sops \
+    --decrypt \
+    --input-type "$EXTENSION" \
+    --output-type "$EXTENSION" \
+    "$INPUT_PATH"
+else
+  sops --decrypt "$INPUT_PATH"
+fi

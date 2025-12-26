@@ -1,0 +1,30 @@
+#!/bin/sh
+
+FILEPATH=${1:-}
+
+case "$(basename "$FILEPATH")" in
+  *.env|*.dotenv)
+    EXTENSION="dotenv"
+  ;;
+  *.json)
+    EXTENSION="json"
+  ;;
+  *.yaml|*.yml)
+    EXTENSION="yaml"
+  ;;
+  *)
+    EXTENSION=""
+    ;;
+esac
+
+INPUT_PATH=${FILEPATH:-/dev/stdin}
+
+if [ -n "$EXTENSION" ]; then
+  sops \
+    --encrypt \
+    --input-type "$EXTENSION" \
+    --output-type "$EXTENSION" \
+    "$INPUT_PATH"
+else
+  sops --encrypt "$INPUT_PATH"
+fi

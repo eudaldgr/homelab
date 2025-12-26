@@ -1,0 +1,2 @@
+compose/**/compose.env filter=sops
+komodo/providers.toml filter=sops
