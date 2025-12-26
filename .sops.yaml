@@ -1,0 +1,17 @@
+keys:
+  - &laptop age1yfrq96mwj6ah0szswj9a8vg8jmyzwl5g6w5u8fh23yg85saxyunss056hg
+  - &host01 age1le3xdnyvh2rdrcs35qh0gjma0580ett08tdgmuzw8dkhxuwd3uls00cntd
+
+creation_rules:
+  - encrypted_regex: '.*'
+    filename_regex: '\.(dotenv|env)$'
+    key_groups:
+      - age:
+        - *laptop
+        - *host01
+
+stores:
+  yaml:
+    indent: 2
+  json:
+    indent: 2
