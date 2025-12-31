@@ -1,6 +1,6 @@
 keys:
   - &laptop age1yfrq96mwj6ah0szswj9a8vg8jmyzwl5g6w5u8fh23yg85saxyunss056hg
-  - &host01 age1le3xdnyvh2rdrcs35qh0gjma0580ett08tdgmuzw8dkhxuwd3uls00cntd
+  - &host01 age1rn8q6tp3rqgwfj9q8svxuha42tgqjnhdhtmq8e4rf856p77rq47s88qd4u
 
 creation_rules:
   - encrypted_regex: '.*'
