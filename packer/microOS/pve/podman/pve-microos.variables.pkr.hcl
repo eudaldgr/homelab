@@ -12,7 +12,7 @@ locals {
     "cryptsetup",
     "systemd-container",
     "podman",
-    "podman-compose",
+    "docker-compose",
     "podman-docker",
     "age",
     "sops"
