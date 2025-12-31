@@ -1,4 +1,11 @@
 ---
+- name: Get UID of {{ rootless_user }}
+  ansible.builtin.command:
+    argv: ["/usr/bin/id", "-u", "{{ rootless_user }}"]
+  register: rootless_uid
+  changed_when: false
+  tags: user
+
 - name: Crear directori pare per a Komodo Stack
   ansible.builtin.file:
     path: "{{ app_data_dir }}/{{ inventory_hostname }}/komodo"

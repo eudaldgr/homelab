@@ -24,6 +24,13 @@
     state: present
   tags: user
 
+- name: Get UID of {{ rootless_user }}
+  ansible.builtin.command:
+    argv: ["/usr/bin/id", "-u", "{{ rootless_user }}"]
+  register: rootless_uid
+  changed_when: false
+  tags: user
+
 - name: Setting subuid and subgid
   ansible.builtin.blockinfile:
     dest: "{{ item }}"
@@ -37,6 +44,15 @@
     - /etc/subuid
     - /etc/subgid
   tags: user
+
+- name: Create /etc/containers/nodocker file
+  ansible.builtin.file:
+    path: /etc/containers/nodocker
+    state: touch
+    owner: root
+    group: root
+    mode: "0644"
+  tags: podman
 
 - name: Create a directory if it does not exist
   ansible.builtin.file:
@@ -138,19 +154,19 @@
   register: nfs_mount
   tags: nfs
 
-# - name: Change ownership of NFS mount point
-#   ansible.builtin.file:
-#     path: "{{ app_data_dir }}"
-#     state: directory
-#     owner: "{{ rootless_user }}"
-#     group: "{{ rootless_user }}"
-#     mode: "0755"
-#     recurse: true
-#   when:
-#     - nfs_server is defined
-#     - nfs_path is defined
-#     - nfs_mount is succeeded
-#   tags: nfs
+- name: Change ownership of NFS mount point
+  ansible.builtin.file:
+    path: "{{ app_data_dir }}"
+    state: directory
+    owner: "{{ rootless_user }}"
+    group: "{{ rootless_user }}"
+    mode: "0755"
+    recurse: true
+  when:
+    - nfs_server is defined
+    - nfs_path is defined
+    - nfs_mount is succeeded
+  tags: nfs
 
 - name: Create directory for secrets on NFS share
   ansible.builtin.file:
@@ -184,14 +200,25 @@
     - nfs
     - podman
 
-- name: Append .bashrc for user -> {{ rootless_user }}
+- name: Create directory for environment.d
+  ansible.builtin.file:
+    path: "/home/{{ rootless_user }}/.config/environment.d"
+    state: directory
+    owner: "{{ rootless_user }}"
+    group: "{{ rootless_user }}"
+    mode: "0700"
+  tags:
+    - user
+    - podman
+
+- name: Append .environment.d config for user -> {{ rootless_user }}
   ansible.builtin.blockinfile:
-    path: "/home/{{ rootless_user }}/.bashrc"
+    path: "/home/{{ rootless_user }}/.config/environment.d/50-homelab.conf"
     block: |
-      export XDG_CONFIG_HOME=$HOME/.config
-      export XDG_RUNTIME_DIR=/run/user/$(id -u)
-      export DOCKER_HOST=unix:///run/user/$(id -u)/podman/podman.sock
-      export PODMAN_COMPOSE_WARNING_LOGS=0
+      XDG_CONFIG_HOME=$HOME/.config
+      XDG_RUNTIME_DIR=/run/user/{{ rootless_uid.stdout | trim }}
+      DOCKER_HOST=unix:///run/user/{{ rootless_uid.stdout | trim }}/podman/podman.sock
+      PODMAN_COMPOSE_WARNING_LOGS=0
     marker: "# {mark} ANSIBLE MANAGED BLOCK - Podman config"
     create: true
     owner: "{{ rootless_user }}"
@@ -200,6 +227,23 @@
   tags:
     - user
     - podman
+
+# - name: Append .bashrc for user -> {{ rootless_user }}
+#   ansible.builtin.blockinfile:
+#     path: "/home/{{ rootless_user }}/.bashrc"
+#     block: |
+#       export XDG_CONFIG_HOME=$HOME/.config
+#       export XDG_RUNTIME_DIR=/run/user/$(id -u)
+#       export DOCKER_HOST=unix:///run/user/$(id -u)/podman/podman.sock
+#       export PODMAN_COMPOSE_WARNING_LOGS=0
+#     marker: "# {mark} ANSIBLE MANAGED BLOCK - Podman config"
+#     create: true
+#     owner: "{{ rootless_user }}"
+#     group: "{{ rootless_user }}"
+#     mode: "0644"
+#   tags:
+#     - user
+#     - podman
 
 - name: Create containers storage.conf
   ansible.builtin.blockinfile:
@@ -222,13 +266,6 @@
     argv: [/usr/bin/loginctl, enable-linger, "{{ rootless_user }}"]
     creates: "/var/lib/systemd/linger/{{ rootless_user }}"
   tags: system
-
-- name: Get UID of {{ rootless_user }}
-  ansible.builtin.command:
-    argv: ["/usr/bin/id", "-u", "{{ rootless_user }}"]
-  register: rootless_uid
-  changed_when: false
-  tags: user
 
 - name: Ensure directory exists -> /run/user/{{ rootless_uid.stdout | trim }}
   ansible.builtin.file:
@@ -259,60 +296,50 @@
     - user
     - podman
 
-- name: Create age secret directory
-  ansible.builtin.file:
-    path: "/home/{{ rootless_user }}/.config/sops/age"
-    state: directory
-    owner: "{{ rootless_user }}"
-    group: "{{ rootless_user }}"
-    mode: "0700"
-  tags:
-    - age
-    - sops
-
-- name: Generate age key for rootless user -> {{ rootless_user }}
+- name: Setup age encryption for rootless user
   become: true
   become_method: community.general.machinectl # noqa: schema
   become_user: "{{ rootless_user }}"
   vars:
     ansible_pipelining: true
-  ansible.builtin.command:
-    argv:
-      [
-        "/usr/bin/age-keygen",
-        "-o",
-        "/home/{{ rootless_user }}/.config/sops/age/keys.txt",
-      ]
-  args:
-    creates: "/home/{{ rootless_user }}/.config/sops/age/keys.txt"
   tags:
     - age
     - sops
+  block:
+    - name: Create age secret directory
+      ansible.builtin.file:
+        path: "/home/{{ rootless_user }}/.config/sops/age"
+        state: directory
+        owner: "{{ rootless_user }}"
+        group: "{{ rootless_user }}"
+        mode: "0700"
 
-- name: Catch public age key and show it
-  become: true
-  become_method: community.general.machinectl # noqa: schema
-  become_user: "{{ rootless_user }}"
-  vars:
-    ansible_pipelining: true
-  ansible.builtin.command:
-    argv:
-      [
-        /usr/bin/age-keygen,
-        "-y",
-        "/home/{{ rootless_user }}/.config/sops/age/keys.txt",
-      ]
-  register: age_public_key
-  changed_when: false
-  tags:
-    - age
-    - sops
+    - name: Check if age key already exists
+      ansible.builtin.stat:
+        path: "/home/{{ rootless_user }}/.config/sops/age/keys.txt"
+      register: age_key_file
 
-- name: Display public age key for rootless user -> {{ rootless_user }}
-  ansible.builtin.debug:
-    msg: >-
-      Public age key for user '{{ rootless_user }}':
-      {{ age_public_key.stdout }}
-  tags:
-    - age
-    - sops
+    - name: Generate age key for rootless user -> {{ rootless_user }}
+      ansible.builtin.command:
+        argv:
+          - /usr/bin/age-keygen
+          - -o
+          - /home/{{ rootless_user }}/.config/sops/age/keys.txt
+      args:
+        creates: "/home/{{ rootless_user }}/.config/sops/age/keys.txt"
+      when: not age_key_file.stat.exists
+
+    - name: Catch public age key and show it
+      ansible.builtin.command:
+        argv:
+          - /usr/bin/age-keygen
+          - -y
+          - /home/{{ rootless_user }}/.config/sops/age/keys.txt
+      register: age_public_key
+      changed_when: false
+
+    - name: Display public age key for rootless user -> {{ rootless_user }}
+      ansible.builtin.debug:
+        msg: >-
+          Public age key for user '{{ rootless_user }}':
+          {{ age_public_key.stdout }}
