@@ -267,31 +267,55 @@
     creates: "/var/lib/systemd/linger/{{ rootless_user }}"
   tags: system
 
-- name: Ensure directory exists -> /run/user/{{ rootless_uid.stdout | trim }}
+- name: Ensure necessary directories exists
   ansible.builtin.file:
-    path: "/run/user/{{ rootless_uid.stdout | trim }}"
+    path: "{{ item }}"
     state: directory
     owner: "{{ rootless_user }}"
     group: "{{ rootless_user }}"
     mode: "0700"
+  with_items:
+    - "/run/user/{{ rootless_uid.stdout | trim }}"
+    - "/home/{{ rootless_user }}/.config/systemd/user/podman-restart.service.d"
   tags:
     - user
     - podman
 
-- name: Start and enable podman.socket for user -> {{ rootless_user }}
+- name: Create override.conf for podman-restart.service
+  ansible.builtin.blockinfile:
+    path: "/home/{{ rootless_user }}/.config/systemd/user/podman-restart.service.d/override.conf"
+    block: |
+      [Service]
+      ExecStart=
+      ExecStart=/usr/bin/podman $LOGGING start --all --filter restart-policy=always --filter restart-policy=unless-stopped
+      ExecStop=
+      ExecStop=/bin/sh -c '/usr/bin/podman $LOGGING stop $(/usr/bin/podman container ls --filter restart-policy=always --filter restart-policy=unless-stopped -q)'
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - Podman restart service override"
+    create: true
+    owner: "{{ rootless_user }}"
+    group: "{{ rootless_user }}"
+    mode: "0644"
+  tags:
+    - user
+    - podman
+
+- name: Start and enable podman services for user -> {{ rootless_user }}
   become: true
   become_method: community.general.machinectl # noqa: schema
   become_user: "{{ rootless_user }}"
   vars:
     ansible_pipelining: true
   ansible.builtin.systemd_service:
-    name: podman.socket
+    name: "{{ item }}"
     state: started
     enabled: true
     scope: user
   environment:
     XDG_RUNTIME_DIR: "/run/user/{{ rootless_uid.stdout | trim }}"
   changed_when: false
+  with_items:
+    - podman.socket
+    - podman-restart.service
   tags:
     - user
     - podman
