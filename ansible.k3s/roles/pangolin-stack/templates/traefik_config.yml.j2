@@ -1,3 +1,4 @@
+{% if pangolin_crowdsec %}
 accessLog:
   bufferingSize: 100
   fields:
@@ -36,9 +37,10 @@ accessLog:
       - 500-599
   format: json
 
+{% endif %}
 api:
-  insecure: false
-  dashboard: false
+  insecure: {{ 'false' if pangolin_crowdsec else 'true' }}
+  dashboard: {{ 'false' if pangolin_crowdsec else 'true' }}
 
 providers:
   http:
@@ -51,10 +53,12 @@ experimental:
   plugins:
     badger:
       moduleName: github.com/fosrl/badger
-      version: v1.2.1
+      version: {{ pangolin_badger_version }}
+{% if pangolin_crowdsec %}
     crowdsec:
       moduleName: github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin
       version: v1.4.4
+{% endif %}
 
 log:
   level: INFO
@@ -69,7 +73,7 @@ certificatesResolvers:
     acme:
       httpChallenge:
         entryPoint: web
-      email: "{{ letsencrypt_mail }}"
+      email: {{ letsencrypt_mail }}
       storage: /letsencrypt/acme.json
       caServer: https://acme-v02.api.letsencrypt.org/directory
 
@@ -79,8 +83,10 @@ entryPoints:
   websecure:
     address: :443
     http:
+{% if pangolin_crowdsec %}
       middlewares:
         - crowdsec@file
+{% endif %}
       tls:
         certResolver: letsencrypt
     transport:

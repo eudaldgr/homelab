@@ -1,5 +1,13 @@
 http:
   middlewares:
+    badger:
+      plugin:
+        badger:
+          disableForwardAuth: true
+    redirect-to-https:
+      redirectScheme:
+        scheme: https
+{% if pangolin_crowdsec %}
     crowdsec:
       plugin:
         crowdsec:
@@ -33,10 +41,6 @@ http:
           - 192.168.0.0/16
           - 172.16.0.0/12
 
-    redirect-to-https:
-      redirectScheme:
-        scheme: https
-
     security-headers:
       headers:
         contentTypeNosniff: true
@@ -55,6 +59,7 @@ http:
         stsPreload: true
         stsSeconds: 63072000
 
+{% endif %}
   routers:
     # HTTP to HTTPS redirect router
     main-app-router-redirect:
@@ -64,6 +69,7 @@ http:
         - web
       middlewares:
         - redirect-to-https
+        - badger
 
     # Next.js router (handles everything except API and WebSocket paths)
     next-router:
@@ -72,7 +78,10 @@ http:
       entryPoints:
         - websecure
       middlewares:
+        - badger
+{% if pangolin_crowdsec %}
         - security-headers
+{% endif %}
       tls:
         certResolver: letsencrypt
 
@@ -83,7 +92,10 @@ http:
       entryPoints:
         - websecure
       middlewares:
+        - badger
+{% if pangolin_crowdsec %}
         - security-headers
+{% endif %}
       tls:
         certResolver: letsencrypt
 
@@ -94,7 +106,10 @@ http:
       entryPoints:
         - websecure
       middlewares:
+        - badger
+{% if pangolin_crowdsec %}
         - security-headers
+{% endif %}
       tls:
         certResolver: letsencrypt
 

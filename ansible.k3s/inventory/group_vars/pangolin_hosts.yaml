@@ -2,9 +2,8 @@
 ansible_become: true
 ansible_become_method: sudo
 
-pangolin_domain: "pangolin.cornfakes.xyz"
+pangolin_domain: "pangolin.eudald.gr"
 base_domains:
-  - "cornfakes.xyz"
   - "eudald.gr"
 
 pangolin_email: true
