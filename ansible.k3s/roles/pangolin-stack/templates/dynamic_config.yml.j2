@@ -117,12 +117,12 @@ http:
     next-service:
       loadBalancer:
         servers:
-          - url: "http://pangolin_app_1:3002" # Next.js server
+          - url: "http://127.0.0.1:3002" # Next.js server
 
     api-service:
       loadBalancer:
         servers:
-          - url: "http://pangolin_app_1:3000" # API/WebSocket server
+          - url: "http://127.0.0.1:3000" # API/WebSocket server
 
 tcp:
   serversTransports:

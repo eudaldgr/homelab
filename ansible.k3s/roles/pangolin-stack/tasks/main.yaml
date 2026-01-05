@@ -56,6 +56,8 @@
   with_items:
     - pangolin_traefik_1.cil
     - pangolin_proxy_1.pod
+    - pangolin_traefik_http.socket
+    - pangolin_traefik_https.socket
   tags: pangolin
 
 - name: Copiar fitxers de configuració de Pangolin Stack
@@ -74,13 +76,16 @@
       dir: data/config/traefik
   tags: pangolin
 
-- name: Assegurar que el directori ~/.config/containers/systemd existeix
+- name: Assegurar que els directoris necessaris existeixen
   ansible.builtin.file:
-    path: "/home/{{ rootless_user }}/.config/containers/systemd"
+    path: "{{ item }}"
     state: directory
     owner: "{{ rootless_user }}"
     group: "{{ rootless_user }}"
     mode: "0755"
+  with_items:
+    - "/home/{{ rootless_user }}/.config/containers/systemd"
+    - "/home/{{ rootless_user }}/.config/systemd/user"
   tags: podman
 
 - name: Crear enllaços symlink quadlets de Pangolin Stack
@@ -96,6 +101,19 @@
     - pangolin_gerbil_1.container
     - pangolin_traefik_1.container
     - pangolin_proxy_1.pod
+  tags: pangolin
+
+- name: Crear enllaços symlink quadlets de Traefik Sockets
+  ansible.builtin.file:
+    src: "{{ app_data_dir }}/pangolin/quadlets/{{ item }}"
+    dest: "/home/{{ rootless_user }}/.config/systemd/user/{{ item }}"
+    state: link
+    owner: "{{ rootless_user }}"
+    group: "{{ rootless_user }}"
+    mode: "0644"
+  with_items:
+    - pangolin_traefik_http.socket
+    - pangolin_traefik_https.socket
   tags: pangolin
 
 - name: Check periphery SELinux policy installed

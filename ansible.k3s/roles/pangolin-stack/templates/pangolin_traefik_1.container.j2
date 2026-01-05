@@ -1,7 +1,7 @@
 [Unit]
 Description=Traefik Reverse Proxy
-After=pangolin_app_1.service pangolin_gerbil_1.service network.target
-Requires=pangolin_app_1.service pangolin_gerbil_1.service
+After=pangolin_app_1.service pangolin_gerbil_1.service network.target pangolin_traefik_http.socket pangolin_traefik_https.socket
+Requires=pangolin_app_1.service pangolin_gerbil_1.service pangolin_traefik_http.socket pangolin_traefik_https.socket
 
 [Container]
 Pod=pangolin_proxy_1.pod
@@ -14,6 +14,7 @@ Mount=type=bind,src={{ app_data_dir }}/pangolin/data/config/traefik/logs,dst=/va
 SecurityLabelType=pangolin_traefik_1.process
 
 [Service]
+Sockets=pangolin_traefik_http.socket pangolin_traefik_https.socket
 Restart=always
 
 [Install]
