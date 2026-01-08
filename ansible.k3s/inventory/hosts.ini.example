@@ -11,12 +11,6 @@ k3s-longhorn-02 ansible_host=192.168.1.62
 [synology_servers]
 k3s-server-03 ansible_host=192.168.1.53
 
-[pangolin_hosts]
-pangolin01 ansible_host=100.100.100.100
-
-[hetzner:children]
-pangolin_hosts
-
 [proxmox:children]
 proxmox_servers
 proxmox_agents

@@ -1,6 +1,12 @@
 [container_hosts]
 host01 ansible_host=192.168.1.10
 
+[pangolin_hosts]
+pangolin01 ansible_host=100.100.100.100
+
+[hetzner:children]
+pangolin_hosts
+
 [container_hosts:vars]
 ansible_user=myuser
 rootless_user=rootless
