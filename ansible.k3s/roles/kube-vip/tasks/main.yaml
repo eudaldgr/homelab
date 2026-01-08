@@ -31,7 +31,7 @@
 
     - name: Update kubeconfig locally
       ansible.builtin.replace:
-        path: "{{ lookup('env', 'HOME') }}/.kube/config-k3s"
+        path: "{{ lookup('env', 'HOME') }}/.kube/k3s-homelab.conf"
         regexp: "{{ hostvars[groups['servers'][0]]['ansible_host'] }}:6443"
         replace: "{{ cluster_endpoint }}:6443"
       run_once: true

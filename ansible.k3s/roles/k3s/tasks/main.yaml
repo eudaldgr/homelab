@@ -116,14 +116,14 @@
 - name: Fetch kubeconfig file
   ansible.builtin.fetch:
     src: /etc/rancher/k3s/k3s.yaml
-    dest: "{{ lookup('env', 'HOME') }}/.kube/config-k3s"
+    dest: "{{ lookup('env', 'HOME') }}/.kube/k3s-homelab.conf"
     flat: true
   when: inventory_hostname == groups['servers'][0]
   tags: k3s
 
 - name: Update kubeconfig locally
   ansible.builtin.replace:
-    path: "{{ lookup('env', 'HOME') }}/.kube/config-k3s"
+    path: "{{ lookup('env', 'HOME') }}/.kube/k3s-homelab.conf"
     regexp: "127.0.0.1:6443"
     replace: "{{ hostvars[groups['servers'][0]]['ansible_host'] }}:6443"
   run_once: true
