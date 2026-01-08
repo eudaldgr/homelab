@@ -12,19 +12,11 @@
 - name: Install / upgrade ArgoCD via Helm
   kubernetes.core.helm:
     name: argocd
-    namespace: argocd
-    chart_repo_url: https://argoproj.github.io/argo-helm
     chart_ref: argo-cd
-    chart_version: "9.1.0"
-    values:
-      configs:
-        cm:
-          kustomize.buildOptions: "--enable-helm"
-        params:
-          server.insecure: true
-      server:
-        service:
-          type: LoadBalancer
+    namespace: argocd
+    chart_repo_url: "{{ argocd_repo_url }}"
+    chart_version: "{{ argocd_version }}"
+    values: "{{ argocd_values }}"
   tags: argocd
 
 - name: Wait for ArgoCD server to be available

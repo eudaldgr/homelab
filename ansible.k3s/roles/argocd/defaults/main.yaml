@@ -1,0 +1,12 @@
+---
+argocd_repo_url: https://argoproj.github.io/argo-helm
+argocd_version: 9.2.4
+argocd_values:
+  configs:
+    cm:
+      kustomize.buildOptions: "--enable-helm"
+    params:
+      server.insecure: true
+  server:
+    service:
+      type: LoadBalancer
