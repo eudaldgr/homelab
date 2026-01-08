@@ -1,0 +1,51 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: system
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: system
+    app.kubernetes.io/managed-by: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-100"
+spec:
+  generators:
+    - git:
+        repoURL: &repoURL https://github.com/eudaldgr/homelab
+        revision: &revision main
+        directories:
+          - path: k8s/system/*/overlays/prod
+  template:
+    metadata:
+      name: '{{ path[1] }}'
+      namespace: argocd
+      labels:
+        app.kubernetes.io/component: 'static-system'
+        app.kubernetes.io/part-of: system
+      annotations:
+        argocd.argoproj.io/sync-wave: "-100"
+    spec:
+      project: system
+      source:
+        repoURL: *repoURL
+        targetRevision: *revision
+        path: '{{ path }}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: kube-system
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        retry:
+          limit: 10
+          backoff:
+            duration: 1m
+            factor: 2
+            maxDuration: 16m
+        syncOptions:
+          - CreateNamespace=true
+          - ApplyOutOfSyncOnly=true
+          - ServerSideApply=true
+          - PruneLast=true
+          - RespectIgnoreDifferences=true
