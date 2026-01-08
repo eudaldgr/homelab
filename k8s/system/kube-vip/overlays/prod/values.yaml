@@ -1,0 +1,35 @@
+config:
+  address: "10.1.20.50"
+
+env:
+  vip_arp: "true"
+  cp_enable: "true"
+  vip_leaderelection: "true"
+  lb_enable: "true"
+  svc_enable: "false"
+
+hostAliases:
+  - ip: "127.0.0.1"
+    hostnames:
+      - kubernetes
+
+securityContext:
+  capabilities:
+    add:
+      - NET_ADMIN
+      - NET_RAW
+    drop:
+      - ALL
+
+volumes:
+  - hostPath:
+      path: /etc/rancher/k3s/k3s.yaml
+      type: File
+    name: kubeconfig
+
+volumeMounts:
+  - mountPath: /etc/kubernetes/admin.conf
+    name: kubeconfig
+
+nodeSelector:
+  node-role.kubernetes.io/control-plane: "true"
