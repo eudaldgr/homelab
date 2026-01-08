@@ -152,21 +152,10 @@
   when: inventory_hostname == groups['servers'][0]
   tags: k3s
   block:
-    - name: Label agents without longhorns nodes # noqa: no-changed-when
+    - name: Label agents nodes # noqa: no-changed-when
       ansible.builtin.shell: |
         kubectl label node {{ item }} node-role.kubernetes.io/worker=true --overwrite
-      loop: "{{ groups['agents'] | difference(groups['longhorns']) }}"
-
-    - name: Label longhorn nodes # noqa: no-changed-when
-      ansible.builtin.shell: |
-        kubectl label node {{ item }} node-role.kubernetes.io/storage=true --overwrite
-        kubectl label node {{ item }} node.longhorn.io/create-default-disk=true --overwrite
-      loop: "{{ groups['longhorns'] }}"
-
-    - name: Taint longhorn nodes # noqa: no-changed-when
-      ansible.builtin.shell: |
-        kubectl taint node {{ item }} node-role.kubernetes.io/storage=:NoSchedule --overwrite
-      loop: "{{ groups['longhorns'] }}"
+      loop: "{{ groups['agents'] }}"
 
 - name: Include intel gpu selinux tasks
   ansible.builtin.import_tasks:
@@ -177,3 +166,11 @@
   tags:
     - selinux
     - intel_gpu
+
+- name: Include longhorn tasks
+  ansible.builtin.import_tasks:
+    file: longhorn.yaml
+  when:
+    - hostvars[inventory_hostname].longhorn is defined
+    - hostvars[inventory_hostname].longhorn | bool
+  tags: longhorn

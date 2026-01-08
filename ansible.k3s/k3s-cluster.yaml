@@ -1,11 +1,4 @@
 ---
-- name: Prepare Longhorn storage nodes
-  hosts: longhorns
-  gather_facts: false
-  become: true
-  roles:
-    - longhorn
-
 - name: Prepare k3s cluster
   hosts: cluster
   gather_facts: false

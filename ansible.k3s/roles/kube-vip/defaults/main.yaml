@@ -1,5 +1,6 @@
+---
 kube_vip_repo_url: https://kube-vip.github.io/helm-charts # noqa: var-naming[no-role-prefix]
-kube_vip_version: 0.6.4 # noqa: var-naming[no-role-prefix]
+kube_vip_version: 0.9.5 # noqa: var-naming[no-role-prefix]
 kube_vip_namespace: kube-system # noqa: var-naming[no-role-prefix]
 kube_vip_values: # noqa: var-naming[no-role-prefix]
   config:

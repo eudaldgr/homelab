@@ -3,10 +3,8 @@ k3s-server-01 ansible_host=192.168.1.11
 k3s-server-02 ansible_host=192.168.1.12
 
 [proxmox_agents]
-k3s-agent-01 ansible_host=192.168.1.71 gpu=true
-k3s-agent-02 ansible_host=192.168.1.72 gpu=false
-k3s-longhorn-01 ansible_host=192.168.1.61
-k3s-longhorn-02 ansible_host=192.168.1.62
+k3s-agent-01 ansible_host=192.168.1.71 gpu=true longhorn=false
+k3s-agent-02 ansible_host=192.168.1.72 gpu=false longhorn=true
 
 [synology_servers]
 k3s-server-03 ansible_host=192.168.1.53
@@ -25,12 +23,6 @@ synology_servers
 [agents]
 k3s-agent-01
 k3s-agent-02
-k3s-longhorn-01
-k3s-longhorn-02
-
-[longhorns]
-k3s-longhorn-01
-k3s-longhorn-02
 
 [cluster:children]
 servers
