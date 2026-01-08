@@ -17,7 +17,7 @@ spec:
           - path: k8s/system/*/overlays/prod
   template:
     metadata:
-      name: '{{ path[1] }}'
+      name: '{{ path[2] }}'
       namespace: argocd
       labels:
         app.kubernetes.io/component: 'static-system'
