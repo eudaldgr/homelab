@@ -9,14 +9,35 @@
   until: argocd_namespace is succeeded
   tags: argocd
 
+# - name: Install / upgrade ArgoCD via Helm
+#   kubernetes.core.helm:
+#     name: argocd
+#     chart_ref: argo-cd
+#     namespace: argocd
+#     chart_repo_url: "{{ argocd_repo_url }}"
+#     chart_version: "{{ argocd_version }}"
+#     values: "{{ argocd_values }}"
+#   tags: argocd
+
+- name: Create temporary ArgoCD values file
+  ansible.builtin.copy:
+    content: "{{ argocd_values | to_nice_yaml }}"
+    dest: /tmp/argocd-values.yaml
+    owner: root
+    group: root
+    mode: "0644"
+  tags: argocd
+
 - name: Install / upgrade ArgoCD via Helm
-  kubernetes.core.helm:
-    name: argocd
-    chart_ref: argo-cd
-    namespace: argocd
-    chart_repo_url: "{{ argocd_repo_url }}"
-    chart_version: "{{ argocd_version }}"
-    values: "{{ argocd_values }}"
+  ansible.builtin.command:
+    cmd: >
+      helm upgrade --install argocd argo-cd
+      --repo {{ argocd_repo_url }}
+      --version {{ argocd_version }}
+      --namespace argocd
+      --values /tmp/argocd-values.yaml
+      --kubeconfig {{ kubeconfig_path }}
+  changed_when: true
   tags: argocd
 
 - name: Wait for ArgoCD server to be available

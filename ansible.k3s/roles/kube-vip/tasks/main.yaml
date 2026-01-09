@@ -3,14 +3,35 @@
   when: groups['servers'] | length > 1
   tags: kube-vip
   block:
+    # - name: Install / upgrade kube-vip via Helm
+    #   kubernetes.core.helm:
+    #     name: kube-vip
+    #     chart_ref: kube-vip
+    #     namespace: "{{ kube_vip_namespace }}"
+    #     chart_repo_url: "{{ kube_vip_repo_url }}"
+    #     chart_version: "{{ kube_vip_version }}"
+    #     values: "{{ kube_vip_values }}"
+    #   when: inventory_hostname == groups['servers'][0]
+
+    - name: Create temporary kube-vip values file
+      ansible.builtin.copy:
+        content: "{{ kube_vip_values | to_nice_yaml }}"
+        dest: /tmp/kube-vip-values.yaml
+        owner: root
+        group: root
+        mode: "0644"
+      when: inventory_hostname == groups['servers'][0]
+
     - name: Install / upgrade kube-vip via Helm
-      kubernetes.core.helm:
-        name: kube-vip
-        chart_ref: kube-vip
-        namespace: "{{ kube_vip_namespace }}"
-        chart_repo_url: "{{ kube_vip_repo_url }}"
-        chart_version: "{{ kube_vip_version }}"
-        values: "{{ kube_vip_values }}"
+      ansible.builtin.command:
+        cmd: >
+          helm upgrade --install kube-vip kube-vip
+          --repo {{ kube_vip_repo_url }}
+          --version {{ kube_vip_version }}
+          --namespace {{ kube_vip_namespace }}
+          --values /tmp/kube-vip-values.yaml
+          --kubeconfig {{ kubeconfig_path }}
+      changed_when: true
       when: inventory_hostname == groups['servers'][0]
 
     - name: Replace k3s config ip for cluster_endpoint

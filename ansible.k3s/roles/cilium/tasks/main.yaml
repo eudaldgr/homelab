@@ -31,14 +31,33 @@
   when: inventory_hostname == groups['servers'][0]
   tags: cilium
   block:
+    # - name: Install helm chart
+    #   kubernetes.core.helm:
+    #     name: cilium
+    #     chart_ref: cilium
+    #     chart_repo_url: "{{ cilium_repo_url }}"
+    #     chart_version: "{{ cilium_version }}"
+    #     release_namespace: "{{ cilium_namespace }}"
+    #     values: "{{ cilium_values }}"
+
+    - name: Create temporary Cilium values file
+      ansible.builtin.copy:
+        content: "{{ cilium_values | to_nice_yaml }}"
+        dest: /tmp/cilium-values.yaml
+        owner: root
+        group: root
+        mode: "0644"
+
     - name: Install helm chart
-      kubernetes.core.helm:
-        name: cilium
-        chart_ref: cilium
-        chart_repo_url: "{{ cilium_repo_url }}"
-        chart_version: "{{ cilium_version }}"
-        release_namespace: "{{ cilium_namespace }}"
-        values: "{{ cilium_values }}"
+      ansible.builtin.command:
+        cmd: >
+          helm upgrade --install cilium cilium
+          --repo {{ cilium_repo_url }}
+          --version {{ cilium_version }}
+          --namespace {{ cilium_namespace }}
+          --values /tmp/cilium-values.yaml
+          --kubeconfig {{ kubeconfig_path }}
+      changed_when: true
 
     - name: Wait for Cilium CRDs # noqa: var-naming
       kubernetes.core.k8s_info:
