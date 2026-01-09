@@ -4,5 +4,4 @@ collections:
   - name: ansible.utils
   - name: community.general
   - name: community.kubernetes
-  - name: containers.podman
   - name: kubernetes.core
