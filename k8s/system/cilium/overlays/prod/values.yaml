@@ -42,6 +42,7 @@ operator:
 rollOutCiliumPods: true
 agent: true
 agentConfig:
+  tolerations: []
   resources:
     requests:
       cpu: 500m
