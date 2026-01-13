@@ -1,0 +1,79 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: internal
+  namespace: gateway
+spec:
+  gatewayClassName: cilium
+  infrastructure:
+    annotations:
+      io.cilium/lb-ipam-ips: 10.1.20.112
+  listeners:
+    - protocol: HTTPS
+      port: 443
+      name: https-gateway
+      hostname: "*.home.eudald.gr"
+      tls:
+        certificateRefs:
+          - kind: Secret
+            name: cert-eudald
+      allowedRoutes:
+        namespaces:
+          from: All
+    - protocol: HTTPS
+      port: 443
+      name: https-domain-gateway
+      hostname: home.eudald.gr
+      tls:
+        certificateRefs:
+          - kind: Secret
+            name: cert-eudald
+    - protocol: TCP
+      port: 29811
+      name: omada-mgr-v1
+      allowedRoutes:
+        namespaces:
+          from: All
+    - protocol: TCP
+      port: 29812
+      name: omada-adopt-v1
+      allowedRoutes:
+        namespaces:
+          from: All
+    - protocol: TCP
+      port: 29813
+      name: omada-upgrade-v1
+      allowedRoutes:
+        namespaces:
+          from: All
+    - protocol: TCP
+      port: 29814
+      name: omada-mgr-v2
+      allowedRoutes:
+        namespaces:
+          from: All
+    - protocol: TCP
+      port: 29815
+      name: omada-transfer-v2
+      allowedRoutes:
+        namespaces:
+          from: All
+    - protocol: TCP
+      port: 29816
+      name: omada-rtty
+      allowedRoutes:
+        namespaces:
+          from: All
+    # Add UDP listeners for Omada discovery
+    - protocol: UDP
+      port: 29810
+      name: omada-discovery
+      allowedRoutes:
+        namespaces:
+          from: All
+    - protocol: UDP
+      port: 27001
+      name: omada-app-discovery
+      allowedRoutes:
+        namespaces:
+          from: All
