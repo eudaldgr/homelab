@@ -15,5 +15,7 @@ spec:
           peerAddress: 10.1.20.1/32
           peerPort: 179
       serviceSelector:
+        serviceAdvertisements:
+          - LoadBalancerIP
         matchExpressions:
           - { key: somekey, operator: NotIn, values: ["never-used-value"] }
