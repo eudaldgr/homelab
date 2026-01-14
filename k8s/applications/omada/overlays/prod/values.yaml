@@ -1,0 +1,59 @@
+image:
+  pullPolicy: IfNotPresent
+
+config:
+  rootless: true
+  timezone: Europe/Madrid
+  showServerLogs: true
+  showMongoDBLogs: false
+
+service:
+  type: LoadBalancer
+  annotations:
+    io.cilium/lb-ipam-ips: "10.1.20.120"
+
+persistence:
+  data:
+    enabled: true
+    storageClassName: longhorn
+    size: 1Gi
+  logs:
+    enabled: true
+    storageClassName: longhorn
+    size: 1Gi
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 512Mi
+  limits:
+    cpu: 750m
+    memory: 2Gi
+
+startupProbe:
+  httpGet:
+    path: /login
+    port: manage-https
+    scheme: HTTPS
+  failureThreshold: 60
+  periodSeconds: 30
+
+readinessProbe:
+  httpGet:
+    path: /login
+    port: manage-https
+    scheme: HTTPS
+  initialDelaySeconds: 60
+  periodSeconds: 15
+  timeoutSeconds: 10
+  failureThreshold: 3
+
+livenessProbe:
+  httpGet:
+    path: /login
+    port: manage-https
+    scheme: HTTPS
+  initialDelaySeconds: 120
+  periodSeconds: 15
+  timeoutSeconds: 10
+  failureThreshold: 3
