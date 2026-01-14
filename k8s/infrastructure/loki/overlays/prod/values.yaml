@@ -4,6 +4,8 @@ loki:
   limits_config:
     retention_period: 720h
   compactor:
+    working_directory: /var/loki/compactor
+    delete_request_store: filesystem
     retention_enabled: true
   auth_enabled: false
   commonConfig:
