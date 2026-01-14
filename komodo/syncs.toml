@@ -1,0 +1,21 @@
+[[resource_sync]]
+name = "main"
+
+[resource_sync.config]
+git_provider = "github.com"
+git_account = "eudaldgr"
+repo = "eudaldgr/homelab"
+
+resource_path = [
+  "komodo/repos.toml",
+  "komodo/servers.toml",
+  "komodo/syncs.toml",
+  
+  # host01 specific
+  "compose/host01/prod/arrstack/stack.toml",
+  "compose/host01/prod/bentopdf/stack.toml",
+  "compose/host01/prod/newt/stack.toml",
+  "compose/host01/prod/searxng/stack.toml",
+  "compose/host01/prod/speedtest/stack.toml",
+  "compose/host01/prod/vaultwarden/stack.toml",
+]
