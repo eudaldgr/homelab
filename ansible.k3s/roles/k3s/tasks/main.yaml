@@ -157,12 +157,17 @@
         kubectl label node {{ item }} node-role.kubernetes.io/worker=true --overwrite
       loop: "{{ groups['agents'] }}"
 
+    - name: Label longhorn nodes # noqa: no-changed-when
+      ansible.builtin.shell: |
+        kubectl label node {{ item }} node-role.kubernetes.io/storage=true --overwrite
+        kubectl label node {{ item }} node.longhorn.io/create-default-disk=true --overwrite
+      loop: "{{ groups['agents'] }}"
+      when: hostvars[item].longhorn | default(false) | bool
+
 - name: Include intel gpu selinux tasks
   ansible.builtin.import_tasks:
     file: intel_gpu_selinux.yaml
-  when:
-    - hostvars[inventory_hostname].gpu is defined
-    - hostvars[inventory_hostname].gpu | bool
+  when: hostvars[inventory_hostname].gpu | default(false) | bool
   tags:
     - selinux
     - intel_gpu
@@ -170,7 +175,5 @@
 - name: Include longhorn tasks
   ansible.builtin.import_tasks:
     file: longhorn.yaml
-  when:
-    - hostvars[inventory_hostname].longhorn is defined
-    - hostvars[inventory_hostname].longhorn | bool
+  when: hostvars[inventory_hostname].longhorn | default(false) | bool
   tags: longhorn
