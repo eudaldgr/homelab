@@ -36,7 +36,7 @@
 #   failed_when: false
 #   tags: services
 
-- name: Check if /dev/sdb exists
+- name: Check if /dev/sdb exists # noqa: var-naming
   ansible.builtin.stat:
     path: /dev/sdb
   register: longhorn_sdb_device
@@ -48,14 +48,14 @@
   when: not longhorn_sdb_device.stat.exists
   tags: longhorn
 
-- name: Check if /dev/sdb has a filesystem
+- name: Check if /dev/sdb has a filesystem # noqa: var-naming
   ansible.builtin.command: blkid -o value -s TYPE /dev/sdb
   register: longhorn_sdb_filesystem
   failed_when: false
   changed_when: false
   tags: longhorn
 
-- name: Check if /dev/sdb is mounted
+- name: Check if /dev/sdb is mounted # noqa: var-naming
   ansible.builtin.command: findmnt -n -o TARGET /dev/sdb
   register: longhorn_sdb_mount
   failed_when: false
