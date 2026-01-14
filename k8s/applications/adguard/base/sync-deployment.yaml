@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adguard-sync
+  namespace: adguard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: adguard-sync
+  template:
+    metadata:
+      labels:
+        app: adguard-sync
+    spec:
+      containers:
+        - name: adguard-sync
+          image: ghcr.io/bakito/adguardhome-sync:alpine-v0.8.2@sha256:4a7f4195b15c923f0a9338220d693665162aeea3b8d8a85709c84669382629c5
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
+          env:
+            - name: CRON
+              value: "*/5 * * * *"
+            - name: RUN_ON_START
+              value: "true"
+            - name: ORIGIN_URL
+              valueFrom:
+                secretKeyRef:
+                  name: adguard-sync-secret
+                  key: origin-url
+            - name: ORIGIN_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: adguard-sync-secret
+                  key: origin-username
+            - name: ORIGIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: adguard-sync-secret
+                  key: origin-password
+            - name: REPLICA1_URL
+              valueFrom:
+                secretKeyRef:
+                  name: adguard-sync-secret
+                  key: replica1-url
+            - name: REPLICA1_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: adguard-sync-secret
+                  key: replica1-username
+            - name: REPLICA1_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: adguard-sync-secret
+                  key: replica1-password

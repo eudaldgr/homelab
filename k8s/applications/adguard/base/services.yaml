@@ -1,0 +1,82 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: adguard-headless
+  namespace: adguard
+spec:
+  clusterIP: None
+  selector:
+    app: adguard-home
+  ports:
+    - port: 53
+      name: dns-tcp
+      protocol: TCP
+    - port: 53
+      name: dns-udp
+      protocol: UDP
+    - port: 80
+      name: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: adguard-dns
+  namespace: adguard
+  annotations:
+    io.cilium/lb-ipam-ips: "10.1.20.153"
+spec:
+  externalTrafficPolicy: Local
+  type: LoadBalancer
+  selector:
+    app: adguard-home
+  ports:
+    - port: 53
+      targetPort: 53
+      protocol: UDP
+      name: dns-udp
+    - port: 53
+      targetPort: 53
+      protocol: TCP
+      name: dns-tcp
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: adguard-home-0
+  namespace: adguard
+  annotations:
+    io.cilium/lb-ipam-ips: "10.1.20.150"
+spec:
+  type: LoadBalancer
+  selector:
+    statefulset.kubernetes.io/pod-name: adguard-home-0
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+      name: http
+    - port: 3000
+      targetPort: 3000
+      protocol: TCP
+      name: http-initial
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: adguard-home-1
+  namespace: adguard
+  annotations:
+    io.cilium/lb-ipam-ips: "10.1.20.151"
+spec:
+  type: LoadBalancer
+  selector:
+    statefulset.kubernetes.io/pod-name: adguard-home-1
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+      name: http
+    - port: 3000
+      targetPort: 3000
+      protocol: TCP
+      name: http-initial
