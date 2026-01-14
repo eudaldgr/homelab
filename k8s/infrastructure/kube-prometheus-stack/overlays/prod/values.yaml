@@ -2,7 +2,7 @@ grafana:
   additionalDataSources:
     - name: Loki
       type: loki
-      url: http://loki.loki:3100
+      url: http://loki.monitoring:3100
   resources:
     requests:
       cpu: 200m

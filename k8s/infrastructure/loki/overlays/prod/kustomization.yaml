@@ -4,7 +4,7 @@ kind: Kustomization
 helmCharts:
 - name: loki
   repo: https://grafana.github.io/helm-charts
-  version: 3.6.3
+  version: 6.49.0
   releaseName: loki
   namespace: monitoring
   valuesFile: values.yaml
