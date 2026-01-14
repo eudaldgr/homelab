@@ -164,6 +164,23 @@
       loop: "{{ groups['agents'] }}"
       when: hostvars[item].longhorn | default(false) | bool
 
+- name: Apply extra manifests
+  when:
+    - inventory_hostname == groups['servers'][0]
+    - extra_manifests is defined
+    - extra_manifests | length > 0
+  tags: extra_manifests
+  block:
+    - name: Wait for cluster to be ready
+      ansible.builtin.command: kubectl wait --for=condition=Ready nodes --all --timeout=120s
+      changed_when: false
+
+    - name: Apply extra manifests from URLs # noqa: var-naming
+      ansible.builtin.command: kubectl apply -f {{ item }}
+      loop: "{{ extra_manifests }}"
+      register: manifest_result
+      changed_when: "'created' in manifest_result.stdout or 'configured' in manifest_result.stdout"
+
 - name: Include intel gpu selinux tasks
   ansible.builtin.import_tasks:
     file: intel_gpu_selinux.yaml
