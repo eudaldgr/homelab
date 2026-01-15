@@ -44,4 +44,7 @@ sources:
   - ingress
   - gateway-httproute
 
+# Exclude resources with annotation external-dns.alpha.kubernetes.io/exclude=true
+annotationFilter: "external-dns.alpha.kubernetes.io/exclude notin (true)"
+
 policy: sync # syncs DNS records with the sources (create, update, delete)
