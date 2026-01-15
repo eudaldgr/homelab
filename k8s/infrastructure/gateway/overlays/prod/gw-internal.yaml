@@ -28,6 +28,13 @@ spec:
         certificateRefs:
           - kind: Secret
             name: cert-eudald
+    - protocol: HTTP
+      port: 80
+      name: http-gateway
+      hostname: "*.home.eudald.gr"
+      allowedRoutes:
+        namespaces:
+          from: All
     - protocol: TCP
       port: 29811
       name: omada-mgr-v1
