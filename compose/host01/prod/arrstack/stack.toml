@@ -1,0 +1,15 @@
+[[stack]]
+name = "arrstack-host01"
+description = "Stack Arrstack"
+deploy = true
+tags = ["host01", "prod"]
+
+[stack.config]
+server_id = "host01"
+linked_repo = "homelab-host01"
+run_directory = "compose/host01/prod/arrstack"
+auto_pull = true
+send_alerts = true
+
+compose_cmd_wrapper = """
+sops exec-env compose.env '[[COMPOSE_COMMAND]]'"""

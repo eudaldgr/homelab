@@ -1,0 +1,66 @@
+---
+services:
+  app:
+    image: docker.io/vaultwarden/server:1.34.3@sha256:84fd8a47f58d79a1ad824c27be0a9492750c0fa5216b35c749863093bfa3c3d7
+    container_name: vaultwarden_app_1
+    environment:
+      - SIGNUPS_ALLOWED=false
+      - ADMIN_TOKEN=${VAULTWARDEN_ADMIN_TOKEN}
+      - ROCKET_PROFILE=release
+      - ROCKET_ADDRESS=0.0.0.0
+      - ROCKET_PORT=8000
+    volumes:
+      - ${APP_DATA_DIR}/vaultwarden/data:/data
+    ports:
+      - 3012:3012
+      - 8122:8000
+    labels:
+      # Public Resource Configuration
+      - pangolin.proxy-resources.vaultwarden.name=vaultwarden
+      - pangolin.proxy-resources.vaultwarden.full-domain=${VAULTWARDEN_HOSTNAME}
+      - pangolin.proxy-resources.vaultwarden.protocol=http
+      # Auth: protect /admin via SSO, leave other paths open
+      - pangolin.proxy-resources.vaultwarden.auth.sso-enabled=true
+      - pangolin.proxy-resources.vaultwarden.rules[0].action=pass
+      - pangolin.proxy-resources.vaultwarden.rules[0].match=path
+      - pangolin.proxy-resources.vaultwarden.rules[0].value=/admin/*
+
+      - pangolin.proxy-resources.vaultwarden.rules[1].action=allow
+      - pangolin.proxy-resources.vaultwarden.rules[1].match=path
+      - pangolin.proxy-resources.vaultwarden.rules[1].value=/api/*
+
+      - pangolin.proxy-resources.vaultwarden.rules[2].action=allow
+      - pangolin.proxy-resources.vaultwarden.rules[2].match=path
+      - pangolin.proxy-resources.vaultwarden.rules[2].value=/identity/*
+
+      - pangolin.proxy-resources.vaultwarden.rules[3].action=allow
+      - pangolin.proxy-resources.vaultwarden.rules[3].match=path
+      - pangolin.proxy-resources.vaultwarden.rules[3].value=/wl/*
+
+      - pangolin.proxy-resources.vaultwarden.rules[4].action=allow
+      - pangolin.proxy-resources.vaultwarden.rules[4].match=path
+      - pangolin.proxy-resources.vaultwarden.rules[4].value=/*
+      # Target Configuration - Override to Host Hairpin
+      - pangolin.proxy-resources.vaultwarden.targets[0].method=http
+      - pangolin.proxy-resources.vaultwarden.targets[0].hostname=host.containers.internal
+      - pangolin.proxy-resources.vaultwarden.targets[0].port=8122
+      # Health Check Configuration
+      - pangolin.proxy-resources.vaultwarden.targets[0].healthcheck.enabled=true
+      - pangolin.proxy-resources.vaultwarden.targets[0].healthcheck.hostname=host.containers.internal
+      - pangolin.proxy-resources.vaultwarden.targets[0].healthcheck.port=8122
+      - pangolin.proxy-resources.vaultwarden.targets[0].healthcheck.path=/alive
+    restart: unless-stopped
+
+  backup:
+    image: docker.io/alpine/sqlite:3.49.2@sha256:519bc9c493ffd696d3861a9b0118dc8938161f155b1dba623d334c271a7f92ac
+    container_name: vaultwarden_backup_1
+    mem_limit: 512m
+    volumes:
+      - ${APP_DATA_DIR}/vaultwarden/data:/data:ro
+      - ${APP_DATA_DIR}/vaultwarden/backup:/backup
+      - ${APP_DATA_DIR}/vaultwarden/backup.sh:/backup.sh:ro
+    entrypoint: ["/bin/sh", "/backup.sh"]
+    environment:
+      - MAX_BACKUPS=128
+      - SLEEP_SECONDS=43200 # 43200 seconds equals to 12h
+    restart: unless-stopped
