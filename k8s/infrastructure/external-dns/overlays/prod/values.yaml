@@ -43,6 +43,7 @@ sources:
   - service
   - ingress
   - gateway-httproute
+  - gateway-tlsroute
 
 # Exclude resources with annotation external-dns.alpha.kubernetes.io/exclude=true
 annotationFilter: "external-dns.alpha.kubernetes.io/exclude notin (true)"

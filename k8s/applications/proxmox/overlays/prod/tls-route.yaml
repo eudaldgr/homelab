@@ -8,7 +8,7 @@ spec:
     - name: tls-passthrough
       namespace: gateway
   hostnames:
-    - "pve01.eudald.gr"
+    - "pve01.home.eudald.gr"
   rules:
     - backendRefs:
         - name: proxmox-pve01
@@ -24,7 +24,7 @@ spec:
     - name: tls-passthrough
       namespace: gateway
   hostnames:
-    - "pve02.eudald.gr"
+    - "pve02.home.eudald.gr"
   rules:
     - backendRefs:
         - name: proxmox-pve02
