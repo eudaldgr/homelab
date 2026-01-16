@@ -12,7 +12,7 @@ spec:
     - protocol: TLS
       port: 443
       name: pve01
-      hostname: "pve01.eudald.gr"
+      hostname: "pve01.home.eudald.gr"
       tls:
         mode: Passthrough
       allowedRoutes:
@@ -21,7 +21,7 @@ spec:
     - protocol: TLS
       port: 443
       name: pve02
-      hostname: "pve02.eudald.gr"
+      hostname: "pve02.home.eudald.gr"
       tls:
         mode: Passthrough
       allowedRoutes:
