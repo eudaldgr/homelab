@@ -30,7 +30,7 @@ spec:
     - protocol: TLS
       port: 443
       name: synology
-      hostname: "ds920plus.eudald.gr"
+      hostname: "ds920plus.home.eudald.gr"
       tls:
         mode: Passthrough
       allowedRoutes:
@@ -39,7 +39,7 @@ spec:
     - protocol: TLS
       port: 443
       name: omada
-      hostname: "omada.eudald.gr"
+      hostname: "omada.home.eudald.gr"
       tls:
         mode: Passthrough
       allowedRoutes:

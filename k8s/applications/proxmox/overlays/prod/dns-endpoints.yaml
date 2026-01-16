@@ -1,0 +1,17 @@
+apiVersion: externaldns.k8s.io/v1alpha1
+kind: DNSEndpoint
+metadata:
+  name: proxmox-endpoints
+  namespace: proxmox
+spec:
+  endpoints:
+    - dnsName: pve01.home.eudald.gr
+      recordType: A
+      recordTTL: 300
+      targets:
+        - 10.1.20.113
+    - dnsName: pve02.home.eudald.gr
+      recordType: A
+      recordTTL: 300
+      targets:
+        - 10.1.20.113

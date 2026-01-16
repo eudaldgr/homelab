@@ -5,4 +5,4 @@ resources:
   - ../../base
   - svc.yaml
   - endpoint-slice.yaml
-  - tls-route.yaml
+  - dns-endpoints.yaml
