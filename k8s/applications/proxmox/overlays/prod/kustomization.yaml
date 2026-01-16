@@ -3,6 +3,7 @@ kind: Kustomization
 
 resources:
   - ../../base
-  - svc.yaml
-  - endpoint-slice.yaml
   - dns-endpoints.yaml
+  - endpoint-slice.yaml
+  - svc.yaml
+  - tls-route.yaml
