@@ -117,17 +117,17 @@ resource "proxmox_vm_qemu" "k3s-agent-01" {
   pcis {
     pci0 {
       mapping {
-        mapping_id  = "iGPU"
+        mapping_id  = "SSD"
         pcie        = true
-        primary_gpu = true
+        primary_gpu = false
         rombar      = true
       }
     }
     pci1 {
       mapping {
-        mapping_id  = "SSD"
+        mapping_id  = "iGPU"
         pcie        = true
-        primary_gpu = false
+        primary_gpu = true
         rombar      = true
       }
     }
