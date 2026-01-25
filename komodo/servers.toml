@@ -1,13 +1,6 @@
 [[server]]
-name = "host01"
-
-[server.config]
-address = "https://host.containers.internal:8120"
-enabled = true
-
-[[server]]
 name = "ds920plus"
 
 [server.config]
-address = "https://10.1.30.50:8120"
+address = "https://komodo_periphery_1:8120"
 enabled = true

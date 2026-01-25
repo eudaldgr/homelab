@@ -11,11 +11,6 @@ resource_path = [
   "komodo/servers.toml",
   "komodo/syncs.toml",
   
-  # host01 specific
-  "compose/host01/prod/arrstack/stack.toml",
-  "compose/host01/prod/bentopdf/stack.toml",
-  "compose/host01/prod/newt/stack.toml",
-  "compose/host01/prod/searxng/stack.toml",
-  "compose/host01/prod/speedtest/stack.toml",
-  "compose/host01/prod/vaultwarden/stack.toml",
+  # ds920plus specific
+  "compose/ds920plus/prod/adguard/stack.toml",
 ]
