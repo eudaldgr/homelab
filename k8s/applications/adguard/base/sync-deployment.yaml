@@ -59,3 +59,18 @@ spec:
                 secretKeyRef:
                   name: adguard-sync-secret
                   key: replica1-password
+            - name: REPLICA2_URL
+              valueFrom:
+                secretKeyRef:
+                  name: adguard-sync-secret
+                  key: replica2-url
+            - name: REPLICA2_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: adguard-sync-secret
+                  key: replica2-username
+            - name: REPLICA2_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: adguard-sync-secret
+                  key: replica2-password
