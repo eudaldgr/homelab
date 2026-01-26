@@ -205,8 +205,8 @@
   environment:
     XDG_RUNTIME_DIR: "/run/user/{{ rootless_uid.stdout | trim }}"
   ansible.builtin.systemd_service:
-    name: pangolin_traefik_1
-    state: started
+    name: pangolin_proxy_1-pod.service
+    state: restarted
     enabled: true
     scope: user
     daemon_reload: true
