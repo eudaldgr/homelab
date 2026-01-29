@@ -9,7 +9,6 @@ repo = "eudaldgr/homelab"
 resource_path = [
   "komodo/repos.toml",
   "komodo/servers.toml",
-  "komodo/syncs.toml",
   
   # ds920plus specific
   "compose/ds920plus/prod/adguard/stack.toml",
