@@ -30,14 +30,14 @@ build {
       os                       = "l26"
       bios                     = "ovmf"
       efi_config {
-        efi_storage_pool        = source.value.storage
+        efi_storage_pool        = source.value.local_storage
         efi_type                = "4m"
         pre_enrolled_keys      = false
       }
       machine                  = "q35"
       tpm_config {
         tpm_version            = "v2.0"
-        tpm_storage_pool       = source.value.storage
+        tpm_storage_pool       = source.value.local_storage
       }
       vga {
         type                   = "serial0"
@@ -55,7 +55,7 @@ build {
       scsi_controller          = "virtio-scsi-pci"
       template_description     = "MicroOS + k3s, generated on ${timestamp()}"
       cloud_init               = true
-      cloud_init_storage_pool  = source.value.storage
+      cloud_init_storage_pool  = source.value.local_storage
       cloud_init_disk_type     = "scsi"
       additional_iso_files {
         cd_content = {

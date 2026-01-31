@@ -4,15 +4,16 @@
 variable "proxmox_nodes" {
   description = "List of Proxmox nodes"
   type = list(object({
-    name        = string
-    host        = string
-    port        = number
-    tls         = bool
-    username    = string
-    password    = string
-    token       = string
-    storage     = string
-    iso_storage = string
+    name          = string
+    host          = string
+    port          = number
+    tls           = bool
+    username      = string
+    password      = string
+    token         = string
+    local_storage = string
+    iso_storage   = string
+    data_storage  = string
   }))
 }
 
@@ -38,15 +39,15 @@ variable "ssh_private_key_file" {
 
 # microOS variables
 variable "packages_to_install" {
-  type    = list(string)
+  type        = list(string)
   description = "List of packages to install on the MicroOS template"
-  default = []
+  default     = []
 }
 
 # alpine variables
 variable "alpine_version" {
   type    = string
-  default = "3.22.1"
+  default = "3.23.3"
 }
 
 locals {
