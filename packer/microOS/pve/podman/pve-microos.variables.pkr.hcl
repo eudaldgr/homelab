@@ -79,6 +79,8 @@ EOF
     systemctl enable transactional-update.timer
     systemctl enable iscsid
 
+    touch /etc/containers/nodocker
+    
     echo 'All done, rebooting...'
     sleep 1 && sync && reboot
   EOT
