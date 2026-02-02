@@ -1,15 +1,16 @@
 variable "proxmox_nodes" {
   description = "List of Proxmox nodes"
   type = list(object({
-    name        = string
-    host        = string
-    port        = optional(number, 8006)
-    tls         = optional(bool, false)
-    username    = optional(string, "root@pam")
-    token       = optional(string, "")
-    password    = optional(string, "")
-    storage     = optional(string, "local-zfs")
-    iso_storage = optional(string, "synology")
+    name          = string
+    host          = string
+    port          = optional(number, 8006)
+    tls           = optional(bool, false)
+    username      = optional(string, "root@pam")
+    token         = optional(string, "")
+    password      = optional(string, "")
+    local_storage = optional(string, "local-zfs")
+    iso_storage   = optional(string, "ds920plus-shared")
+    data_storage  = optional(string, "ds920plus-data")
   }))
 }
 
