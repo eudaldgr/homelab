@@ -23,7 +23,7 @@ build {
       vm_id                    = 9012
       vm_name                  = "microOS-podman"
       tags                     = "microos;podman"
-      memory                   = 4096
+      memory                   = 2048
       ballooning_minimum       = 0
       cores                    = 1
       cpu_type                 = "host"

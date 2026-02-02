@@ -21,7 +21,7 @@ build {
       vm_id                    = 9010
       vm_name                  = "microOS"
       tags                     = "microos;vanilla"
-      memory                   = 4096
+      memory                   = 2048
       ballooning_minimum       = 0
       cores                    = 1
       cpu_type                 = "host"
@@ -77,7 +77,7 @@ build {
         firewall                = true
       }
       disks {
-        disk_size              = "40G"
+        disk_size              = "24G"
         storage_pool           = source.value.local_storage
         type                   = "scsi"
         ssd                    = true
