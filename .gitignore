@@ -2,8 +2,6 @@
 *.tfstate
 *.tfstate.*
 *.tfstate.backup
-*.tfvars
-*.tfvars.json
 .terraform/
 .terraform.lock.hcl
 terraform.tfstate.d/
@@ -31,19 +29,7 @@ packer/downloaded_iso_path
 
 # Ansible
 *.retry
-.vault_pass
-vault_pass.txt
-vault-password-file
 .ansible/
-hosts.ini
-inventory.ini
-**/group_vars/vault.yml
-**/group_vars/*/vault.yml
-**/group_vars/*/vault.yml
-**/host_vars/*/vault.yml
-*.vault
-roles/*/tests/test.yml
-roles/*/tests/inventory
 .molecule/
 .cache/
 

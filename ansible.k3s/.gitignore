@@ -1,1 +1,4 @@
+.ansible_facts/
+*.ansible_facts
+ansible_facts/
 inventory/hosts.ini
