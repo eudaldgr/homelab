@@ -1,6 +1,14 @@
 [[server]]
-name = "ds920plus"
-
+name = "host01"
 [server.config]
-address = "https://komodo_periphery_1:8120"
+enabled = true
+
+[[server]]
+name = "host02"
+[server.config]
+enabled = true
+
+[[server]]
+name = "ds920plus"
+[server.config]
 enabled = true

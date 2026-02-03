@@ -7,11 +7,11 @@ git_account = "eudaldgr"
 repo = "eudaldgr/homelab"
 
 resource_path = [
-  "komodo/repos.toml",
+  # "komodo/repos.toml",
   "komodo/servers.toml",
   
   # ds920plus specific
-  "compose/ds920plus/prod/adguard/stack.toml",
-  "compose/ds920plus/prod/bitcoind-core/stack.toml",
-  "compose/ds920plus/prod/newt/stack.toml",
+  # "compose/ds920plus/prod/adguard/stack.toml",
+  # "compose/ds920plus/prod/bitcoind-core/stack.toml",
+  # "compose/ds920plus/prod/newt/stack.toml",
 ]
