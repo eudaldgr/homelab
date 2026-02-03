@@ -14,5 +14,5 @@ resource_path = [
   # ds920plus specific
   # "compose/ds920plus/prod/adguard/stack.toml",
   # "compose/ds920plus/prod/bitcoind-core/stack.toml",
-  # "compose/ds920plus/prod/newt/stack.toml",
+  "compose/ds920plus/prod/newt/stack.toml",
 ]
