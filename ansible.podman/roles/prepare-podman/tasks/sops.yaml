@@ -1,0 +1,38 @@
+---
+- name: Create age secret directory
+  ansible.builtin.file:
+    path: /root/.config/sops/age
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+
+- name: Generate age key for root user
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/age-keygen
+      - -o
+      - /root/.config/sops/age/keys.txt
+  args:
+    creates: /root/.config/sops/age/keys.txt
+
+- name: Ensure age key file permissions
+  ansible.builtin.file:
+    path: /root/.config/sops/age/keys.txt
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Catch public age key
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/age-keygen
+      - -y
+      - /root/.config/sops/age/keys.txt
+  register: age_public_key
+  changed_when: false
+  no_log: true
+
+- name: Display public age key for root user
+  ansible.builtin.debug:
+    msg: "Public age key: {{ age_public_key.stdout }}"

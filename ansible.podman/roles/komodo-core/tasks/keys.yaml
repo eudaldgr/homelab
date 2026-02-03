@@ -1,0 +1,25 @@
+---
+- name: Ensure core_keys volume exists
+  containers.podman.podman_volume:
+    name: core_keys
+    state: present
+
+- name: Get core_keys mountpoint # noqa: jinja[spacing]
+  ansible.builtin.command: "podman volume inspect core_keys --format {{'{{.Mountpoint}}'}}"
+  register: core_keys_mp_cmd
+  changed_when: false
+
+- name: Wait for core.pub
+  ansible.builtin.wait_for:
+    path: "{{ core_keys_mp_cmd.stdout }}/core.pub"
+    timeout: 120
+
+- name: Read core.pub
+  ansible.builtin.slurp:
+    src: "{{ core_keys_mp_cmd.stdout }}/core.pub"
+  register: core_pub_slurp
+
+- name: Store Komodo core public key as delegated fact (global)
+  ansible.builtin.set_fact:
+    komodo_core_public_key: "{{ core_pub_slurp.content | b64decode }}"
+    cacheable: true

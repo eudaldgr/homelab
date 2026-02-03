@@ -1,0 +1,23 @@
+[Unit]
+Description=Komodo MongoDB
+
+[Container]
+Image=docker.io/mongo:{{ komodo_mongo_version }}
+ContainerName=komodo_mongo_1
+Label=komodo.skip=
+#User={{ mongo_uid }}:{{ mongo_gid }}
+Network=komodo.network
+
+Exec=--quiet --wiredTigerCacheSizeGB 0.25
+
+Volume=mongo_config:/data/configdb
+Volume=mongo_data:/data/db
+
+Environment=MONGO_INITDB_ROOT_USERNAME=admin
+Secret=komodo_mongo_1_passwd,type=env,target=MONGO_INITDB_ROOT_PASSWORD
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

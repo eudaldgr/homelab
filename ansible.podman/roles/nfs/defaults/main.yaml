@@ -1,0 +1,3 @@
+---
+media_data_dir: /var/lib/media # noqa: var-naming
+mount_options: nofail,x-systemd.automount,x-systemd.requires=network-online.target,x-systemd.mount-timeout=10s # noqa: var-naming

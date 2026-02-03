@@ -1,0 +1,17 @@
+(block komodo_periphery_1
+    (blockinherit container)
+    (blockinherit restricted_net_container)
+
+    (allow process unreserved_port_t ( tcp_socket ( name_bind name_connect )))
+    (allow process unreserved_port_t ( udp_socket ( name_bind )))
+    
+    ;; Accés al socket rootful (/run/podman/podman.sock etiquetat container_file_t)
+    ;; /run/podman està etiquetat var_run_t
+    (allow process var_run_t ( dir ( search )))
+    (allow process var_run_t ( sock_file ( getattr open read write )))
+    (allow process container_runtime_t ( unix_stream_socket ( connectto )))
+    
+    ;; Accés al socket rootless (/tmp/podman-run-UID/podman/podman.sock etiquetat user_tmp_t)
+    ;; (allow process user_tmp_t ( sock_file ( getattr read write )))
+    ;; (allow process container_runtime_t ( unix_stream_socket ( connectto )))
+)

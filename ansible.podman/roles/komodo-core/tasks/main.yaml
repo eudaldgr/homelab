@@ -1,0 +1,110 @@
+---
+- name: Assegurar que els directoris necessaris existeixen
+  ansible.builtin.file:
+    path: "{{ dir_path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  loop:
+    - /etc/containers/systemd
+    - /etc/komodo
+  loop_control:
+    loop_var: dir_path
+  tags: podman
+
+- name: Copiar quadlet Komodo Core
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/komodo_core_1.container.j2"
+    dest: "/etc/containers/systemd/komodo_core_1.container"
+    owner: root
+    group: root
+    mode: "0644"
+  register: komodo_core_quadlet
+  tags: komodo
+
+- name: Copiar quadlet Komodo Mongo
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/komodo_mongo_1.container.j2"
+    dest: "/etc/containers/systemd/komodo_mongo_1.container"
+    owner: root
+    group: root
+    mode: "0644"
+  register: komodo_mongo_quadlet
+  tags: komodo
+
+- name: Copiar fitxers Komodo (network)
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/komodo.network"
+    dest: "/etc/containers/systemd/komodo.network"
+    owner: root
+    group: root
+    mode: "0644"
+  register: komodo_network
+  tags: komodo
+
+- name: Copiar fitxers Komodo (env)
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/komodo.env"
+    dest: "/etc/komodo/komodo.env"
+    owner: root
+    group: root
+    mode: "0644"
+  register: komodo_files
+  tags: komodo
+
+- name: Create secrets for Komodo stack
+  containers.podman.podman_secret:
+    state: present
+    name: "{{ item }}"
+    data: "{{ lookup('ansible.builtin.vars', item) }}"
+  loop:
+    - komodo_core_1_jwt
+    - komodo_core_1_webhook_secret
+    - komodo_mongo_1_passwd
+  tags: komodo
+
+- name: Reload systemd if komodo config changed
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+  when: komodo_core_quadlet.changed
+    or komodo_mongo_quadlet.changed
+    or komodo_network.changed
+    or komodo_files.changed
+  tags: komodo
+
+# - name: Pull images for komodo containers based on configured versions
+#   ansible.builtin.shell:
+#     cmd: |
+#       podman pull $(awk -F'=' '/^Image=/ {print $2}' /etc/containers/systemd/{{ container_file }})
+#   changed_when: false
+#   loop:
+#     - komodo_core_1.container
+#     - komodo_mongo_1.container
+#   loop_control:
+#     loop_var: container_file
+#   tags: komodo
+
+- name: Restart Komodo Mongo if needed
+  ansible.builtin.systemd_service:
+    name: komodo_mongo_1.service
+    state: restarted
+    enabled: true
+  when: komodo_mongo_quadlet.changed
+    or komodo_network.changed
+    or komodo_files.changed
+  tags: komodo
+
+- name: Restart Komodo Core if needed
+  ansible.builtin.systemd_service:
+    name: komodo_core_1.service
+    state: restarted
+    enabled: true
+  when: komodo_core_quadlet.changed
+    or komodo_network.changed
+    or komodo_files.changed
+  tags: komodo
+
+- name: Include Komodo key generation tasks
+  ansible.builtin.include_tasks: keys.yaml
+  tags: [komodo, keys]

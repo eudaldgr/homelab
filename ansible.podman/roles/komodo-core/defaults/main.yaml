@@ -1,0 +1,5 @@
+---
+komodo_core_version: "2.0.0-dev@sha256:0487a75fe289dda8934495a0d3ee2ecd69d32e17e78d3560026147328af7362f"
+komodo_mongo_version: "8.2.4@sha256:6f55a078e025aa29fea2826c82f67ff2f774b82efd816c4c30bbfe67904f0bb8"
+mongo_uid: 999
+mongo_gid: 999

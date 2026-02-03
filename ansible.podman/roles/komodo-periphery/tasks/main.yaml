@@ -1,49 +1,92 @@
 ---
-# curl -sSL https://raw.githubusercontent.com/moghtech/komodo/main/scripts/setup-periphery.py | python3 - --user
-- name: Install Komodo Periphery systemd service
-  become: true
-  become_method: community.general.machinectl # noqa: schema
-  become_user: "{{ rootless_user }}"
-  vars:
-    ansible_pipelining: true
-  tags: periphery
-  block:
-    - name: Install Komodo Periphery systemd service
-      ansible.builtin.get_url:
-        url: https://raw.githubusercontent.com/moghtech/komodo/main/scripts/setup-periphery.py
-        dest: /tmp/setup-periphery.py
-        mode: "0755"
+- name: Assegurar que els directoris necessaris existeixen
+  ansible.builtin.file:
+    path: "{{ dir_path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  loop:
+    - /etc/containers/systemd
+    - /etc/komodo
+  loop_control:
+    loop_var: dir_path
+  tags: podman
 
-    - name: Run Komodo Periphery setup script
-      ansible.builtin.command:
-        cmd: python3 /tmp/setup-periphery.py --user --version={{ komodo_periphery_version }}
-      args:
-        creates: "/home/{{ rootless_user }}/.local/bin/periphery"
+- name: Copiar quadlet Komodo Periphery
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/komodo_periphery_1.container.j2"
+    dest: "/etc/containers/systemd/komodo_periphery_1.container"
+    owner: root
+    group: root
+    mode: "0644"
+  register: komodo_periphery_quadlet
+  tags: komodo
 
-    - name: Crear subdirectoris per a Komodo Periphery
-      ansible.builtin.file:
-        path: "{{ app_data_dir }}/{{ inventory_hostname }}/komodo/data/periphery"
-        state: directory
-        owner: "{{ rootless_user }}"
-        group: "{{ rootless_user }}"
-        mode: "0755"
+- name: Copiar fitxers Komodo (network)
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/komodo.network"
+    dest: "/etc/containers/systemd/komodo.network"
+    owner: root
+    group: root
+    mode: "0644"
+  register: komodo_network
+  tags: komodo
 
-    - name: Modify Komodo Periphery config file
-      ansible.builtin.lineinfile:
-        path: "/home/{{ rootless_user }}/.config/komodo/periphery.config.toml"
-        regexp: "{{ item.regexp }}"
-        line: "{{ item.line }}"
-        backrefs: true
-      loop:
-        - regexp: '^(\s*)root_directory\s*=\s*"/etc/komodo"'
-          line: '\1root_directory = "{{ app_data_dir }}/{{ inventory_hostname }}/komodo/data/periphery"'
-        - regexp: '^(\s*)passkeys\s*=\s*\[\s*\]'
-          line: '\1passkeys = ["{{ komodo_core_1_passkey }}"]'
+- name: Copiar politica SELinux per a Komodo Periphery
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/komodo_periphery_1.cil"
+    dest: "/etc/komodo/komodo_periphery_1.cil"
+    owner: root
+    group: root
+    mode: "0644"
+  register: periphery_policy_file
+  tags: [komodo, periphery, selinux]
 
-    - name: Start and enable periphery for user -> {{ rootless_user }}
-      ansible.builtin.systemd_service:
-        name: periphery
-        state: started
-        enabled: true
-        scope: user
-      changed_when: false
+- name: Check periphery SELinux policy installed
+  ansible.builtin.command: semodule -l | grep -w komodo_periphery_1
+  register: selinux_policy_check
+  failed_when: false
+  changed_when: false
+  tags: [komodo, periphery, selinux]
+
+- name: Install periphery SELinux policy
+  ansible.builtin.shell: |
+    semodule -i /etc/komodo/komodo_periphery_1.cil /usr/share/udica/templates/*
+  args:
+    creates: /var/lib/selinux/targeted/active/modules/400/komodo_periphery_1
+  when: selinux_policy_check.rc != 0 or periphery_policy_file.changed
+  changed_when: true
+  tags: [komodo, periphery, selinux]
+
+- name: Reload systemd if komodo config changed
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+  when: komodo_periphery_quadlet.changed
+    or komodo_network.changed
+  tags: komodo
+
+# - name: Pull images for komodo containers based on configured versions
+#   ansible.builtin.shell:
+#     cmd: |
+#       podman pull $(awk -F'=' '/^Image=/ {print $2}' /etc/containers/systemd/komodo_periphery_1.container)
+#   changed_when: false
+#   tags: komodo
+
+- name: Include Komodo core key generation tasks
+  ansible.builtin.include_tasks: core2periphery.yaml
+  tags: [komodo, keys]
+
+- name: Restart Komodo Periphery if needed
+  ansible.builtin.systemd_service:
+    name: komodo_periphery_1.service
+    state: restarted
+    enabled: true
+  when: komodo_periphery_quadlet.changed
+    or komodo_network.changed
+    or periphery_policy_file.changed
+  tags: komodo
+
+- name: Include Komodo periphery key generation tasks
+  ansible.builtin.include_tasks: periphery2core.yaml
+  tags: [komodo, keys]

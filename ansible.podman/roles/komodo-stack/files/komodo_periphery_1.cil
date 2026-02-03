@@ -1,7 +1,0 @@
-(block komodo_periphery_1
-    (blockinherit container)
-    (blockinherit restricted_net_container)
-    (allow process unreserved_port_t ( tcp_socket ( name_bind )))
-    (allow process user_tmp_t ( sock_file ( getattr read write )))
-    (allow process container_runtime_t ( unix_stream_socket ( connectto )))
-)

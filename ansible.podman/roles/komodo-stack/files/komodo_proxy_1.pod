@@ -1,4 +1,0 @@
-[Pod]
-Network=komodo.network
-PodName=komodo_proxy_1
-PublishPort=9120:9120

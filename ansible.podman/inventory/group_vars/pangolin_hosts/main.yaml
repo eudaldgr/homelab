@@ -1,0 +1,17 @@
+---
+ansible_become: true
+ansible_become_method: sudo
+
+pangolin_domain: "{{ secret_pangolin_domain }}"
+base_domains: "{{ secret_base_domains }}"
+
+pangolin_email: "{{ secret_pangolin_email }}"
+smtp_host: "{{ secret_pangolin_smtp_host }}"
+smtp_port: "{{ secret_pangolin_smtp_port }}"
+smtp_user: "{{ secret_pangolin_smtp_user }}"
+smtp_pass: "{{ secret_pangolin_smtp_pass }}"
+smtp_secure: "{{ secret_pangolin_smtp_secure }}"
+no_reply_email: "{{ secret_pangolin_smtp_no_reply_email }}"
+letsencrypt_mail: "{{ secret_pangolin_traefik_letsencrypt_mail }}"
+pangolin_server_secret: "{{ secret_pangolin_server_secret }}"
+pangolin_crowdsec_lapi_key: "{{ secret_pangolin_crowdsec_lapi_key }}"
