@@ -11,6 +11,9 @@ resource_path = [
   "komodo/repos.toml",
   "komodo/servers.toml",
   
+  # host01 specific
+  "compose/host01/prod/newt/stack.toml",
+  
   # ds920plus specific
   # "compose/ds920plus/prod/adguard/stack.toml",
   # "compose/ds920plus/prod/bitcoind-core/stack.toml",

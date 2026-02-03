@@ -3,7 +3,7 @@ name = "homelab"
 description = "Repositori principal del homelab"
 
 [repo.config]
-server_id = "ds920plus"
+server_id = "host01"
 git_provider = "github.com"
 repo = "eudaldgr/homelab"
 branch = "main"

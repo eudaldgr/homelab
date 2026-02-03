@@ -2,11 +2,10 @@
 name = "newt-host01"
 description = "Stack Newt"
 deploy = true
-tags = ["host01", "prod"]
 
 [stack.config]
 server_id = "host01"
-linked_repo = "homelab-host01"
+linked_repo = "homelab"
 run_directory = "compose/host01/prod/newt"
 auto_pull = true
 send_alerts = true
