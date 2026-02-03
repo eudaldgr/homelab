@@ -1,9 +1,15 @@
 #!/bin/sh -e
 
-# HCLOUD_IP=$(tofu -chdir=../tofu/hetzner/homelab output -raw server_ip)
+export ANSIBLE_CONFIG=./ansible.cfg
 
-# sed "s/pangolin01 ansible_host=.*/pangolin01 ansible_host=${HCLOUD_IP}/" inventory/hosts.ini > _
-# mv -f _ inventory/hosts.ini
+if [ "$1" = "--pangolin" ]; then
+  HCLOUD_IP=$(tofu -chdir=../tofu/hetzner/homelab output -raw server_ip)
 
-ANSIBLE_CONFIG=./ansible.cfg \
-ansible-playbook containers-host.yaml "$@"
+  sed "s/pangolin01 ansible_host=.*/pangolin01 ansible_host=${HCLOUD_IP}/" inventory/hosts.ini > _
+  mv -f _ inventory/hosts.ini
+
+  shift
+  ansible-playbook pangolin.yaml --skip-tags sops,age "$@"
+else
+  ansible-playbook containers-host.yaml "$@"
+fi

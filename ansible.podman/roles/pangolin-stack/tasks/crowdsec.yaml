@@ -1,37 +1,30 @@
 ---
-- name: Get UID of {{ rootless_user }}
-  ansible.builtin.command:
-    argv: ["/usr/bin/id", "-u", "{{ rootless_user }}"]
-  register: rootless_uid
-  changed_when: false
-  tags: user
-
 - name: Crear subdirectoris per a Pangolin Stack
   ansible.builtin.file:
-    path: "{{ app_data_dir }}/pangolin/{{ item }}"
+    path: "/etc/pangolin/{{ item }}"
     state: directory
-    owner: "{{ rootless_user }}"
-    group: "{{ rootless_user }}"
+    owner: root
+    group: root
     mode: "0755"
   with_items:
-    - data/config/crowdsec
-    - data/config/crowdsec/acquis.d
-    - data/config/crowdsec/db
+    - crowdsec
+    - crowdsec/acquis.d
+    - crowdsec/db
   tags: pangolin
 
 - name: Copiar fitxers de configuració de Pangolin Stack
   ansible.builtin.template:
     src: "{{ role_path }}/templates/pangolin_crowdsec_1.container.j2"
-    dest: "{{ app_data_dir }}/pangolin/quadlets/pangolin_crowdsec_1.container"
-    owner: "{{ rootless_user }}"
-    group: "{{ rootless_user }}"
+    dest: "/etc/containers/systemd/pangolin_crowdsec_1.container"
+    owner: root
+    group: root
     mode: "0644"
   tags: pangolin
 
 - name: Check for existing Crowdsec API key
   ansible.builtin.shell: |
     set -o pipefail
-    grep "crowdsecLapiKey:" {{ app_data_dir }}/pangolin/data/config/traefik/dynamic_config.yml | awk '{print $2}' | tr -d '"'
+    grep "crowdsecLapiKey:" /etc/pangolin/traefik/dynamic_config.yml | awk '{print $2}' | tr -d '"'
   register: existing_crowdsec_key
   failed_when: false
   changed_when: false
@@ -40,9 +33,9 @@
 - name: Copiar fitxers de configuració de Crowdsec
   ansible.builtin.copy:
     src: "{{ role_path }}/files/crowdsec_{{ item }}.yaml"
-    dest: "{{ app_data_dir }}/pangolin/data/config/crowdsec/acquis.d/{{ item }}.yaml"
-    owner: "{{ rootless_user }}"
-    group: "{{ rootless_user }}"
+    dest: "/etc/pangolin/crowdsec/acquis.d/{{ item }}.yaml"
+    owner: root
+    group: root
     mode: "0664"
   with_items:
     - appsec
@@ -52,97 +45,71 @@
 - name: Copiar fitxers de configuració de Crowdsec
   ansible.builtin.copy:
     src: "{{ role_path }}/files/crowdsec_profiles.yaml"
-    dest: "{{ app_data_dir }}/pangolin/data/config/crowdsec/profiles.yaml"
-    owner: "{{ rootless_user }}"
-    group: "{{ rootless_user }}"
+    dest: "/etc/pangolin/crowdsec/profiles.yaml"
+    owner: root
+    group: root
     mode: "0664"
   tags: pangolin, crowdsec
 
-- name: Crear enllaços symlink quadlets de Pangolin Stack
-  ansible.builtin.file:
-    src: "{{ app_data_dir }}/pangolin/quadlets/pangolin_crowdsec_1.container"
-    dest: "/home/{{ rootless_user }}/.config/containers/systemd/pangolin_crowdsec_1.container"
-    state: link
-    owner: "{{ rootless_user }}"
-    group: "{{ rootless_user }}"
-    mode: "0644"
+# - name: Pull images for pangolin containers based on configured versions
+#   ansible.builtin.shell:
+#     cmd: |
+#       podman pull $(awk -F'=' '/^Image=/ {print $2}' /etc/containers/systemd/pangolin_crowdsec_1.container)
+#   changed_when: false
+#   tags: pangolin
+
+- name: Start and enable pangolin containers
+  ansible.builtin.systemd_service:
+    name: pangolin_traefik_1
+    state: started
+    enabled: true
   tags: pangolin
 
-- name: Start Pangolin Stack containers
-  become: true
-  become_method: community.general.machinectl # noqa: schema
-  become_user: "{{ rootless_user }}"
-  vars:
-    ansible_pipelining: true
-  environment:
-    XDG_RUNTIME_DIR: "/run/user/{{ rootless_uid.stdout | trim }}"
-  block:
-    # There's an issue with passta that prevents pulling images
-    - name: Pull images for pangolin containers based on configured versions
-      ansible.builtin.shell:
-        cmd: |
-          podman pull $(awk -F'=' '/^Image=/ {print $2}' {{ app_data_dir }}/pangolin/quadlets/*.container)
-      changed_when: false
-      tags: pangolin
+- name: Wait for Crowdsec to be ready
+  ansible.builtin.shell: |
+    podman exec pangolin_crowdsec_1 cscli capi status
+  register: crowdsec_status
+  until: crowdsec_status.rc == 0
+  retries: 30
+  delay: 5
+  changed_when: false
+  when: existing_crowdsec_key.stdout is not defined or existing_crowdsec_key.stdout == '' or existing_crowdsec_key.stdout == '__CROWDSEC_LAPI_KEY__'
+  tags: pangolin, crowdsec
 
-    - name: Start and enable pangolin containers
-      ansible.builtin.systemd_service:
-        name: pangolin_traefik_1
-        state: started
-        enabled: true
-        scope: user
-        daemon_reload: true
-      changed_when: false
-      tags: pangolin
+- name: Delete existing bouncer if regenerating
+  ansible.builtin.shell: |
+    podman exec pangolin_crowdsec_1 cscli bouncers delete traefik-bouncer
+  failed_when: false
+  changed_when: false
+  when: existing_crowdsec_key.stdout is not defined or existing_crowdsec_key.stdout == '' or existing_crowdsec_key.stdout == '__CROWDSEC_LAPI_KEY__'
+  tags: pangolin, crowdsec
 
-    - name: Wait for Crowdsec to be ready
-      ansible.builtin.shell: |
-        podman exec pangolin_crowdsec_1 cscli capi status
-      register: crowdsec_status
-      until: crowdsec_status.rc == 0
-      retries: 30
-      delay: 5
-      changed_when: false
-      when: existing_crowdsec_key.stdout is not defined or existing_crowdsec_key.stdout == '' or existing_crowdsec_key.stdout == '__CROWDSEC_LAPI_KEY__'
-      tags: pangolin, crowdsec
+- name: Generate Crowdsec Bouncer Key # noqa: no-changed-when
+  ansible.builtin.shell: |
+    podman exec pangolin_crowdsec_1 cscli bouncers add traefik-bouncer
+  register: bouncer_key_gen
+  when: existing_crowdsec_key.stdout is not defined or existing_crowdsec_key.stdout == '' or existing_crowdsec_key.stdout == '__CROWDSEC_LAPI_KEY__'
+  tags: pangolin, crowdsec
 
-    - name: Delete existing bouncer if regenerating
-      ansible.builtin.shell: |
-        podman exec pangolin_crowdsec_1 cscli bouncers delete traefik-bouncer
-      failed_when: false
-      changed_when: false
-      when: existing_crowdsec_key.stdout is not defined or existing_crowdsec_key.stdout == '' or existing_crowdsec_key.stdout == '__CROWDSEC_LAPI_KEY__'
-      tags: pangolin, crowdsec
+- name: Update dynamic_config.yml with new key
+  ansible.builtin.replace:
+    path: "/etc/pangolin/traefik/dynamic_config.yml"
+    regexp: "__CROWDSEC_LAPI_KEY__"
+    replace: "{{ bouncer_key_gen.stdout_lines | select('match', '^\\s*[a-zA-Z0-9]{32,}\\s*$') | first | trim }}"
+  when: bouncer_key_gen.changed # noqa: no-handler
+  tags: pangolin, crowdsec
 
-    - name: Generate Crowdsec Bouncer Key # noqa: no-changed-when
-      ansible.builtin.shell: |
-        podman exec pangolin_crowdsec_1 cscli bouncers add traefik-bouncer
-      register: bouncer_key_gen
-      when: existing_crowdsec_key.stdout is not defined or existing_crowdsec_key.stdout == '' or existing_crowdsec_key.stdout == '__CROWDSEC_LAPI_KEY__'
-      tags: pangolin, crowdsec
+- name: Enroll crowdsec bouncer
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      podman exec pangolin_crowdsec_1 cscli console enroll {{ pangolin_crowdsec_lapi_key }}
+  changed_when: false
+  tags: pangolin, crowdsec
 
-    - name: Update dynamic_config.yml with new key
-      ansible.builtin.replace:
-        path: "{{ app_data_dir }}/pangolin/data/config/traefik/dynamic_config.yml"
-        regexp: "__CROWDSEC_LAPI_KEY__"
-        replace: "{{ bouncer_key_gen.stdout_lines | select('match', '^\\s*[a-zA-Z0-9]{32,}\\s*$') | first | trim }}"
-      when: bouncer_key_gen.changed # noqa: no-handler
-      tags: pangolin, crowdsec
-
-    - name: Enroll crowdsec bouncer
-      ansible.builtin.shell:
-        cmd: |
-          set -o pipefail
-          podman exec pangolin_crowdsec_1 cscli console enroll {{ pangolin_crowdsec_lapi_key }}
-      changed_when: false
-      tags: pangolin, crowdsec
-
-    - name: Restart crowdsec containers
-      ansible.builtin.systemd_service:
-        name: pangolin_crowdsec_1
-        state: restarted
-        enabled: true
-        scope: user
-        daemon_reload: true
-      changed_when: false
-      tags: pangolin, crowdsec
+- name: Restart crowdsec containers
+  ansible.builtin.systemd_service:
+    name: pangolin_crowdsec_1
+    state: restarted
+    enabled: true
+  tags: pangolin, crowdsec

@@ -1,8 +1,8 @@
 ---
-- name: Deploy fail2ban & pangolin stack
+- name: Deploy Pangolin stack
   hosts: pangolin_hosts
   gather_facts: false
   become: true
   roles:
-    - prepare-pangolin-host
+    - prepare-podman
     - pangolin-stack

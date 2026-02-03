@@ -1,230 +1,134 @@
 ---
-- name: Get UID of {{ rootless_user }}
-  ansible.builtin.command:
-    argv: ["/usr/bin/id", "-u", "{{ rootless_user }}"]
-  register: rootless_uid
-  changed_when: false
-  tags: user
-
-- name: Crear directori pare per a Pangolin Stack
+- name: Assegurar que els directoris necessaris existeixen
   ansible.builtin.file:
-    path: "{{ app_data_dir }}/pangolin"
+    path: "{{ dir_path }}"
     state: directory
-    owner: "{{ rootless_user }}"
-    group: "{{ rootless_user }}"
+    owner: root
+    group: root
     mode: "0755"
-  tags: pangolin
+  loop:
+    - /etc/containers/systemd
+    - /etc/pangolin
+    - /etc/pangolin/traefik
+    - /etc/pangolin/traefik/letsencrypt
+    - /etc/pangolin/traefik/logs
+    - /etc/systemd/system
+  loop_control:
+    loop_var: dir_path
+  tags: podman
 
-- name: Crear subdirectoris per a Pangolin Stack
-  ansible.builtin.file:
-    path: "{{ app_data_dir }}/pangolin/{{ item }}"
-    state: directory
-    owner: "{{ rootless_user }}"
-    group: "{{ rootless_user }}"
-    mode: "0755"
-  with_items:
-    - data
-    - data/config
-    - data/config/db
-    - data/config/letsencrypt
-    - data/config/logs
-    - data/config/traefik
-    - data/config/traefik/logs
-    - quadlets
-  tags: pangolin
-
-- name: Copiar fitxers de configuració de Pangolin Stack
+- name: Copiar Pangolin quadlets
   ansible.builtin.template:
-    src: "{{ role_path }}/templates/{{ item }}.j2"
-    dest: "{{ app_data_dir }}/pangolin/quadlets/{{ item }}"
-    owner: "{{ rootless_user }}"
-    group: "{{ rootless_user }}"
+    src: "{{ role_path }}/templates/{{ quadlet }}.container.j2"
+    dest: "/etc/containers/systemd/{{ quadlet }}.container"
+    owner: root
+    group: root
     mode: "0644"
-  with_items:
-    - pangolin_app_1.container
-    - pangolin_gerbil_1.container
-    - pangolin_traefik_1.container
+  register: pangolin_quadlets
+  loop:
+    - pangolin_app_1
+    - pangolin_gerbil_1
+    - pangolin_traefik_1
+  loop_control:
+    loop_var: quadlet
   tags: pangolin
 
 - name: Copiar fitxers de configuració de Pangolin Stack
   ansible.builtin.copy:
-    src: "{{ role_path }}/files/{{ item }}"
-    dest: "{{ app_data_dir }}/pangolin/quadlets/{{ item }}"
-    owner: "{{ rootless_user }}"
-    group: "{{ rootless_user }}"
+    src: "{{ role_path }}/files/pangolin_proxy_1.pod"
+    dest: "/etc/containers/systemd/pangolin_proxy_1.pod"
+    owner: root
+    group: root
     mode: "0644"
-  with_items:
-    - pangolin_traefik_1.cil
-    - pangolin_proxy_1.pod
-    - pangolin_traefik_http.socket
-    - pangolin_traefik_https.socket
+  register: pangolin_pod
   tags: pangolin
 
 - name: Copiar fitxers de configuració de Pangolin Stack
   ansible.builtin.template:
     src: "{{ role_path }}/templates/{{ item.name }}.j2"
-    dest: "{{ app_data_dir }}/pangolin/{{ item.dir }}/{{ item.name }}"
-    owner: "{{ rootless_user }}"
-    group: "{{ rootless_user }}"
+    dest: "{{ item.dir }}/{{ item.name }}"
+    owner: root
+    group: root
     mode: "0644"
   with_items:
     - name: config.yml
-      dir: data/config
-    - name: traefik_config.yml
-      dir: data/config/traefik
+      dir: /etc/pangolin
     - name: dynamic_config.yml
-      dir: data/config/traefik
+      dir: /etc/pangolin/traefik
+    - name: traefik_config.yml
+      dir: /etc/pangolin/traefik
+  register: pangolin_configs
   tags: pangolin
 
-- name: Assegurar que els directoris necessaris existeixen
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: directory
-    owner: "{{ rootless_user }}"
-    group: "{{ rootless_user }}"
-    mode: "0755"
-  with_items:
-    - "/home/{{ rootless_user }}/.config/containers/systemd"
-    - "/home/{{ rootless_user }}/.config/systemd/user"
-  tags: podman
-
-- name: Crear enllaços symlink quadlets de Pangolin Stack
-  ansible.builtin.file:
-    src: "{{ app_data_dir }}/pangolin/quadlets/{{ item }}"
-    dest: "/home/{{ rootless_user }}/.config/containers/systemd/{{ item }}"
-    state: link
-    owner: "{{ rootless_user }}"
-    group: "{{ rootless_user }}"
+- name: Copiar fitxers de configuració de Pangolin Stack
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/pangolin_traefik_1.cil"
+    dest: "/etc/pangolin/pangolin_traefik_1.cil"
+    owner: root
+    group: root
     mode: "0644"
-  with_items:
-    - pangolin_app_1.container
-    - pangolin_gerbil_1.container
-    - pangolin_traefik_1.container
-    - pangolin_proxy_1.pod
-  tags: pangolin
-
-- name: Crear enllaços symlink quadlets de Traefik Sockets
-  ansible.builtin.file:
-    src: "{{ app_data_dir }}/pangolin/quadlets/{{ item }}"
-    dest: "/home/{{ rootless_user }}/.config/systemd/user/{{ item }}"
-    state: link
-    owner: "{{ rootless_user }}"
-    group: "{{ rootless_user }}"
-    mode: "0644"
-  with_items:
-    - pangolin_traefik_http.socket
-    - pangolin_traefik_https.socket
-  tags: pangolin
+  tags: [pangolin, selinux]
 
 - name: Check periphery SELinux policy installed
-  ansible.builtin.command: |
-    semodule -l | grep -w pangolin_traefik_1
+  ansible.builtin.command: semodule -l | grep -w pangolin_traefik_1
   register: selinux_policy_check
   failed_when: false
   changed_when: false
-  tags: pangolin, selinux
+  tags: [pangolin, selinux]
 
-- name: Install periphery SELinux policy
+- name: Install periphery SELinux policy # noqa: command-instead-of-shell
   ansible.builtin.shell: |
-    semodule -i {{ app_data_dir }}/pangolin/quadlets/pangolin_traefik_1.cil /usr/share/udica/templates/base_container.cil
+    semodule -i /etc/pangolin/pangolin_traefik_1.cil /usr/share/udica/templates/base_container.cil
   args:
     creates: /var/lib/selinux/targeted/active/modules/400/pangolin_traefik_1
   when: selinux_policy_check.rc != 0
-  tags: pangolin, selinux
+  tags: [pangolin, selinux]
 
-- name: Download GeoLite2 Country database
-  ansible.builtin.get_url:
-    url: https://github.com/GitSquared/node-geolite2-redist/raw/refs/heads/master/redist/GeoLite2-Country.tar.gz
-    dest: /tmp/GeoLite2-Country.tar.gz
-    mode: "0644"
-  tags: pangolin, geolite2
-
-- name: Extract GeoLite2 Country database
-  ansible.builtin.unarchive:
-    src: /tmp/GeoLite2-Country.tar.gz
-    dest: /tmp
-    remote_src: true
-  tags: pangolin, geolite2
-
-- name: Find extracted GeoLite2 Country database
-  ansible.builtin.find:
-    paths: /tmp
-    patterns: "GeoLite2-Country.mmdb"
-    recurse: true
-    file_type: file
-  register: geolite2_file
-  tags: pangolin, geolite2
-
-- name: Move GeoLite2 Country database to Pangolin config directory
-  ansible.builtin.copy:
-    src: "{{ geolite2_file.files[0].path }}"
-    dest: "{{ app_data_dir }}/pangolin/data/config/GeoLite2-Country.mmdb"
-    owner: "{{ rootless_user }}"
-    group: "{{ rootless_user }}"
-    mode: "0644"
-    remote_src: true
-  when: geolite2_file.files | length > 0
-  tags: pangolin, geolite2
-
-- name: Clean up GeoLite2 Country database temporary files
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: absent
-  loop:
-    - /tmp/GeoLite2-Country.tar.gz
-    - "{{ geolite2_file.files[0].path | dirname }}"
-  when: geolite2_file.files | length > 0
-  tags: pangolin, geolite2
-
-# There's an issue with passta that prevents pulling images
-- name: Pull images for pangolin containers based on configured versions
-  become: true
-  become_method: community.general.machinectl # noqa: schema
-  become_user: "{{ rootless_user }}"
-  vars:
-    ansible_pipelining: true
-  environment:
-    XDG_RUNTIME_DIR: "/run/user/{{ rootless_uid.stdout | trim }}"
-  ansible.builtin.shell:
-    cmd: |
-      podman pull $(awk -F'=' '/^Image=/ {print $2}' {{ app_data_dir }}/pangolin/quadlets/*.container)
-  changed_when: false
-  tags: pangolin
+- name: Include GeoLite2 database tasks
+  ansible.builtin.include_tasks: geolite2.yaml
+  tags: [pangolin, geolite2]
 
 - name: Include crowdsec tasks if enabled
   ansible.builtin.include_tasks: crowdsec.yaml
   when: pangolin_crowdsec
-  tags: pangolin, crowdsec
+  tags: [pangolin, crowdsec]
+
+- name: Reload systemd if Pangolin config changed
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+  when: pangolin_quadlets.changed
+    or pangolin_pod.changed
+    or pangolin_configs.changed
+  tags: pangolin
+
+# - name: Pull images for pangolin containers based on configured versions
+#   ansible.builtin.shell:
+#     cmd: |
+#       podman pull $(awk -F'=' '/^Image=/ {print $2}' /etc/containers/systemd/pangolin_*.container)
+#   changed_when: false
+#   tags: pangolin
 
 - name: Start and enable pangolin containers
-  become: true
-  become_method: community.general.machinectl # noqa: schema
-  become_user: "{{ rootless_user }}"
-  vars:
-    ansible_pipelining: true
-  environment:
-    XDG_RUNTIME_DIR: "/run/user/{{ rootless_uid.stdout | trim }}"
   ansible.builtin.systemd_service:
-    name: pangolin_proxy_1-pod.service
+    name: "{{ container }}.service"
     state: restarted
     enabled: true
-    scope: user
-    daemon_reload: true
-  changed_when: false
+  loop:
+    - pangolin_app_1
+    - pangolin_gerbil_1
+    - pangolin_traefik_1
+  loop_control:
+    loop_var: container
+  when: pangolin_quadlets.changed
+    or pangolin_pod.changed
+    or pangolin_configs.changed
   tags: pangolin
 
 - name: Register pangolin token
-  become: true
-  become_method: community.general.machinectl # noqa: schema
-  become_user: "{{ rootless_user }}"
-  vars:
-    ansible_pipelining: true
-  environment:
-    XDG_RUNTIME_DIR: "/run/user/{{ rootless_uid.stdout | trim }}"
   ansible.builtin.shell:
     cmd: |
       set -o pipefail
-      journalctl --user -u pangolin_app_1 -n 300 | \
+      journalctl -u pangolin_app_1 -n 300 | \
       awk -F'Token: ' '/Token:/ {print $2}' | \
       tail -n1
   register: pangolin_token_result

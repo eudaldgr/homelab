@@ -1,0 +1,39 @@
+---
+- name: Download GeoLite2 Country database
+  ansible.builtin.get_url:
+    url: https://github.com/GitSquared/node-geolite2-redist/raw/refs/heads/master/redist/GeoLite2-Country.tar.gz
+    dest: /tmp/GeoLite2-Country.tar.gz
+    mode: "0644"
+
+- name: Extract GeoLite2 Country database
+  ansible.builtin.unarchive:
+    src: /tmp/GeoLite2-Country.tar.gz
+    dest: /tmp
+    remote_src: true
+
+- name: Find extracted GeoLite2 Country database
+  ansible.builtin.find:
+    paths: /tmp
+    patterns: "GeoLite2-Country.mmdb"
+    recurse: true
+    file_type: file
+  register: geolite2_file
+
+- name: Move GeoLite2 Country database to Pangolin config directory
+  ansible.builtin.copy:
+    src: "{{ geolite2_file.files[0].path }}"
+    dest: "/etc/pangolin/GeoLite2-Country.mmdb"
+    owner: root
+    group: root
+    mode: "0644"
+    remote_src: true
+  when: geolite2_file.files | length > 0
+
+- name: Clean up GeoLite2 Country database temporary files
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /tmp/GeoLite2-Country.tar.gz
+    - "{{ geolite2_file.files[0].path | dirname }}"
+  when: geolite2_file.files | length > 0

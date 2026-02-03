@@ -1,5 +1,4 @@
 ---
-app_data_dir: "/home/{{ rootless_user }}/stack"
 pangolin_app_version: "ee-1.15.1@sha256:05597e3778f1660c067fce7d5aee3751138ecc90c65a76cad7d8dc80fed95c44"
 pangolin_gerbil_version: "1.3.0@sha256:7d9732af74c5851dde4b39a69a0c5d25b2f86a44464ebe0a4f116280914a8b56"
 pangolin_traefik_version: "v3.6.0@sha256:18112aed2bfe3dfb8534f1045622390c3316596cff0cefab64f44e43d23e1640"
