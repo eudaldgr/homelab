@@ -1,0 +1,16 @@
+[Unit]
+Description=Sops
+
+[Container]
+Image=ghcr.io/getsops/sops:{{ sops_version }}
+ContainerName=komodo_sops_1
+Label=komodo.skip
+Exec=tail -f /dev/null
+
+Volume=sops_bin:/usr/local/bin:ro
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

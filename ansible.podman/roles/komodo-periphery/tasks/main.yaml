@@ -15,12 +15,17 @@
 
 - name: Copiar quadlet Komodo Periphery
   ansible.builtin.template:
-    src: "{{ role_path }}/templates/komodo_periphery_1.container.j2"
-    dest: "/etc/containers/systemd/komodo_periphery_1.container"
+    src: "{{ role_path }}/templates/{{ quadlet }}.container.j2"
+    dest: "/etc/containers/systemd/{{ quadlet }}.container"
     owner: root
     group: root
     mode: "0644"
-  register: komodo_periphery_quadlet
+  loop:
+    - komodo_periphery_1
+    - komodo_sops_1
+  loop_control:
+    loop_var: quadlet
+  register: komodo_periphery_quadlets
   tags: komodo
 
 - name: Copiar fitxers Komodo (network)
@@ -62,8 +67,6 @@
 - name: Reload systemd if komodo config changed
   ansible.builtin.systemd_service:
     daemon_reload: true
-  when: komodo_periphery_quadlet.changed
-    or komodo_network.changed
   tags: komodo
 
 # - name: Pull images for komodo containers based on configured versions
@@ -79,10 +82,15 @@
 
 - name: Restart Komodo Periphery if needed
   ansible.builtin.systemd_service:
-    name: komodo_periphery_1.service
+    name: "{{ container }}.service"
     state: restarted
     enabled: true
-  when: komodo_periphery_quadlet.changed
+  loop:
+    - komodo_periphery_1
+    - komodo_sops_1
+  loop_control:
+    loop_var: container
+  when: komodo_periphery_quadlets.changed
     or komodo_network.changed
     or periphery_policy_file.changed
   tags: komodo

@@ -1,2 +1,3 @@
 ---
 komodo_periphery_version: "2.0.0-dev@sha256:3b4a96c7fb02525a702847ebc3651c77e106cbd348dd7fc58d4779c3001d4584"
+sops_version: "v3.11.0@sha256:6ce00ac946e1a52b2d1e5b7087441f7b6ef7bad907753104013f8bdb8f5fd891"

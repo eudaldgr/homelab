@@ -14,6 +14,10 @@ Volume=periphery_keys:/config/keys
 Mount=type=bind,source=/proc,target=/proc
 Mount=type=bind,source=/%t/podman/podman.sock,target=/var/run/docker.sock
 
+# SOPS binary and keys
+Volume=sops_bin:/opt:ro
+Mount=type=bind,source=/root/.config/sops/age,target=/keys,ro,relabel=shared,U=true
+
 Environment=COMPOSE_KOMODO_IMAGE_TAG=latest
 Environment=TZ=Europe/Madrid
 Environment=PERIPHERY_ROOT_DIRECTORY=/etc/komodo
@@ -27,6 +31,8 @@ Environment=PERIPHERY_INCLUDE_DISK_MOUNTS=/etc/hostname
 Environment=PERIPHERY_LOGGING_PRETTY=false
 Environment=PERIPHERY_PRETTY_STARTUP_CONFIG=false
 Environment=PERIPHERY_CORE_TLS_INSECURE_SKIP_VERIFY=true
+# SOPS settings
+Environment=SOPS_AGE_KEY_FILE=/keys/keys.txt
 
 SecurityLabelType=komodo_periphery_1.process
 
