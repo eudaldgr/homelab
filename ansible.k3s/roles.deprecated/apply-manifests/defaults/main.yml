@@ -1,7 +1,0 @@
----
-# Kured version
-kured_version: "1.16.0"
-
-# Optional: Slack notifications
-# kured_slack_hook_url: "https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK"
-# kured_slack_channel: "#k3s-alerts"
