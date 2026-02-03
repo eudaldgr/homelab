@@ -14,6 +14,9 @@ resource_path = [
   # host01 specific
   "compose/host01/prod/newt/stack.toml",
   
+  # host02 specific
+  "compose/host02/prod/newt/stack.toml",
+  
   # ds920plus specific
   # "compose/ds920plus/prod/adguard/stack.toml",
   # "compose/ds920plus/prod/bitcoind-core/stack.toml",

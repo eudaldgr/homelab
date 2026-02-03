@@ -1,0 +1,14 @@
+[[stack]]
+name = "newt-host02"
+description = "Stack Newt"
+deploy = true
+
+[stack.config]
+server_id = "host02"
+linked_repo = "homelab-host02"
+run_directory = "compose/host02/prod/newt"
+auto_pull = true
+send_alerts = true
+
+compose_cmd_wrapper = """
+sops exec-env compose.env '[[COMPOSE_COMMAND]]'"""
