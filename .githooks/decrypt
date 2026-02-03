@@ -1,7 +1,6 @@
 #!/bin/sh
 
-SOPS_AGE_KEY_FILE=./secrets/age-key.txt
-export SOPS_AGE_KEY_FILE
+export SOPS_AGE_KEY_FILE=./secrets/age-key.txt
 
 FILEPATH="${1#\'}"
 FILEPATH="${FILEPATH%\'}"
@@ -15,4 +14,8 @@ case "$FILEPATH" in
   *) EXTENSION="binary" ;;
 esac
 
-sops decrypt --input-type "$EXTENSION" --output-type "$EXTENSION" --filename-override "$1" /dev/stdin
+sops decrypt \
+  --input-type "$EXTENSION" \
+  --output-type "$EXTENSION" \
+  --filename-override "$1" \
+  /dev/stdin

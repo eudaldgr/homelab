@@ -12,4 +12,8 @@ case "$FILEPATH" in
   *) EXTENSION="binary" ;;
 esac
 
-sops encrypt --input-type "$EXTENSION" --output-type "$EXTENSION" --filename-override "$1" /dev/stdin
+sops encrypt \
+  --input-type "$EXTENSION" \
+  --output-type "$EXTENSION" \
+  --filename-override "$1" \
+  /dev/stdin
