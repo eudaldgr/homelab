@@ -5,7 +5,7 @@ deploy = true
 
 [stack.config]
 server_id = "ds920plus"
-linked_repo = "homelab"
+linked_repo = "homelab-ds920plus"
 run_directory = "compose/ds920plus/prod/newt"
 auto_pull = true
 send_alerts = true

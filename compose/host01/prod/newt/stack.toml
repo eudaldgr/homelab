@@ -5,7 +5,7 @@ deploy = true
 
 [stack.config]
 server_id = "host01"
-linked_repo = "homelab"
+linked_repo = "homelab-host01"
 run_directory = "compose/host01/prod/newt"
 auto_pull = true
 send_alerts = true
