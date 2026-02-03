@@ -1,1 +1,4 @@
-compose/**/compose.env filter=sops
+**/compose.env filter=sops
+**/secrets.sops.yaml filter=sops
+**/secrets.sops.yml filter=sops
+**/terraform.tfvars filter=sops
