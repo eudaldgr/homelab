@@ -119,20 +119,20 @@ resource "proxmox_vm_qemu" "k3s-agent-02" {
   pcis {
     pci0 {
       mapping {
-        mapping_id  = "iGPU"
-        pcie        = true
-        primary_gpu = true
-        rombar      = true
-      }
-    }
-    pci1 {
-      mapping {
         mapping_id  = "SSD"
         pcie        = true
         primary_gpu = false
         rombar      = true
       }
     }
+    # pci1 {
+    #   mapping {
+    #     mapping_id  = "iGPU"
+    #     pcie        = true
+    #     primary_gpu = true
+    #     rombar      = true
+    #   }
+    # }
   }
 }
 
@@ -181,17 +181,7 @@ resource "proxmox_vm_qemu" "container-host-02" {
         disk {
           discard    = true
           emulatessd = true
-          size       = "24G"
-          replicate  = true
-          storage    = var.proxmox_nodes[1].local_storage
-          format     = "raw"
-        }
-      }
-      scsi1 {
-        disk {
-          discard    = true
-          emulatessd = true
-          size       = "120G"
+          size       = "144G"
           replicate  = true
           storage    = var.proxmox_nodes[1].local_storage
           format     = "raw"
@@ -203,14 +193,14 @@ resource "proxmox_vm_qemu" "container-host-02" {
     id   = 0
     type = "socket"
   }
-  # pcis {
-  #   pci0 {
-  #     mapping {
-  #       mapping_id  = "iGPU"
-  #       pcie        = true
-  #       primary_gpu = true
-  #       rombar      = true
-  #     }
-  #   }
-  # }
+  pcis {
+    pci0 {
+      mapping {
+        mapping_id  = "iGPU"
+        pcie        = true
+        primary_gpu = true
+        rombar      = true
+      }
+    }
+  }
 }

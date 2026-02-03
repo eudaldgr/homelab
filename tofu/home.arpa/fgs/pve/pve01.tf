@@ -181,17 +181,7 @@ resource "proxmox_vm_qemu" "container-host-01" {
         disk {
           discard    = true
           emulatessd = true
-          size       = "24G"
-          replicate  = true
-          storage    = var.proxmox_nodes[0].local_storage
-          format     = "raw"
-        }
-      }
-      scsi1 {
-        disk {
-          discard    = true
-          emulatessd = true
-          size       = "120G"
+          size       = "144G"
           replicate  = true
           storage    = var.proxmox_nodes[0].local_storage
           format     = "raw"
