@@ -7,6 +7,7 @@ git_account = "eudaldgr"
 repo = "eudaldgr/homelab"
 
 resource_path = [
+  "komodo/builders.toml",
   # "komodo/repos.toml",
   "komodo/servers.toml",
   
