@@ -1,11 +1,11 @@
 [[stack]]
-name = "bitcoind-core"
+name = "bitcoind-core-ds920plus"
 description = "Stack Bitcoind Core"
 deploy = true
 
 [stack.config]
 server_id = "ds920plus"
-linked_repo = "homelab"
+linked_repo = "homelab-ds920plus"
 run_directory = "compose/ds920plus/prod/bitcoind-core"
 auto_pull = true
 send_alerts = true
