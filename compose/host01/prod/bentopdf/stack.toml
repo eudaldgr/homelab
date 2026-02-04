@@ -12,4 +12,4 @@ auto_pull = true
 send_alerts = true
 
 compose_cmd_wrapper = """
-sops exec-env compose.env '[[COMPOSE_COMMAND]]'"""
+/opt/sops exec-env compose.env '[[COMPOSE_COMMAND]]'"""

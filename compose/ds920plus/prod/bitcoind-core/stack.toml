@@ -2,6 +2,7 @@
 name = "bitcoind-core-ds920plus"
 description = "Stack Bitcoind Core"
 deploy = true
+tags = ["ds920plus", "prod"]
 
 [stack.config]
 server_id = "ds920plus"
