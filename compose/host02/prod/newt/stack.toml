@@ -2,6 +2,7 @@
 name = "newt-host02"
 description = "Stack Newt"
 deploy = true
+tags = ["host02", "prod"]
 
 [stack.config]
 server_id = "host02"
