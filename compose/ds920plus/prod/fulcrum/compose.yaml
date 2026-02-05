@@ -62,5 +62,5 @@ services:
 
 networks:
   bitcoin-net:
+    external: true
     name: bitcoin-net
-    driver: bridge
