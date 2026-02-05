@@ -1,7 +1,7 @@
 ---
 services:
   testnet3:
-    image: ghcr.io/eudaldgr/docker-bitcoind-core:latest
+    image: ghcr.io/eudaldgr/bitcoind-core:latest
     container_name: bitcoind-core_testnet3_1
     user: "${PUID}:${PGID}"
     command: ["-datadir=/data/.bitcoin", "-chain=test"]
@@ -21,7 +21,7 @@ services:
     restart: unless-stopped
 
   testnet4:
-    image: ghcr.io/eudaldgr/docker-bitcoind-core:latest
+    image: ghcr.io/eudaldgr/bitcoind-core:latest
     container_name: bitcoind-core_testnet4_1
     user: "${PUID}:${PGID}"
     command: ["-datadir=/data/.bitcoin", "-chain=testnet4"]
@@ -41,7 +41,7 @@ services:
     restart: unless-stopped
 
   signet:
-    image: ghcr.io/eudaldgr/docker-bitcoind-core:latest
+    image: ghcr.io/eudaldgr/bitcoind-core:latest
     container_name: bitcoind-core_signet_1
     user: "${PUID}:${PGID}"
     command:
