@@ -3,6 +3,7 @@ services:
   app:
     image: docker.io/rustfs/rustfs:1.0.0-alpha.82@sha256:eadee1b524ec05cbc1fe08426a95e589bc70e70cd15a4591edf176cabde238a6
     container_name: rustfs_app_1
+    user: "${PUID}:${PGID}"
     healthcheck:
       test: ["CMD-SHELL", "nc -z 127.0.0.1 9000 || exit 1"]
       interval: 10s
