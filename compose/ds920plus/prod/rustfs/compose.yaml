@@ -11,6 +11,7 @@ services:
       retries: 3
       start_period: 90s
     environment:
+      - TZ=${TZ}
       - RUSTFS_SERVER_DOMAINS=${RUSTFS_HOSTNAME}
       - RUSTFS_CONSOLE_ENABLE=true
       - RUSTFS_ACCESS_KEY=${RUSTFS_ACCESS_KEY} # Generate your own access key with `openssl rand -hex 16`
