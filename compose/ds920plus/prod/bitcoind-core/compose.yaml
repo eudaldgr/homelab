@@ -4,7 +4,13 @@ services:
     image: ghcr.io/eudaldgr/bitcoind-core:latest
     container_name: bitcoind-core_testnet3_1
     user: "${PUID}:${PGID}"
-    command: ["-datadir=/data/.bitcoin", "-chain=test"]
+    command:
+      [
+        "-datadir=/data/.bitcoin",
+        "-chain=test",
+        "-rpcbind=0.0.0.0",
+        "-rpcallowip=10.89.0.0/24",
+      ]
     ports:
       # - "8332:8332" # Mainnet RPC
       # - "8333:8333" # Mainnet P2P
@@ -18,13 +24,20 @@ services:
       # - "18444:18444" # Regtest P2P
     volumes:
       - ${APP_DATA_DIR}/bitcoind-core/data:/data/.bitcoin
+    networks: [bitcoin-net]
     restart: unless-stopped
 
   testnet4:
     image: ghcr.io/eudaldgr/bitcoind-core:latest
     container_name: bitcoind-core_testnet4_1
     user: "${PUID}:${PGID}"
-    command: ["-datadir=/data/.bitcoin", "-chain=testnet4"]
+    command:
+      [
+        "-datadir=/data/.bitcoin",
+        "-chain=testnet4",
+        "-rpcbind=0.0.0.0",
+        "-rpcallowip=10.89.0.0/24",
+      ]
     ports:
       # - "8332:8332" # Mainnet RPC
       # - "8333:8333" # Mainnet P2P
@@ -38,6 +51,7 @@ services:
       # - "18444:18444" # Regtest P2P
     volumes:
       - ${APP_DATA_DIR}/bitcoind-core/data:/data/.bitcoin
+    networks: [bitcoin-net]
     restart: unless-stopped
 
   signet:
@@ -50,6 +64,8 @@ services:
         "-chain=signet",
         "-addnode=89.147.108.149:38333",
         "-signetchallenge=00144b4ef981ad360b21e2a758954e5152d8390e6598",
+        "-rpcbind=0.0.0.0",
+        "-rpcallowip=10.89.0.0/24",
       ]
     ports:
       # - "8332:8332" # Mainnet RPC
@@ -64,4 +80,13 @@ services:
       # - "18444:18444" # Regtest P2P
     volumes:
       - ${APP_DATA_DIR}/bitcoind-core/data:/data/.bitcoin
+    networks: [bitcoin-net]
     restart: unless-stopped
+
+networks:
+  bitcoin-net:
+    name: bitcoin-net
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.89.0.0/24
