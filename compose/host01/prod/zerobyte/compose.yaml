@@ -1,0 +1,19 @@
+---
+services:
+  app:
+    image: ghcr.io/nicotsx/zerobyte:v0.25.1@sha256:196b2bde15ce7e897b14fb22935025194c38ce83c19349d4b950e739e8a3a06a
+    container_name: zerobyte_app_1
+    ports:
+      - "4096:4096"
+    environment:
+      - TZ=${TZ}
+      - BASE_URL=${BASE_URL}
+      - APP_SECRET=${APP_SECRET} # Generate your own secret with `openssl rand -hex 32`
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - data:/var/lib/zerobyte
+      - /var/lib/containers:/host
+    restart: unless-stopped
+
+volumes:
+  data:
