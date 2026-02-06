@@ -26,10 +26,6 @@ services:
     volumes:
       - ${APP_DATA_DIR}/bitcoind-core/data:/data/.bitcoin
     networks: [bitcoin-net]
-    deploy:
-      resources:
-        limits:
-          memory: 1G
     restart: unless-stopped
 
   testnet4:
@@ -58,10 +54,6 @@ services:
     volumes:
       - ${APP_DATA_DIR}/bitcoind-core/data:/data/.bitcoin
     networks: [bitcoin-net]
-    deploy:
-      resources:
-        limits:
-          memory: 256M
     restart: unless-stopped
 
   signet:
@@ -92,10 +84,6 @@ services:
     volumes:
       - ${APP_DATA_DIR}/bitcoind-core/data:/data/.bitcoin
     networks: [bitcoin-net]
-    deploy:
-      resources:
-        limits:
-          memory: 256M
     restart: unless-stopped
 
 networks:

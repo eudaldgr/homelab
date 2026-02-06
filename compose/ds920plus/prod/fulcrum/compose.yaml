@@ -18,10 +18,6 @@ services:
       - ${APP_DATA_DIR}/fulcrum/data/testnet3:/data
       - ${APP_DATA_DIR}/bitcoind-core/data/testnet3:/run/bitcoind:ro
     networks: [bitcoin-net]
-    deploy:
-      resources:
-        limits:
-          memory: 1G
     restart: unless-stopped
 
   testnet4:
@@ -42,10 +38,6 @@ services:
       - ${APP_DATA_DIR}/fulcrum/data/testnet4:/data
       - ${APP_DATA_DIR}/bitcoind-core/data/testnet4:/run/bitcoind:ro
     networks: [bitcoin-net]
-    deploy:
-      resources:
-        limits:
-          memory: 256M
     restart: unless-stopped
 
   signet:
@@ -66,10 +58,6 @@ services:
       - ${APP_DATA_DIR}/fulcrum/data/signet:/data
       - ${APP_DATA_DIR}/bitcoind-core/data/signet:/run/bitcoind:ro
     networks: [bitcoin-net]
-    deploy:
-      resources:
-        limits:
-          memory: 256M
     restart: unless-stopped
 
 networks:
