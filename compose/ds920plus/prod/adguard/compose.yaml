@@ -34,39 +34,13 @@ services:
       # Optional: DNSCrypt Port
       # - "5443:5443/tcp"
       # - "5443:5443/udp"
-    # labels:
-    #   # Public Resource Configuration
-    #   - pangolin.proxy-resources.adguard.name=adguard
-    #   - pangolin.proxy-resources.adguard.full-domain=${ADGUARD_HOSTNAME}
-    #   - pangolin.proxy-resources.adguard.protocol=http
-    #   # Auth: protect all but API
-    #   - pangolin.proxy-resources.adguard.auth.sso-enabled=true
-    #   # - pangolin.proxy-resources.adguard.rules[0].action=allow
-    #   # - pangolin.proxy-resources.adguard.rules[0].match=path
-    #   # - pangolin.proxy-resources.adguard.rules[0].value=/api/*
-    #   # Target Configuration - Override to Host Hairpin
-    #   - pangolin.proxy-resources.adguard.targets[0].method=http
-    #   - pangolin.proxy-resources.adguard.targets[0].hostname=${HOST_IP}
-    #   - pangolin.proxy-resources.adguard.targets[0].port=${ADGUARD_WEB_PORT}
-    #   # Health Check Configuration
-    #   - pangolin.proxy-resources.adguard.targets[0].healthcheck.enabled=true
-    #   - pangolin.proxy-resources.adguard.targets[0].healthcheck.hostname=${HOST_IP}
-    #   - pangolin.proxy-resources.adguard.targets[0].healthcheck.port=${ADGUARD_WEB_PORT}
-    #   - pangolin.proxy-resources.adguard.targets[0].healthcheck.path=/
     # To see real client IPs in rootless podman, use host networking.
     # WARNING: This requires port 53 to be free on the host (disable systemd-resolved stub).
     networks:
-      vlan20:
-        ipv4_address: 10.1.20.5
+      vlan99:
+        ipv4_address: 10.1.99.5
     restart: unless-stopped
 
 networks:
-  vlan20:
-    name: vlan20
-    driver: macvlan
-    driver_opts:
-      parent: eth2.20
-    ipam:
-      config:
-        - subnet: 10.1.20.0/24
-          gateway: 10.1.20.1
+  vlan99:
+    external: true
