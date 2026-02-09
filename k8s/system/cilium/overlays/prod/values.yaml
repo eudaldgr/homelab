@@ -1,5 +1,6 @@
 # https://github.com/cilium/cilium/blob/main/install/kubernetes/cilium/values.yaml
 kubeProxyReplacement: true
+upgradeCompatibility: "1.18"
 
 # k3s specific settings
 k8sServiceHost: 127.0.0.1
