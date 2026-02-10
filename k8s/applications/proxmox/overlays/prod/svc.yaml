@@ -3,6 +3,10 @@ kind: Service
 metadata:
   name: proxmox-pve01
   namespace: proxmox
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: pve01.home.eudald.gr
+    external-dns.alpha.kubernetes.io/target: 10.1.20.113
+    external-dns.alpha.kubernetes.io/ttl: "300"
 spec:
   ports:
     - name: https
@@ -15,6 +19,10 @@ kind: Service
 metadata:
   name: proxmox-pve02
   namespace: proxmox
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: pve02.home.eudald.gr
+    external-dns.alpha.kubernetes.io/target: 10.1.20.113
+    external-dns.alpha.kubernetes.io/ttl: "300"
 spec:
   ports:
     - name: https
