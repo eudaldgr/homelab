@@ -44,6 +44,11 @@ spec:
                 secretKeyRef:
                   name: adguard-sync-secret
                   key: origin-password
+            - name: ORIGIN_AUTO_SETUP
+              valueFrom:
+                secretKeyRef:
+                  name: adguard-sync-secret
+                  key: origin-auto-setup
             - name: REPLICA1_URL
               valueFrom:
                 secretKeyRef:
@@ -59,18 +64,8 @@ spec:
                 secretKeyRef:
                   name: adguard-sync-secret
                   key: replica1-password
-            - name: REPLICA2_URL
+            - name: REPLICA1_AUTO_SETUP
               valueFrom:
                 secretKeyRef:
                   name: adguard-sync-secret
-                  key: replica2-url
-            - name: REPLICA2_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: adguard-sync-secret
-                  key: replica2-username
-            - name: REPLICA2_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: adguard-sync-secret
-                  key: replica2-password
+                  key: replica1-auto-setup

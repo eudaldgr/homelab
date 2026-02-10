@@ -5,6 +5,7 @@ resources:
   - ../../base
   - recurringjob.yaml
   - http-route.yaml
+  - sealed-secrets.yaml
 
 helmCharts:
   - name: longhorn

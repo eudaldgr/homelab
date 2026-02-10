@@ -46,7 +46,8 @@ csi:
         cpu: 60m
         memory: 70Mi
 defaultBackupStore:
-  backupTarget: "nfs://10.1.30.50:/volume2/k8s/homelab/prod/longhorn/backups"
+  backupTarget: "s3://longhorn@us-west-1"
+  backupTargetCredentialSecret: longhorn-rustfs-credentials
   pollInterval: 180
 defaultSettings:
   allowCollectingLonghornUsageMetrics: false
@@ -65,6 +66,10 @@ defaultSettings:
   replicaReplenishmentWaitInterval: "600"
   backupstorePollInterval: 300
   replicaSoftAntiAffinity: true
+  # Replica balancing and maintenance settings
+  replicaAutoBalance: least-effort
+  removeSnapshotsDuringFilesystemTrim: "enabled"
+  offlineReplicaRebuilding: '{"v1":"enabled"}'
 persistence:
   defaultClass: true
   defaultClassReplicaCount: 2
