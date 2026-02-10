@@ -46,7 +46,7 @@ csi:
         cpu: 60m
         memory: 70Mi
 defaultBackupStore:
-  backupTarget: "s3://longhorn@us-west-1"
+  backupTarget: "s3://longhorn@us-west-1/backups"
   backupTargetCredentialSecret: longhorn-rustfs-credentials
   pollInterval: 180
 defaultSettings:
