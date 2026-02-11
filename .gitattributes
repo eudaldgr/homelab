@@ -3,3 +3,4 @@
 **/secrets.sops.yml filter=sops
 **/terraform.tfvars filter=sops
 **/variables.auto.pkrvars.hcl filter=sops
+**/backend.hcl filter=sops
