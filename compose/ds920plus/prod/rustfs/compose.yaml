@@ -16,6 +16,10 @@ services:
       - RUSTFS_CONSOLE_ENABLE=true
       - RUSTFS_ACCESS_KEY=${RUSTFS_ACCESS_KEY} # Generate your own access key with `openssl rand -hex 16`
       - RUSTFS_SECRET_KEY=${RUSTFS_SECRET_KEY} # Generate your own secret key with `openssl rand -hex 32`
+      # - RUSTFS_OBS_ENVIRONMENT=development
+      # - RUSTFS_OBS_LOGGER_LEVEL=debug
+      # - RUSTFS_OBS_LOG_STDOUT_ENABLED="true"
+      # - RUST_BACKTRACE=1
     volumes:
       - ${APP_DATA_DIR}/data:/data
       - ${APP_DATA_DIR}/logs:/logs
