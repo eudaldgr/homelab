@@ -38,7 +38,7 @@ services:
     # WARNING: This requires port 53 to be free on the host (disable systemd-resolved stub).
     networks:
       vlan99:
-        ipv4_address: 10.1.99.5
+        ipv4_address: 192.168.99.5
     restart: unless-stopped
 
 networks:
