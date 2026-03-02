@@ -1,0 +1,84 @@
+# Import blocks for existing resources.
+# Remove this file after the first successful `tofu apply`.
+
+# Cluster — APT standard repos
+import {
+  to = module.cluster.proxmox_virtual_environment_apt_standard_repository.enterprise["pve01"]
+  id = "pve01,enterprise"
+}
+import {
+  to = module.cluster.proxmox_virtual_environment_apt_standard_repository.no_subscription["pve01"]
+  id = "pve01,no-subscription"
+}
+import {
+  to = module.cluster.proxmox_virtual_environment_apt_standard_repository.ceph_no_subscription["pve01"]
+  id = "pve01,ceph-squid-no-subscription"
+}
+
+# Cluster — APT repositories toggles
+import {
+  to = module.cluster.proxmox_virtual_environment_apt_repository.enterprise["pve01"]
+  id = "pve01,/etc/apt/sources.list.d/pve-enterprise.sources,0"
+}
+import {
+  to = module.cluster.proxmox_virtual_environment_apt_repository.no_subscription["pve01"]
+  id = "pve01,/etc/apt/sources.list.d/proxmox.sources,0"
+}
+import {
+  to = module.cluster.proxmox_virtual_environment_apt_repository.ceph_no_subscription["pve01"]
+  id = "pve01,/etc/apt/sources.list.d/ceph.sources,0"
+}
+
+# Cluster - APT Debian Trixie repos
+import {
+  to = module.cluster.proxmox_virtual_environment_apt_repository.debian_trixie["pve01"]
+  id = "pve01,/etc/apt/sources.list.d/debian.sources,0"
+}
+import {
+  to = module.cluster.proxmox_virtual_environment_apt_repository.debian_trixie_security["pve01"]
+  id = "pve01,/etc/apt/sources.list.d/debian.sources,1"
+}
+
+# Cluster — DNS per node
+import {
+  to = module.cluster.proxmox_virtual_environment_dns.nodes["pve01"]
+  id = "pve01"
+}
+
+# Cluster — iGPU PCI mapping
+import {
+  to = module.cluster.proxmox_virtual_environment_hardware_mapping_pci.igpu
+  id = "iGPU"
+}
+
+# Cluster — Hosts entries
+import {
+  to = module.cluster.proxmox_virtual_environment_hosts.main["pve01"]
+  id = "pve01"
+}
+
+# Cluster — Storage
+import {
+  to = module.cluster.proxmox_virtual_environment_storage_directory.local
+  id = "local"
+}
+import {
+  to = module.cluster.proxmox_virtual_environment_storage_zfspool.local-zfs
+  id = "local-zfs"
+}
+
+# Cluster — Network
+import {
+  to = module.cluster.proxmox_virtual_environment_network_linux_bridge.vmbr0["pve01"]
+  id = "pve01:vmbr0"
+}
+import {
+  to = module.cluster.proxmox_virtual_environment_network_linux_bridge.vmbr1["pve01"]
+  id = "pve01:vmbr1"
+}
+
+# Timezone
+import {
+  to = module.cluster.proxmox_virtual_environment_time.main["pve01"]
+  id = "pve01"
+}

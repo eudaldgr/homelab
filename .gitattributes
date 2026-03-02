@@ -4,3 +4,4 @@
 **/terraform.tfvars filter=sops
 **/variables.auto.pkrvars.hcl filter=sops
 **/backend.hcl filter=sops
+**/imports.tf filter=sops

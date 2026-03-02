@@ -1,0 +1,3 @@
+# Ignore OpenTofu generated output files
+**/output/kubeconfig
+**/output/talosconfig
