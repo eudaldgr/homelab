@@ -21,6 +21,8 @@ resource "proxmox_virtual_environment_role" "devops_operator" {
     "VM.Config.Memory",
     "VM.Config.Network",
     "VM.Config.Options",
+    "VM.GuestAgent.Audit",
+    "VM.GuestAgent.Unrestricted",
     "VM.PowerMgmt",
   ]
 }

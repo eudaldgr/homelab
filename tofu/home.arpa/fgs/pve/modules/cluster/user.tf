@@ -1,7 +1,8 @@
 resource "proxmox_virtual_environment_user" "tofu" {
-  comment = "Managed by OpenTofu for automation"
-  user_id = "tofu@pve"
-  enabled = true
+  comment  = "Managed by OpenTofu for automation"
+  user_id  = "tofu@pve"
+  password = var.tofu_user_password
+  enabled  = true
   groups = [
     proxmox_virtual_environment_group.devops.group_id,
   ]

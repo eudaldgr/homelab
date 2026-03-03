@@ -37,3 +37,9 @@ variable "cloudflare_api_token" {
   type        = string
   sensitive   = true
 }
+
+variable "tofu_user_password" {
+  description = "Password for the 'tofu' user created on Proxmox nodes"
+  type        = string
+  sensitive   = true
+}
