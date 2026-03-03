@@ -1,1 +1,0 @@
-instance-id: ${instance_id}

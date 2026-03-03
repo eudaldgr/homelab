@@ -1,7 +1,0 @@
----
-collections:
-  - name: ansible.posix
-  - name: ansible.utils
-  - name: community.general
-  - name: community.kubernetes
-  - name: kubernetes.core

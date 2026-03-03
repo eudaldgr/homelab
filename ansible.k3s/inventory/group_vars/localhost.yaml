@@ -1,4 +1,0 @@
----
-ansible_become: false
-
-kubeconfig_path: "{{ lookup('env', 'HOME') }}/.kube/k3s-homelab.conf"

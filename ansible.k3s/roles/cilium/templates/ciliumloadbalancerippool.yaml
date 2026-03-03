@@ -1,9 +1,0 @@
-{% set start, stop = lb_range.split('-') %}
-apiVersion: cilium.io/v2
-kind: CiliumLoadBalancerIPPool
-metadata:
-  name: default
-spec:
-  blocks:
-    - start: {{ start }}
-      stop: {{ stop }}
