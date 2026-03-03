@@ -1,0 +1,50 @@
+machine:
+  certSANs:
+%{ for san in cert_sans ~}
+    - ${san}
+%{ endfor ~}
+
+  kubelet:
+    clusterDNS:
+      - 10.96.0.10
+    extraArgs:
+      rotate-server-certificates: true
+    extraConfig:
+      imageMinimumGCAge: 1h
+      evictionHard:
+        imagefs.available: 1Gi
+      evictionSoft:
+        imagefs.available: 2Gi
+      evictionSoftGracePeriod:
+        imagefs.available: 5m
+  sysctls:
+    vm.nr_hugepages: "1024"
+  kernel:
+    modules:
+      - name: vfio_pci
+%{ if igpu ~}
+      - name: i915
+%{ endif ~}
+
+  nodeLabels:
+    topology.kubernetes.io/region: ${cluster_name}
+    topology.kubernetes.io/zone: ${node_name}
+    kubearmor.io/enforcer: bpf
+    kubearmor.io/runtime: containerd
+    kubearmor.io/socket: run_containerd_containerd.sock
+    kubearmor.io/btf: "yes"
+    kubearmor.io/seccomp: "yes"
+    kubearmor.io/apparmorfs: "no"
+    kubearmor.io/securityfs: "yes"
+    kubearmor.io/rand: talos-static
+
+cluster:
+  clusterName: ${cluster_domain}
+  network:
+    dnsDomain: ${cluster_domain}
+
+---
+apiVersion: v1alpha1
+kind: HostnameConfig
+auto: off
+hostname: ${hostname}
