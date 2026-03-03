@@ -19,7 +19,7 @@ resource "proxmox_virtual_environment_storage_zfspool" "local-zfs" {
 
 resource "proxmox_virtual_environment_storage_nfs" "ds920plus-shared" {
   id     = "ds920plus-shared"
-  server = "ds920plus.home.eudald.gr"
+  server = "ds920plus.${var.dns.domain}"
   export = "/volume2/pve-shared"
 
   content = ["vztmpl", "iso", "snippets"]
@@ -29,7 +29,7 @@ resource "proxmox_virtual_environment_storage_nfs" "ds920plus-shared" {
 
 resource "proxmox_virtual_environment_storage_nfs" "ds920plus-data" {
   id     = "ds920plus-data"
-  server = "ds920plus.home.eudald.gr"
+  server = "ds920plus.${var.dns.domain}"
   export = "/volume2/pve-data"
 
   content = ["images", "rootdir"]
