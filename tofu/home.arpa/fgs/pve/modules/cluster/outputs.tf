@@ -10,3 +10,16 @@ output "tofu_proxmox_api_token" {
   )
   sensitive = true
 }
+
+output "csi_proxmox_api_token" {
+  description = "API token string for Proxmox provider auth (id=secret)"
+  value = format(
+    "%s=%s",
+    proxmox_virtual_environment_user_token.kubernetes-csi-token.id,
+    element(
+      split("=", proxmox_virtual_environment_user_token.kubernetes-csi-token.value),
+      length(split("=", proxmox_virtual_environment_user_token.kubernetes-csi-token.value)) - 1
+    )
+  )
+  sensitive = true
+}

@@ -3,3 +3,9 @@ output "tofu_proxmox_api_token" {
   value       = module.cluster.tofu_proxmox_api_token
   sensitive   = true
 }
+
+output "csi_proxmox_api_token" {
+  description = "API token for Proxmox provider"
+  value       = module.cluster.csi_proxmox_api_token
+  sensitive   = true
+}

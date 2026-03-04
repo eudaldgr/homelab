@@ -1,3 +1,4 @@
+# OpenTofu
 resource "proxmox_virtual_environment_role" "devops_operator" {
   role_id = "devops-operator"
 
@@ -27,18 +28,16 @@ resource "proxmox_virtual_environment_role" "devops_operator" {
   ]
 }
 
-resource "proxmox_virtual_environment_acl" "devops_group_role" {
-  group_id = proxmox_virtual_environment_group.devops.group_id
-  role_id  = proxmox_virtual_environment_role.devops_operator.role_id
+# Proxmox-csi
+resource "proxmox_virtual_environment_role" "csi" {
+  role_id = "csi"
 
-  path      = "/"
-  propagate = true
-}
-
-resource "proxmox_virtual_environment_acl" "tofu_token_role" {
-  token_id = proxmox_virtual_environment_user_token.tofu.id
-  role_id  = proxmox_virtual_environment_role.devops_operator.role_id
-
-  path      = "/"
-  propagate = true
+  privileges = [
+    "Sys.Audit",
+    "VM.Audit",
+    "VM.Config.Disk",
+    "Datastore.Allocate",
+    "Datastore.AllocateSpace",
+    "Datastore.Audit"
+  ]
 }
