@@ -28,7 +28,7 @@ variable "dns" {
 variable "talos" {
   description = "Talos cluster configuration"
   type = object({
-    cluster_name       = string
+    cluster_name       = optional(string, "homelab")
     vip                = string
     gateway            = string
     subnet             = string
