@@ -1,0 +1,21 @@
+storageClass:
+  - name: proxmox-csi
+    cache: writethrough
+    fstype: ext4
+    reclaimPolicy: Retain
+    volumeBindingMode: WaitForFirstConsumer
+    ssd: true
+    storage: ceph-ssd
+    mountOptions:
+      - noatime
+    default: true
+  - name: proxmox-csi-local-zfs
+    cache: writethrough
+    fstype: ext4
+    reclaimPolicy: Retain
+    volumeBindingMode: WaitForFirstConsumer
+    ssd: true
+    storage: local-zfs
+    mountOptions:
+      - noatime
+    default: false
