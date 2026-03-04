@@ -4,7 +4,6 @@ resource "talos_image_factory_schematic" "std" {
     customization = {
       systemExtensions = {
         officialExtensions = [
-          "siderolabs/iscsi-tools",
           "siderolabs/qemu-guest-agent",
         ]
       }
