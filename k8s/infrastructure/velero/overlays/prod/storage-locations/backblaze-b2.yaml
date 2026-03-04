@@ -1,0 +1,21 @@
+# Backblaze B2 Backup Storage Location
+apiVersion: velero.io/v1
+kind: BackupStorageLocation
+metadata:
+  name: backblaze-b2
+  namespace: velero
+spec:
+  provider: aws
+  objectStorage:
+    bucket: e17n-homelab-velero-b2
+    prefix: velero-backups # Organize backups in subdirectory
+  config:
+    region: eu-central-003
+    s3ForcePathStyle: "false" # B2 uses virtual-hosted style
+    s3Url: https://s3.eu-central-003.backblazeb2.com
+  credential:
+    name: velero-b2-credentials
+    key: cloud
+  default: false # Keep rustfs as default for faster local restores
+  accessMode: ReadWrite
+  validationFrequency: 24h # Verify B2 connectivity daily to reduce Class B transactions

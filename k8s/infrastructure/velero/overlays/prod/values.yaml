@@ -1,0 +1,68 @@
+---
+upgradeCRDs: false
+deployNodeAgent: true
+snapshotsEnabled: false
+initContainers:
+  - name: velero-plugin-for-aws
+    image: velero/velero-plugin-for-aws:v1.13.2
+    imagePullPolicy: IfNotPresent
+    volumeMounts:
+      - mountPath: /target
+        name: plugins
+rbac:
+  create: true
+  clusterAdministrator: true
+serviceAccount:
+  server:
+    create: true
+credentials:
+  useSecret: true
+  existingSecret: velero-rustfs-credentials
+configuration:
+  uploaderType: kopia
+  uploaderConfig:
+    parallelFilesUpload: 2
+  backupRepositoryConfigMap: velero-repository-config
+  backupStorageLocation:
+    - name: default
+      provider: aws
+      bucket: velero
+      default: true
+      config:
+        region: cat-emp-01
+        s3ForcePathStyle: "true"
+        s3Url: http://ds920plus.home.eudald.gr:9000
+  repositoryMaintenanceJob:
+    repositoryConfigData:
+      name: "velero-repo-maintenance"
+      global:
+        keepLatestMaintenanceJobs: 3
+        podResources:
+          cpuRequest: "100m"
+          cpuLimit: "200m"
+          memoryRequest: "128Mi"
+          memoryLimit: "256Mi"
+        podSecurityContext:
+          runAsNonRoot: true
+          runAsUser: 65534
+          runAsGroup: 65534
+          fsGroup: 65534
+          seccompProfile:
+            type: RuntimeDefault
+        containerSecurityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          readOnlyRootFilesystem: true
+resources:
+  requests:
+    cpu: 200m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true
