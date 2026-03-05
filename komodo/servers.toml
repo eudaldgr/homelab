@@ -1,9 +1,4 @@
 [[server]]
-name = "host01"
-[server.config]
-enabled = true
-
-[[server]]
 name = "ds920plus"
 [server.config]
 enabled = true

@@ -18,10 +18,4 @@ resource_path = [
   "compose/ds920plus/prod/fulcrum/stack.toml",
   "compose/ds920plus/prod/newt/stack.toml",
   "compose/ds920plus/prod/rustfs/stack.toml",
-  
-  # host01 specific
-  "compose/host01/prod/adguard/stack.toml",
-  "compose/host01/prod/bentopdf/stack.toml",
-  "compose/host01/prod/newt/stack.toml",
-  "compose/host01/prod/zerobyte/stack.toml",
 ]
