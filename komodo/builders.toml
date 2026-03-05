@@ -5,12 +5,6 @@ type = "Server"
 params.server_id = "host01"
 
 [[builder]]
-name = "host02"
-[builder.config]
-type = "Server"
-params.server_id = "host02"
-
-[[builder]]
 name = "ds920plus"
 [builder.config]
 type = "Server"

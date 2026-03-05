@@ -9,16 +9,6 @@ repo = "eudaldgr/homelab"
 branch = "main"
 
 [[repo]]
-name = "homelab-host02"
-description = "Repositori principal del homelab"
-
-[repo.config]
-server_id = "host02"
-git_provider = "github.com"
-repo = "eudaldgr/homelab"
-branch = "main"
-
-[[repo]]
 name = "homelab-ds920plus"
 description = "Repositori principal del homelab"
 

@@ -1,7 +1,6 @@
 keys:
   - &laptop age1yfrq96mwj6ah0szswj9a8vg8jmyzwl5g6w5u8fh23yg85saxyunss056hg
   - &host01 age1kuqhs9tgpqnjldnayeykqvu9u0z384xrgdd8dds7g6lymdzczu8qun9hep
-  - &host02 age1v6j7cn8ud0p67363dj8ft8qermdv7fp7f5hklamajyqqm5phnp0q8y3ryh
   - &ds920plus age175lfmhlkmu8qu07dkxsau62v4vfdczejr66xvf9peg733rrth44shlz5zq
 
 creation_rules:
@@ -10,7 +9,6 @@ creation_rules:
       - age:
         - *laptop
         - *host01
-        - *host02
         - *ds920plus
 
   - path_regex: '.*/secrets\.sops\.ya?ml$'
