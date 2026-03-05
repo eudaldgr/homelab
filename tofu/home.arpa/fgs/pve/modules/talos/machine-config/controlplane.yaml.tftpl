@@ -12,14 +12,15 @@ machine:
     extraConfig:
       imageMinimumGCAge: 1h
       evictionHard:
+        memory.available: 500Mi
         imagefs.available: 1Gi
       evictionSoft:
+        memory.available: 1Gi
         imagefs.available: 2Gi
       evictionSoftGracePeriod:
+        memory.available: 1m
         imagefs.available: 5m
-  sysctls:
-    vm.nr_hugepages: "1024"
-
+  
   network:
     interfaces:
       - interface: eth0
@@ -40,17 +41,38 @@ machine:
     kubearmor.io/rand: talos-static
 
 cluster:
+  clusterName: ${cluster_domain}
+  allowSchedulingOnControlPlanes: false
+  
   coreDNS:
     disabled: false
-  allowSchedulingOnControlPlanes: false
-  clusterName: ${cluster_domain}
+
   apiServer:
+    extraArgs:
+      default-watch-cache-size: "100"
+
+  controllerManager:
+    extraArgs:
+      concurrent-service-syncs: "1"
+      concurrent-deployment-syncs: "1"
+
+  etcd:
+    extraArgs:
+      quota-backend-bytes: "1073741824"
+      auto-compaction-retention: "1"
+      auto-compaction-mode: "periodic"
+      snapshot-count: "50000"
+      heartbeat-interval: "500"
+      election-timeout: "5000"
+  
   network:
     dnsDomain: ${cluster_domain}
     cni:
       name: none
+  
   proxy:
     disabled: true
+  
   extraManifests:
     - https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.4.1/standard-install.yaml # renovate: github-releases=kubernetes-sigs/gateway-api
     - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.4.1/config/crd/experimental/gateway.networking.k8s.io_tlsroutes.yaml # renovate: github-releases=kubernetes-sigs/gateway-api

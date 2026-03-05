@@ -12,13 +12,27 @@ machine:
     extraConfig:
       imageMinimumGCAge: 1h
       evictionHard:
+        memory.available: 300Mi
+        nodefs.available: 5%
         imagefs.available: 1Gi
       evictionSoft:
+        memory.available: 800Mi
+        nodefs.available: 10%
         imagefs.available: 2Gi
       evictionSoftGracePeriod:
+        memory.available: 1m
+        nodefs.available: 2m
         imagefs.available: 5m
+      kubeReserved:
+        memory: 512Mi
+      systemReserved:
+        memory: 256Mi
+
+%{ if igpu ~}
   sysctls:
     vm.nr_hugepages: "1024"
+%{ endif ~}
+
   kernel:
     modules:
       - name: vfio_pci
