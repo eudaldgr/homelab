@@ -1,5 +1,5 @@
 ---
-upgradeCRDs: false
+upgradeCRDs: true
 deployNodeAgent: true
 snapshotsEnabled: false
 initContainers:
@@ -23,6 +23,7 @@ configuration:
   uploaderConfig:
     parallelFilesUpload: 2
   backupRepositoryConfigMap: velero-repository-config
+  repoMaintenanceJobConfigMap: velero-repo-maintenance-job-config
   backupStorageLocation:
     - name: default
       provider: aws
