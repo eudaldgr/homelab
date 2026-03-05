@@ -42,10 +42,7 @@ resource "null_resource" "system_project" {
 }
 
 resource "null_resource" "system_appset" {
-  depends_on = [
-    null_resource.system_project,
-    null_resource.infrastructure_appset
-  ]
+  depends_on = [null_resource.system_project]
 
   provisioner "local-exec" {
     command = <<-EOT
@@ -100,7 +97,6 @@ resource "null_resource" "applications_project" {
 resource "null_resource" "applications_appset" {
   depends_on = [
     null_resource.applications_project,
-    null_resource.system_appset,
     null_resource.infrastructure_appset
   ]
 
