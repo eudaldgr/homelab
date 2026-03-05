@@ -1,5 +1,0 @@
-configuration:
-  timeZone: Europe/Madrid
-  rebootCommand: /usr/bin/systemctl reboot
-  preRebootNodeLabels: [kured=rebooting]
-  postRebootNodeLabels: [kured=done]
