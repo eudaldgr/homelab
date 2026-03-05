@@ -5,6 +5,7 @@ resources:
 - ../../base
 - clusterissuer.yaml
 - internal-ca-issuer.yaml
+- sealed-secrets.yaml
 
 helmCharts:
 - name: cert-manager
