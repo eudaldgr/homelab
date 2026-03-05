@@ -11,9 +11,8 @@ terraform {
   }
 }
 
-
 provider "kubernetes" {
-  config_path = "${path.module}/../modules/talos/output/kubeconfig"
+  config_path = abspath("${path.root}/../output/kubeconfig")
 }
 
 provider "null" {}

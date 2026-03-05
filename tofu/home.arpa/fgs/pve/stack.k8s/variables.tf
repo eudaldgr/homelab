@@ -6,3 +6,9 @@ variable "proxmox" {
     insecure     = optional(bool, false)
   })
 }
+
+variable "restore_sealed_secrets_master_key" {
+  description = "Restore Sealed Secrets master key from ./secrets/sealed-secrets-master-keys.yaml"
+  type        = bool
+  default     = false
+}
