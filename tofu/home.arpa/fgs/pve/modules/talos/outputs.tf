@@ -16,13 +16,15 @@ output "cluster_endpoint" {
 }
 
 resource "local_file" "kubeconfig" {
-  filename        = "${path.module}/output/kubeconfig"
-  content         = talos_cluster_kubeconfig.this.kubeconfig_raw
-  file_permission = "0600"
+  filename             = "${abspath("${path.root}/../output")}/kubeconfig"
+  content              = talos_cluster_kubeconfig.this.kubeconfig_raw
+  directory_permission = "0700"
+  file_permission      = "0600"
 }
 
 resource "local_file" "talosconfig" {
-  filename        = "${path.module}/output/talosconfig"
-  content         = data.talos_client_configuration.this.talos_config
-  file_permission = "0600"
+  filename             = "${abspath("${path.root}/../output")}/talosconfig"
+  content              = data.talos_client_configuration.this.talos_config
+  directory_permission = "0700"
+  file_permission      = "0600"
 }
