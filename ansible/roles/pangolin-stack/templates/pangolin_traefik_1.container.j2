@@ -8,8 +8,8 @@ Pod=pangolin_proxy_1.pod
 ContainerName=pangolin_traefik_1
 Exec='--configFile=/etc/traefik/traefik_config.yml'
 Image=docker.io/library/traefik:{{ pangolin_traefik_version }}
-Mount=type=bind,src=/etc/pangolin/traefik,dst=/etc/traefik,ro=true
-Mount=type=bind,src=/etc/pangolin/traefik/letsencrypt,dst=/letsencrypt
+Mount=type=bind,src=/etc/pangolin/traefik,dst=/etc/traefik,ro=true,relabel=shared
+Mount=type=bind,src=/etc/pangolin/traefik/letsencrypt,dst=/letsencrypt,relabel=shared
 Mount=type=bind,src=/etc/pangolin/traefik/logs,dst=/var/log/traefik,relabel=shared,U=true
 SecurityLabelType=pangolin_traefik_1.process
 

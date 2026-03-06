@@ -4,5 +4,4 @@
   gather_facts: false
   become: true
   roles:
-    - prepare-podman
     - pangolin-stack

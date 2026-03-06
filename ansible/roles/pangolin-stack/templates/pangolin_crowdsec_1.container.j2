@@ -13,9 +13,9 @@ Environment=ENROLL_TAGS='docker'
 Environment=GID='1000'
 Environment=PARSERS='crowdsecurity/whitelists'
 Label="traefik.enable=false"
-Mount=type=bind,src=/etc/pangolin/crowdsec,dst=/etc/crowdsec,U=true
-Mount=type=bind,src=/etc/pangolin/crowdsec/db,dst=/var/lib/crowdsec/data
-Mount=type=bind,src=/etc/pangolin/traefik/logs,dst=/var/log/traefik
+Mount=type=bind,src=/etc/pangolin/crowdsec,dst=/etc/crowdsec,relabel=shared,U=true
+Mount=type=bind,src=/etc/pangolin/crowdsec/db,dst=/var/lib/crowdsec/data,relabel=shared
+Mount=type=bind,src=/etc/pangolin/traefik/logs,dst=/var/log/traefik,relabel=shared
 Exec='-t'
 Notify=healthy
 HealthCmd="cscli capi status"

@@ -1,33 +1,4 @@
 ---
-- name: Ensure subuid and subgid for root (userns=auto)
-  ansible.builtin.blockinfile:
-    dest: "{{ item }}"
-    owner: root
-    group: root
-    mode: "0644"
-    marker: "# {mark} ANSIBLE MANAGED BLOCK - Default"
-    content: |
-      containers:300000:1048576
-  with_items:
-    - /etc/subuid
-    - /etc/subgid
-  tags: user
-
-- name: Configure containers.conf for userns=auto
-  ansible.builtin.ini_file:
-    path: /etc/containers/containers.conf
-    section: containers
-    option: "{{ item.option }}"
-    value: "{{ item.value }}"
-    create: true
-    owner: root
-    group: root
-    mode: "0644"
-  loop:
-    - { option: userns, value: '"auto"' }
-  tags: podman
-# - { option: userns_size, value: "65536" }
-
 - name: Create override.conf for podman-restart.service
   ansible.builtin.blockinfile:
     path: "/etc/systemd/system/podman-restart.service.d/override.conf"
@@ -51,13 +22,10 @@
 
 - name: Start and enable podman services
   ansible.builtin.systemd_service:
-    name: "{{ item }}"
-    state: started
+    name: podman-restart.service
+    state: restarted
     enabled: true
   changed_when: false
-  with_items:
-    - podman.socket
-    - podman-restart.service
   tags: podman
 
 - name: Include SOPS age setup tasks
