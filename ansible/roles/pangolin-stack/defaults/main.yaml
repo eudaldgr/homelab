@@ -1,5 +1,5 @@
 ---
-pangolin_app_version: "1.16.2@sha256:06aad9971df1a72edf0bea07d64fa67daeb8ee84319faf6813850c43e950eaa5"
+pangolin_app_version: "ee-1.16.2@sha256:b054615fc9f14e554adc0d0582ed9adb6885b581379e2007c7be8f8be6aa4e99"
 pangolin_gerbil_version: "1.3.0@sha256:7d9732af74c5851dde4b39a69a0c5d25b2f86a44464ebe0a4f116280914a8b56"
 pangolin_traefik_version: "v3.6.0@sha256:18112aed2bfe3dfb8534f1045622390c3316596cff0cefab64f44e43d23e1640"
 pangolin_badger_version: "v1.3.1"
