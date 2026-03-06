@@ -2,35 +2,13 @@
 
 locals {
   needed_packages = join(" ", concat([
-    "restorecond",
-    "policycoreutils",
-    "policycoreutils-python-utils",
-    "setools-console",
-    "audit",
-    "bind-utils",
-    "wireguard-tools",
-    "fuse",
-    "open-iscsi",
-    "nfs-client",
-    "xfsprogs",
-    "cryptsetup",
-    "lvm2",
-    "git",
-    "cifs-utils",
     "bash-completion",
-    "mtr",
-    "tcpdump",
-    "udica",
+    "bind-utils",
     "fail2ban",
-    "nfs-utils",
-    "curl",
-    "wget",
-    "podman",
-    "fuse-overlayfs",
-    "passt",
-    "systemd-container",
-    "libcap2",
     "iptables",
+    "sudo",
+    "udica",
+    "podman",
     "qemu-guest-agent"
   ], var.packages_to_install))
 
@@ -56,38 +34,49 @@ locals {
 
     transactional-update --non-interactive --continue setup-selinux
     transactional-update --continue run bash -c 'echo "-F" > /etc/selinux/.autorelabel'
-    systemctl enable fail2ban
 
-    # Write configs from Packer host into the guest
-    cat > /etc/fail2ban/jail.local <<'EOF'
-${file("${abspath(path.root)}/files/fail2ban-jail.local")}
-EOF
+    printf "%s\n" \
+      "[DEFAULT]" \
+      "bantime = 3600" \
+      "findtime = 600" \
+      "maxretry = 3" \
+      "" \
+      "[sshd]" \
+      "enabled = true" \
+      "port = 22" \
+      "filter = sshd" \
+      "logpath = /var/log/auth.log" \
+      "maxretry = 3" \
+      "bantime = 3600" \
+      > /etc/fail2ban/jail.local
 
-    cat > /etc/modules-load.d/50-hcloud.conf <<'EOF'
-${file("${abspath(path.root)}/files/podman-modules.conf")}
-EOF
+    printf "%s\n" \
+      "ip_tables" \
+      "ip6_tables" \
+      > /etc/modules-load.d/50-hcloud.conf
 
-    cat > /etc/sysctl.d/50-hcloud.conf <<'EOF'
-${file("${abspath(path.root)}/files/podman-sysctl.conf")}
-EOF
-
-    cat > /etc/containers/containers.conf <<'EOF'
-[containers]
-events_logger = "journald"
-EOF
+    printf "%s\n" \
+      "[containers]" \
+      "events_logger = \"journald\"" \
+      >> /etc/containers/containers.conf
 
     mkdir -p /etc/rebootmgr.conf.d /etc/transactional-update.conf.d
 
-    cat > /etc/rebootmgr.conf.d/50-hcloud.conf <<'EOF'
-[rebootmgr]
-window-start=02:00
-window-duration=6h
-strategy=best-effort
-EOF
+    printf "%s\n" \
+      "[rebootmgr]" \
+      "window-start=02:00" \
+      "window-duration=6h" \
+      "strategy=best-effort" \
+      > /etc/rebootmgr.conf.d/50-hcloud.conf
 
     echo 'REBOOT_METHOD=rebootmgr' > /etc/transactional-update.conf.d/50-reboot.conf
 
-    systemctl disable podman.socket
+    echo 'containers:300000:1048576' >> /etc/subuid
+    echo 'containers:300000:1048576' >> /etc/subgid
+
+    systemctl enable podman.socket
+    systemctl enable podman-restart.service
+    systemctl enable fail2ban
     systemctl enable rebootmgr
     systemctl enable transactional-update.timer
 

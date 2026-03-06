@@ -6,7 +6,7 @@
 source "hcloud" "microos-x86-snapshot" {
   image       = "ubuntu-24.04"
   rescue      = "linux64"
-  location    = "fsn1"
+  location    = "nbg1"
   server_type = "cx23" # >= 40GiB
   snapshot_labels = {
     microos-snapshot = "yes"
@@ -23,7 +23,7 @@ source "hcloud" "microos-x86-snapshot" {
 source "hcloud" "microos-arm-snapshot" {
   image       = "ubuntu-24.04"
   rescue      = "linux64"
-  location    = "fsn1"
+  location    = "nbg1"
   server_type = "cax11" # >= 40GiB
   snapshot_labels = {
     microos-snapshot = "yes"
@@ -61,6 +61,13 @@ build {
     expect_disconnect = true
   }
 
+  # Configure system
+  provisioner "shell" {
+    pause_before      = "15s"
+    inline            = [local.configure_system]
+    expect_disconnect = true
+  }
+
   # Do house-keeping
   provisioner "shell" {
     pause_before = "5s"
@@ -90,6 +97,13 @@ build {
   provisioner "shell" {
     pause_before      = "5s"
     inline            = [local.install_packages]
+    expect_disconnect = true
+  }
+
+  # Configure system
+  provisioner "shell" {
+    pause_before      = "15s"
+    inline            = [local.configure_system]
     expect_disconnect = true
   }
 
