@@ -30,7 +30,7 @@ data "talos_cluster_health" "this" {
   endpoints            = [for k, v in talos_machine_configuration_apply.controlplane : v.node]
 
   timeouts = {
-    read = "3m"
+    read = "5m"
   }
 
   depends_on = [
