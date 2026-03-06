@@ -5,8 +5,12 @@ resource "kubernetes_namespace_v1" "sealed_secrets" {
 }
 
 resource "null_resource" "restore_sealed_secrets_master_key" {
-  depends_on = [kubernetes_namespace_v1.sealed_secrets]
-  count      = var.restore_sealed_secrets_master_key ? 1 : 0
+  depends_on = [
+    kubernetes_namespace_v1.sealed_secrets,
+    null_resource.wait_for_sealed_secrets
+  ]
+
+  count = var.restore_sealed_secrets_master_key ? 1 : 0
 
   provisioner "local-exec" {
     command = <<-EOT

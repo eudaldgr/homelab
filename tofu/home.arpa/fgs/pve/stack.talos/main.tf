@@ -5,7 +5,7 @@ module "talos" {
   talos_version      = var.talos.talos_version
   kubernetes_version = var.talos.kubernetes_version
   cilium_version     = var.talos.cilium_version
-  cilium_values      = file("${path.module}/../../../../../k8s/system/cilium/overlays/prod/values.yaml")
+  cilium_values      = file("${path.module}/../../../../../k8s/infrastructure/network/cilium/values.yaml")
   vip                = var.talos.vip
   gateway            = var.talos.gateway
   subnet             = var.talos.subnet

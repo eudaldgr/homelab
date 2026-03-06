@@ -7,7 +7,7 @@ resource "null_resource" "argocd_kustomize" {
         --server-side \
         --force-conflicts
     EOT
-    working_dir = "${local.k8s.base_dir}/infrastructure/argocd/overlays/prod"
+    working_dir = "${local.k8s.base_dir}/infrastructure/controllers/argocd"
   }
 }
 
@@ -28,55 +28,30 @@ resource "null_resource" "wait_for_argocd" {
   }
 }
 
-# System
-resource "null_resource" "system_project" {
-  depends_on = [null_resource.wait_for_argocd]
-
-  provisioner "local-exec" {
-    command = <<-EOT
-      kubectl apply \
-        --kubeconfig="${var.kubeconfig_path}" \
-        -f ${local.k8s.base_dir}/clusters/prod/${var.proxmox.cluster_name}/system/project.yaml
-    EOT
-  }
-}
-
-resource "null_resource" "system_appset" {
-  depends_on = [null_resource.system_project]
-
-  provisioner "local-exec" {
-    command = <<-EOT
-      kubectl apply \
-        --kubeconfig="${var.kubeconfig_path}" \
-        -f ${local.k8s.base_dir}/clusters/prod/${var.proxmox.cluster_name}/system/applicationset.yaml
-    EOT
-  }
-}
-
 # Infrastructure
 resource "null_resource" "infrastructure_project" {
-  depends_on = [null_resource.wait_for_argocd]
-
-  provisioner "local-exec" {
-    command = <<-EOT
-      kubectl apply \
-        --kubeconfig="${var.kubeconfig_path}" \
-        -f ${local.k8s.base_dir}/clusters/prod/${var.proxmox.cluster_name}/infrastructure/project.yaml
-    EOT
-  }
-}
-
-resource "null_resource" "infrastructure_appset" {
   depends_on = [
-    null_resource.infrastructure_project,
-    null_resource.system_appset
+    null_resource.wait_for_argocd,
+    null_resource.wait_for_sealed_secrets
   ]
 
   provisioner "local-exec" {
     command = <<-EOT
       kubectl apply \
         --kubeconfig="${var.kubeconfig_path}" \
-        -f ${local.k8s.base_dir}/clusters/prod/${var.proxmox.cluster_name}/infrastructure/applicationset.yaml
+        -f ${local.k8s.base_dir}/infrastructure/project.yaml
+    EOT
+  }
+}
+
+resource "null_resource" "infrastructure_appset" {
+  depends_on = [null_resource.infrastructure_project]
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      kubectl apply \
+        --kubeconfig="${var.kubeconfig_path}" \
+        -f ${local.k8s.base_dir}/infrastructure/application-set.yaml
     EOT
   }
 }
@@ -89,7 +64,7 @@ resource "null_resource" "applications_project" {
     command = <<-EOT
       kubectl apply \
         --kubeconfig="${var.kubeconfig_path}" \
-        -f ${local.k8s.base_dir}/clusters/prod/${var.proxmox.cluster_name}/applications/project.yaml
+        -f ${local.k8s.base_dir}/applications/project.yaml
     EOT
   }
 }
@@ -104,7 +79,7 @@ resource "null_resource" "applications_appset" {
     command = <<-EOT
       kubectl apply \
         --kubeconfig="${var.kubeconfig_path}" \
-        -f ${local.k8s.base_dir}/clusters/prod/${var.proxmox.cluster_name}/applications/applicationset.yaml
+        -f ${local.k8s.base_dir}/applications/application-set.yaml
     EOT
   }
 }
