@@ -43,8 +43,6 @@ data "talos_machine_configuration" "worker" {
       cluster_domain = var.dns.domain
       hostname       = each.key
     }),
-    local.cilium_patch,
-    local.coredns_patch,
   ]
 }
 
