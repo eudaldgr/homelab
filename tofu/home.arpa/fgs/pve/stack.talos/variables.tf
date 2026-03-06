@@ -34,8 +34,6 @@ variable "talos" {
     subnet             = string
     talos_version      = string
     kubernetes_version = string
-    cilium_version     = string
-    cilium_values      = optional(string)
   })
 }
 

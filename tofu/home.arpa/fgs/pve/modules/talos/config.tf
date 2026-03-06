@@ -20,6 +20,7 @@ data "talos_machine_configuration" "controlplane" {
       hostname       = each.key
     }),
     local.cilium_patch,
+    local.coredns_patch,
   ]
 }
 
@@ -43,6 +44,7 @@ data "talos_machine_configuration" "worker" {
       hostname       = each.key
     }),
     local.cilium_patch,
+    local.coredns_patch,
   ]
 }
 

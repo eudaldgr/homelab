@@ -1,13 +1,7 @@
-data "helm_template" "cilium" {
-  name         = "cilium"
-  namespace    = "kube-system"
-  repository   = "https://helm.cilium.io/"
-  chart        = "cilium"
-  version      = var.cilium_version
-  kube_version = var.kubernetes_version
-
-  values = [
-    var.cilium_values
+data "external" "cilium_kustomize" {
+  program = [
+    "sh", "-c",
+    "kustomize build ${local.k8s.base_dir}/infrastructure/network/cilium --enable-helm | jq -Rs '{manifest: .}'"
   ]
 }
 
@@ -16,7 +10,7 @@ locals {
     cluster = {
       inlineManifests = [{
         name     = "cilium"
-        contents = data.helm_template.cilium.manifest
+        contents = data.external.cilium_kustomize.result.manifest
       }]
     }
   })

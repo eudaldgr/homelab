@@ -13,16 +13,6 @@ variable "kubernetes_version" {
   type        = string
 }
 
-variable "cilium_version" {
-  description = "Cilium version (e.g. 1.19.0)"
-  type        = string
-}
-
-variable "cilium_values" {
-  description = "Cilium Helm values (YAML string)"
-  type        = string
-}
-
 variable "vip" {
   description = "Virtual IP for the Kubernetes API server"
   type        = string

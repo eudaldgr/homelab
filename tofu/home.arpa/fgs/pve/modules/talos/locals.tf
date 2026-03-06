@@ -15,4 +15,9 @@ locals {
 
   # Certificate SANs: VIP + all node IPs
   cert_sans = concat([var.vip], local.cp_ips, local.worker_ips)
+
+  # Kubernetes base directory for file references
+  k8s = {
+    base_dir = "${path.module}/../../../../../../k8s"
+  }
 }

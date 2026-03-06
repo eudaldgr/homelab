@@ -6,11 +6,11 @@ terraform {
     talos = {
       source = "siderolabs/talos"
     }
-    helm = {
-      source = "hashicorp/helm"
-    }
     local = {
       source = "hashicorp/local"
+    }
+    external = {
+      source = "hashicorp/external"
     }
   }
 }
