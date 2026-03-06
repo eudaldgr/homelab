@@ -1,0 +1,50 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: infrastructure
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: infrastructure
+    app.kubernetes.io/managed-by: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: '-10'
+spec:
+  generators:
+    - git:
+        repoURL: &repoURL https://github.com/eudaldgr/homelab
+        revision: &revision main
+        directories:
+          - path: k8s/infrastructure/*/*
+  template:
+    metadata:
+      name: '{{ path.basename }}'
+      namespace: argocd
+      labels:
+        app.kubernetes.io/component: 'static-infrastructure'
+        app.kubernetes.io/part-of: infrastructure
+    spec:
+      project: infrastructure
+      source:
+        repoURL: *repoURL
+        targetRevision: *revision
+        path: '{{ path }}'
+        kustomize: {} # Let Kustomize handle naming
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{ path.basename }}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        retry:
+          limit: 1
+          backoff:
+            duration: 10s
+            factor: 2
+            maxDuration: 3m
+        syncOptions:
+          - CreateNamespace=true
+          - ApplyOutOfSyncOnly=true
+          - ServerSideApply=true
+          - PruneLast=true
+          - RespectIgnoreDifferences=true
