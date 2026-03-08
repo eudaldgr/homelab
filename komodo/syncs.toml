@@ -12,10 +12,10 @@ resource_path = [
   "komodo/servers.toml",
   
   # ds920plus specific
-  "compose/ds920plus/prod/adguard/stack.toml",
-  "compose/ds920plus/prod/adguard-sync/stack.toml",
+  #"compose/ds920plus/prod/adguard/stack.toml",
+  #"compose/ds920plus/prod/adguard-sync/stack.toml",
   "compose/ds920plus/prod/bitcoind-core/stack.toml",
   "compose/ds920plus/prod/fulcrum/stack.toml",
   "compose/ds920plus/prod/newt/stack.toml",
-  "compose/ds920plus/prod/rustfs/stack.toml",
+  #"compose/ds920plus/prod/rustfs/stack.toml",
 ]
