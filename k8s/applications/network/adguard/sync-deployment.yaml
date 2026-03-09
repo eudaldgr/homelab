@@ -30,10 +30,7 @@ spec:
             - name: RUN_ON_START
               value: "true"
             - name: ORIGIN_URL
-              valueFrom:
-                secretKeyRef:
-                  name: adguard-sync-secret
-                  key: origin-url
+              value: "http://adguard-home-0.adguard.svc.cluster.local"
             - name: ORIGIN_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -44,16 +41,8 @@ spec:
                 secretKeyRef:
                   name: adguard-sync-secret
                   key: origin-password
-            - name: ORIGIN_AUTO_SETUP
-              valueFrom:
-                secretKeyRef:
-                  name: adguard-sync-secret
-                  key: origin-auto-setup
             - name: REPLICA1_URL
-              valueFrom:
-                secretKeyRef:
-                  name: adguard-sync-secret
-                  key: replica1-url
+              value: "http://adguard-home-1.adguard.svc.cluster.local"
             - name: REPLICA1_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -64,8 +53,3 @@ spec:
                 secretKeyRef:
                   name: adguard-sync-secret
                   key: replica1-password
-            - name: REPLICA1_AUTO_SETUP
-              valueFrom:
-                secretKeyRef:
-                  name: adguard-sync-secret
-                  key: replica1-auto-setup
