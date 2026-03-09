@@ -1,0 +1,53 @@
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: proxmox-pve01
+  namespace: proxmox
+  labels:
+    kubernetes.io/service-name: proxmox-pve01
+    endpointslice.kubernetes.io/managed-by: cluster-admins
+addressType: IPv4
+ports:
+  - name: https
+    protocol: TCP
+    port: 8006
+endpoints:
+  - addresses:
+      - 10.1.90.111
+    conditions: { }
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: proxmox-pve02
+  namespace: proxmox
+  labels:
+    kubernetes.io/service-name: proxmox-pve02
+    endpointslice.kubernetes.io/managed-by: cluster-admins
+addressType: IPv4
+ports:
+  - name: https
+    protocol: TCP
+    port: 8006
+endpoints:
+  - addresses:
+      - 10.1.90.112
+    conditions: { }
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: proxmox-pve03
+  namespace: proxmox
+  labels:
+    kubernetes.io/service-name: proxmox-pve03
+    endpointslice.kubernetes.io/managed-by: cluster-admins
+addressType: IPv4
+ports:
+  - name: https
+    protocol: TCP
+    port: 8006
+endpoints:
+  - addresses:
+      - 10.1.90.113
+    conditions: { }
