@@ -1,55 +1,62 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: batch/v1
+kind: CronJob
 metadata:
   name: adguard-sync
   namespace: adguard
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: adguard-sync
-  template:
-    metadata:
-      labels:
-        app: adguard-sync
+  schedule: "*/5 * * * *"
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 300
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
     spec:
-      containers:
-        - name: adguard-sync
-          image: ghcr.io/bakito/adguardhome-sync:alpine-v0.9.0@sha256:fc3accd883cda7d68f027811f34f213c23d8ed38c23f944fc58636456dc74329
-          imagePullPolicy: IfNotPresent
-          resources:
-            requests:
-              cpu: 10m
-              memory: 32Mi
-            limits:
-              cpu: 100m
-              memory: 128Mi
-          env:
-            - name: CRON
-              value: "*/5 * * * *"
-            - name: RUN_ON_START
-              value: "true"
-            - name: ORIGIN_URL
-              value: "http://adguard-home-0.adguard.svc.cluster.local"
-            - name: ORIGIN_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: adguard-sync-secret
-                  key: origin-username
-            - name: ORIGIN_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: adguard-sync-secret
-                  key: origin-password
-            - name: REPLICA1_URL
-              value: "http://adguard-home-1.adguard.svc.cluster.local"
-            - name: REPLICA1_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: adguard-sync-secret
-                  key: replica1-username
-            - name: REPLICA1_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: adguard-sync-secret
-                  key: replica1-password
+      template:
+        metadata:
+          labels:
+            app: adguard-sync
+        spec:
+          containers:
+            - name: adguard-sync
+              image: ghcr.io/bakito/adguardhome-sync:alpine-v0.9.0@sha256:fc3accd883cda7d68f027811f34f213c23d8ed38c23f944fc58636456dc74329
+              imagePullPolicy: IfNotPresent
+              command: ["/opt/go/adguardhome-sync", "run", "--config", "/config.yaml"]
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 32Mi
+                limits:
+                  cpu: 100m
+                  memory: 128Mi
+              env:
+                - name: ORIGIN_URL
+                  value: "http://adguard-home-0.adguard.svc.cluster.local"
+                - name: ORIGIN_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: adguard-sync-secret
+                      key: origin-username
+                - name: ORIGIN_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: adguard-sync-secret
+                      key: origin-password
+                - name: REPLICA1_URL
+                  value: "http://adguard-home-1.adguard.svc.cluster.local"
+                - name: REPLICA1_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: adguard-sync-secret
+                      key: replica1-username
+                - name: REPLICA1_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: adguard-sync-secret
+                      key: replica1-password
+                - name: PRINT_CONFIG_ONLY
+                  value: "false"
+                - name: LOG_LEVEL
+                  value: "info"
+                - name: API_PORT
+                  value: "0"
+          restartPolicy: OnFailure

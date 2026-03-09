@@ -20,6 +20,7 @@ persistence:
   logs:
     enabled: true
     storageClassName: proxmox-csi
+    storageClass: proxmox-csi
     size: 1Gi
 
 resources:
