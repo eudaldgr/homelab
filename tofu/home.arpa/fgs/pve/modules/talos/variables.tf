@@ -1,3 +1,8 @@
+variable "proxmox_cluster_name" {
+  description = "Name of the Proxmox cluster (used for tagging and naming)"
+  type        = string
+}
+
 variable "cluster_name" {
   description = "Talos cluster name"
   type        = string
@@ -26,14 +31,6 @@ variable "gateway" {
 variable "subnet" {
   description = "Subnet CIDR for Talos node IPs (e.g. 192.168.20.0/24)"
   type        = string
-}
-
-variable "dns" {
-  description = "DNS configuration for Proxmox nodes"
-  type = object({
-    domain  = optional(string)
-    servers = optional(list(string), ["1.1.1.1", "1.0.0.1"])
-  })
 }
 
 variable "controlplanes" {

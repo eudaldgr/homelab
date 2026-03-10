@@ -1,11 +1,12 @@
 variable "proxmox" {
   description = "Proxmox VE API configuration"
   type = object({
-    endpoint  = string
-    username  = optional(string, "root@pam")
-    password  = optional(string)
-    api_token = optional(string)
-    insecure  = optional(bool, false)
+    cluster_name = optional(string, "homelab")
+    endpoint     = string
+    username     = optional(string, "root@pam")
+    password     = optional(string)
+    api_token    = optional(string)
+    insecure     = optional(bool, false)
   })
 }
 
@@ -15,14 +16,6 @@ variable "nodes" {
     local_storage = optional(string, "local-zfs")
     iso_storage   = optional(string, "ds920plus-shared")
   }))
-}
-
-variable "dns" {
-  description = "DNS configuration for Proxmox nodes"
-  type = object({
-    domain  = optional(string)
-    servers = optional(list(string), ["1.1.1.1", "1.0.0.1"])
-  })
 }
 
 variable "talos" {

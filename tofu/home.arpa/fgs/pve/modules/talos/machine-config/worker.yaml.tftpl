@@ -41,7 +41,7 @@ machine:
 %{ endif ~}
 
   nodeLabels:
-    topology.kubernetes.io/region: ${cluster_name}
+    topology.kubernetes.io/region: ${proxmox_cluster_name}
     topology.kubernetes.io/zone: ${node_name}
     kubearmor.io/enforcer: bpf
     kubearmor.io/runtime: containerd
@@ -53,7 +53,7 @@ machine:
     kubearmor.io/rand: talos-static
 
 cluster:
-  clusterName: ${cluster_domain}
+  clusterName: ${cluster_name}
   network:
     dnsDomain: cluster.local
 

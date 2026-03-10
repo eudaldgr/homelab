@@ -12,12 +12,12 @@ data "talos_machine_configuration" "controlplane" {
 
   config_patches = [
     templatefile("${path.module}/machine-config/controlplane.yaml.tftpl", {
-      cert_sans      = local.cert_sans
-      vip            = var.vip
-      cluster_name   = var.cluster_name
-      node_name      = each.value.node
-      cluster_domain = var.dns.domain
-      hostname       = each.key
+      cert_sans            = local.cert_sans
+      vip                  = var.vip
+      proxmox_cluster_name = var.proxmox_cluster_name
+      cluster_name         = var.cluster_name
+      node_name            = each.value.node
+      hostname             = each.key
     }),
     local.cilium_patch,
     local.coredns_patch,
@@ -36,12 +36,12 @@ data "talos_machine_configuration" "worker" {
 
   config_patches = [
     templatefile("${path.module}/machine-config/worker.yaml.tftpl", {
-      cert_sans      = local.cert_sans
-      igpu           = each.value.igpu
-      cluster_name   = var.cluster_name
-      node_name      = each.value.node
-      cluster_domain = var.dns.domain
-      hostname       = each.key
+      cert_sans            = local.cert_sans
+      igpu                 = each.value.igpu
+      proxmox_cluster_name = var.proxmox_cluster_name
+      cluster_name         = var.cluster_name
+      node_name            = each.value.node
+      hostname             = each.key
     }),
   ]
 }
