@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: synology-ds920plus
+  namespace: synology
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: ds920plus.home.eudald.gr
+    external-dns.alpha.kubernetes.io/target: 10.1.20.113
+    external-dns.alpha.kubernetes.io/ttl: "300"
+spec:
+  ports:
+    - name: https
+      protocol: TCP
+      port: 443
+      targetPort: 5551
