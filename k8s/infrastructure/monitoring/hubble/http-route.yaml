@@ -9,7 +9,7 @@ spec:
       namespace: gateway
       sectionName: https-gateway
   hostnames:
-    - "hubble.home.eudald.gr"
+    - "hubble.lab.home.eudald.gr"
   rules:
     - matches:
         - path:

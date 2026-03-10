@@ -9,7 +9,7 @@ spec:
     namespace: gateway
     sectionName: https-gateway
   hostnames:
-  - "dns01.home.eudald.gr"
+  - "dns01.lab.home.eudald.gr"
   rules:
   - backendRefs:
     - name: adguard-home-0
@@ -26,7 +26,7 @@ spec:
     namespace: gateway
     sectionName: https-gateway
   hostnames:
-  - "dns02.home.eudald.gr"
+  - "dns02.lab.home.eudald.gr"
   rules:
   - backendRefs:
     - name: adguard-home-1

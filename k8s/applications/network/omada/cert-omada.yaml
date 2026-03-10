@@ -5,7 +5,7 @@ metadata:
   namespace: omada
 spec:
   dnsNames:
-    - omada.home.eudald.gr
+    - omada.lab.home.eudald.gr
   issuerRef:
     group: cert-manager.io
     kind: ClusterIssuer
