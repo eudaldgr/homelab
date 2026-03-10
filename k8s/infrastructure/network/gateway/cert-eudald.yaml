@@ -9,8 +9,8 @@ spec:
     name: cloudflare-issuer-prod
     kind: ClusterIssuer
   dnsNames:
-    - "eudald.gr"
-    - "*.eudald.gr"
+    - "home.eudald.gr"
+    - "*.home.eudald.gr"
   usages:
     - digital signature
     - key encipherment

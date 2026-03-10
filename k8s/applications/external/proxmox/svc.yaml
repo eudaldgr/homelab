@@ -5,7 +5,7 @@ metadata:
   namespace: proxmox
   annotations:
     external-dns.alpha.kubernetes.io/hostname: pve01.home.eudald.gr
-    external-dns.alpha.kubernetes.io/target: 10.1.90.111
+    external-dns.alpha.kubernetes.io/target: 10.1.20.113
     external-dns.alpha.kubernetes.io/ttl: "300"
 spec:
   ports:
@@ -21,7 +21,7 @@ metadata:
   namespace: proxmox
   annotations:
     external-dns.alpha.kubernetes.io/hostname: pve02.home.eudald.gr
-    external-dns.alpha.kubernetes.io/target: 10.1.90.112
+    external-dns.alpha.kubernetes.io/target: 10.1.20.113
     external-dns.alpha.kubernetes.io/ttl: "300"
 spec:
   ports:
@@ -37,7 +37,7 @@ metadata:
   namespace: proxmox
   annotations:
     external-dns.alpha.kubernetes.io/hostname: pve03.home.eudald.gr
-    external-dns.alpha.kubernetes.io/target: 10.1.90.113
+    external-dns.alpha.kubernetes.io/target: 10.1.20.113
     external-dns.alpha.kubernetes.io/ttl: "300"
 spec:
   ports:

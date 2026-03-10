@@ -29,6 +29,15 @@ spec:
           from: All
     - protocol: TLS
       port: 443
+      name: pve03
+      hostname: "pve03.home.eudald.gr"
+      tls:
+        mode: Passthrough
+      allowedRoutes:
+        namespaces:
+          from: All
+    - protocol: TLS
+      port: 443
       name: synology
       hostname: "ds920plus.home.eudald.gr"
       tls:

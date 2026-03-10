@@ -10,6 +10,9 @@ config:
 service:
   type: LoadBalancer
   annotations:
+    external-dns.alpha.kubernetes.io/hostname: omada.home.eudald.gr
+    external-dns.alpha.kubernetes.io/target: "10.1.20.113"
+    external-dns.alpha.kubernetes.io/ttl: "300"
     io.cilium/lb-ipam-ips: "10.1.20.120"
 
 persistence:

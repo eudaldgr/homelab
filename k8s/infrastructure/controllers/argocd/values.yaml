@@ -3,7 +3,7 @@ configs:
   cm:
     create: true
     application.resourceTrackingMethod: label
-    url: https://argocd.eudald.gr
+    url: https://argocd.home.eudald.gr
     kustomize.buildOptions: '--enable-helm'
 
   cmp:
