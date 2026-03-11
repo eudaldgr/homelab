@@ -1,0 +1,107 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: plex
+  namespace: plex
+  labels:
+    app: plex
+spec:
+  serviceName: plex
+  replicas: 1
+  selector:
+    matchLabels:
+      app: plex
+  template:
+    metadata:
+      annotations:
+        backup.velero.io/backup-volumes: config
+      labels:
+        app: plex
+    spec:
+      hostNetwork: false
+      hostPID: false
+      hostIPC: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        supplementalGroups:
+          - 44
+          - 104
+        seccompProfile:
+          type: RuntimeDefault
+      volumes:
+        - name: media
+          persistentVolumeClaim:
+            claimName: media-share
+        - name: tmp
+          emptyDir:
+            sizeLimit: 1Gi
+        - name: run
+          emptyDir:
+            sizeLimit: 100Mi
+      containers:
+        - name: plex
+          image: ghcr.io/home-operations/plex:1.43.0.10492@sha256:8cb062f2b0660bd7811387e6c799da0ce5f18112078fe21485c11adcc83a9c1c
+          ports:
+            - name: http
+              containerPort: 32400
+          env:
+            - name: TZ
+              value: Europe/Madrid
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: media
+              mountPath: /data/media
+              subPath: media
+            - name: tmp
+              mountPath: /tmp
+            - name: run
+              mountPath: /run
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: 4000m
+              memory: 4Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+                - ALL
+          livenessProbe:
+            httpGet:
+              path: /identity
+              port: 32400
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /identity
+              port: 32400
+            initialDelaySeconds: 20
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 3
+      nodeSelector:
+        kubernetes.io/arch: amd64
+  volumeClaimTemplates:
+    - metadata:
+        name: config
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: proxmox-csi
+        resources:
+          requests:
+            storage: 10Gi
