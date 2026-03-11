@@ -1,0 +1,31 @@
+# yaml-language-server: $schema=https://goauthentik.io/blueprints/schema.json
+# yamllint disable-file
+# prettier-ignore-start
+# eslint-disable
+# NOTE: Using embedded outpost approach - Authentik manages the outpost automatically
+---
+version: 1
+metadata:
+  name: Outposts
+entries:
+  - model: authentik_outposts.outpost
+    identifiers:
+      managed: goauthentik.io/outposts/embedded
+    attrs:
+      service_connection:
+        !Find [
+          authentik_outposts.outpostserviceconnection,
+          [name, "Local Kubernetes Cluster"],
+        ]
+      providers: []
+      config:
+        log_level: info
+        authentik_host: https://sso.lab.home.eudald.gr
+        object_naming_template: ak-outpost-%(name)s
+        kubernetes_disabled_components:
+          - ingress
+        kubernetes_namespace: auth
+        kubernetes_httproute_parent_refs:
+          - name: internal
+            namespace: gateway
+            sectionName: https-gateway

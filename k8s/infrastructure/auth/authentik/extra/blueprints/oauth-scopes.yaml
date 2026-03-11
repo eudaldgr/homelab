@@ -1,0 +1,76 @@
+# yaml-language-server: $schema=https://goauthentik.io/blueprints/schema.json
+# yamllint disable-file
+# prettier-ignore-start
+# eslint-disable
+---
+version: 1
+metadata:
+  name: OAuth Scopes
+entries:
+  - model: authentik_providers_oauth2.scopemapping
+    identifiers:
+      name: "authentik default OAuth Mapping: OpenID 'openid'"
+    attrs:
+      scope_name: openid
+      description: OpenID Connect identifier
+      expression: |
+        return {
+          "sub": request.user.uid,
+        }
+
+  - model: authentik_providers_oauth2.scopemapping
+    identifiers:
+      name: "authentik default OAuth Mapping: OpenID 'profile'"
+    attrs:
+      scope_name: profile
+      description: User profile information
+      expression: |
+        return {
+          "name": request.user.name,
+          "preferred_username": request.user.username,
+        }
+
+  - model: authentik_providers_oauth2.scopemapping
+    identifiers:
+      name: "authentik default OAuth Mapping: OpenID 'email'"
+    attrs:
+      scope_name: email
+      description: Email address
+      expression: |
+        return {
+          "email": request.user.email,
+          "email_verified": False,
+        }
+
+  - model: authentik_providers_oauth2.scopemapping
+    identifiers:
+      name: "OAuth mapping: OpenID 'username'"
+    attrs:
+      scope_name: username
+      description: Username
+      expression: |
+        return {
+          "username": request.user.username,
+        }
+
+  - model: authentik_providers_oauth2.scopemapping
+    identifiers:
+      name: "OAuth mapping: OpenID 'user_pk'"
+    attrs:
+      scope_name: user_pk
+      description: User ID
+      expression: |
+        return {
+          "id": request.user.pk,
+        }
+
+  - model: authentik_providers_oauth2.scopemapping
+    identifiers:
+      name: "authentik default OAuth Mapping: OpenID 'groups'"
+    attrs:
+      scope_name: groups
+      description: User groups
+      expression: |
+        return {
+          "groups": [group.name for group in request.user.ak_groups.all()],
+        }

@@ -1,0 +1,107 @@
+---
+# Local RustFS backup (fast recovery)
+apiVersion: barmancloud.cnpg.io/v1
+kind: ObjectStore
+metadata:
+  name: authentik-rustfs-store
+  namespace: auth
+spec:
+  retentionPolicy: "14d"
+  configuration:
+    destinationPath: s3://postgres/auth/authentik-postgresql
+    endpointURL: http://ds920plus.home.eudald.gr:9000
+    s3Credentials:
+      accessKeyId:
+        name: rustfs-credentials
+        key: AWS_ACCESS_KEY_ID
+      secretAccessKey:
+        name: rustfs-credentials
+        key: AWS_SECRET_ACCESS_KEY
+---
+# Offsite Backblaze B2 backup (disaster recovery)
+apiVersion: barmancloud.cnpg.io/v1
+kind: ObjectStore
+metadata:
+  name: authentik-b2-store
+  namespace: auth
+spec:
+  retentionPolicy: "30d"
+  configuration:
+    destinationPath: s3://e17n-homelab-cnpg-b2/auth/authentik-postgresql
+    endpointURL: https://s3.eu-central-003.backblazeb2.com
+    s3Credentials:
+      accessKeyId:
+        name: b2-cnpg-credentials
+        key: AWS_ACCESS_KEY_ID
+      secretAccessKey:
+        name: b2-cnpg-credentials
+        key: AWS_SECRET_ACCESS_KEY
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: authentik-postgresql
+  namespace: auth
+spec:
+  instances: 2
+  imageName: ghcr.io/cloudnative-pg/postgresql:17
+  storage:
+    size: 40Gi
+    storageClass: proxmox-csi
+
+  walStorage:
+    size: 20Gi
+    storageClass: proxmox-csi
+
+  resources:
+    requests:
+      memory: 512Mi
+      cpu: 200m
+    limits:
+      memory: 1Gi
+      cpu: 1000m
+
+  postgresql:
+    parameters:
+      max_connections: "100"
+      shared_buffers: "256MB"
+      effective_cache_size: "768MB"
+      maintenance_work_mem: "64MB"
+      checkpoint_completion_target: "0.9"
+      wal_buffers: "16MB"
+      default_statistics_target: "100"
+      random_page_cost: "1.1"
+      effective_io_concurrency: "200"
+      work_mem: "2621kB"
+      huge_pages: "off"
+      min_wal_size: "1GB"
+      max_wal_size: "3GB"
+
+  plugins:
+  - name: barman-cloud.cloudnative-pg.io
+    enabled: true
+    isWALArchiver: true
+    parameters:
+      barmanObjectName: authentik-rustfs-store
+
+  externalClusters:
+    - name: authentik-postgresql-b2-backup
+      plugin:
+        name: barman-cloud.cloudnative-pg.io
+        parameters:
+          barmanObjectName: authentik-b2-store
+    - name: authentik-postgresql-rustfs-backup
+      plugin:
+        name: barman-cloud.cloudnative-pg.io
+        parameters:
+          barmanObjectName: authentik-rustfs-store
+
+  monitoring:
+    enablePodMonitor: false
+
+  minSyncReplicas: 1
+  maxSyncReplicas: 1
+
+  affinity:
+    enablePodAntiAffinity: true
+    topologyKey: kubernetes.io/hostname

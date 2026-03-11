@@ -1,0 +1,137 @@
+---
+global:
+  envFrom:
+    - secretRef:
+        name: authentik-core-secrets
+    - secretRef:
+        name: authentik-blueprint-secrets
+    # - secretRef:
+    #     name: authentik-smtp-credentials
+
+  volumeMounts:
+    - name: db-creds
+      mountPath: /secrets/authentik
+      readOnly: true
+    - name: shm
+      mountPath: /dev/shm
+
+  volumes:
+    - name: db-creds
+      secret:
+        secretName: authentik-postgresql-app
+    - name: shm
+      emptyDir:
+        medium: Memory
+        sizeLimit: 1Gi
+
+authentik:
+  enabled: true
+  secret_key: "env://AUTHENTIK_SECRET_KEY"
+  # email:
+  #   host: "mail.eudald.gr"
+  #   port: 465
+  #   username: "env://AUTHENTIK_EMAIL__USERNAME"
+  #   password: "env://AUTHENTIK_EMAIL__PASSWORD"
+  #   use_tls: false
+  #   use_ssl: true
+  #   timeout: 30
+  #   from: "env://AUTHENTIK_EMAIL__FROM"
+  postgresql:
+    host: authentik-postgresql-rw
+    name: app
+    user: file:///secrets/authentik/username
+    password: file:///secrets/authentik/password
+    port: "5432"
+    sslmode: require
+
+
+blueprints:
+  configMaps:
+    - authentik-blueprints
+
+server:
+  enabled: true
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    fsGroup: 1000
+    seccompProfile:
+      type: RuntimeDefault
+
+  containerSecurityContext:
+    runAsNonRoot: true
+    readOnlyRootFilesystem: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    seccompProfile:
+      type: RuntimeDefault
+
+  volumeMounts:
+    - name: media
+      mountPath: /media
+
+  volumes:
+    - name: media
+      emptyDir:
+        sizeLimit: 2Gi
+
+  service:
+    type: LoadBalancer
+
+  metrics:
+    enabled: true
+
+worker:
+  enabled: true
+
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    fsGroup: 1000
+    seccompProfile:
+      type: RuntimeDefault
+
+  containerSecurityContext:
+    runAsNonRoot: true
+    readOnlyRootFilesystem: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+
+  volumeMounts:
+    - name: media
+      mountPath: /media
+
+  volumes:
+    - name: media
+      emptyDir:
+        sizeLimit: 2Gi
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 2Gi
+
+  livenessProbe:
+    timeoutSeconds: 15
+  readinessProbe:
+    timeoutSeconds: 15
+  startupProbe:
+    initialDelaySeconds: 60
+    timeoutSeconds: 15
+
+  metrics:
+    enabled: true
+
+prometheus:
+  rules:
+    enabled: true
+
+postgresql:
+  enabled: false
