@@ -1,0 +1,121 @@
+---
+services:
+  # docker:
+  #   image: docker.io/docker:29.3.0-dind@sha256:1ba18449911d01f477a3fc104123c85d677addc60701b14b3fcb5381f9c4a537
+  #   container_name: komodo_docker_1
+  #   user: "${PUID}:${PGID}"
+  #   privileged: true
+  #   network_mode: host
+  #   stop_grace_period: 1m
+  #   environment:
+  #     DOCKER_ENSURE_BRIDGE: "dind0:10.32.0.1/16"
+  #   entrypoint: /entrypoint.sh
+  #   command: >
+  #     dockerd
+  #       --bridge dind0
+  #       --data-root /data/data
+  #       --exec-root /data/exec
+  #       --host unix:///data/docker.sock
+  #       --pidfile /data/docker.pid
+  #   volumes:
+  #     - ${APP_DATA_DIR}/entrypoint.sh:/entrypoint.sh
+  #     - ${APP_DATA_DIR}/data/docker:/data
+  #   restart: unless-stopped
+
+  postgres:
+    image: ghcr.io/ferretdb/postgres-documentdb:17-0.107.0@sha256:2386795ec2aa7ae559304361979f1dc5708d383ee9020ae63dadc2940dfe58f7
+    container_name: komodo_postgres_1
+    labels:
+      komodo.skip:
+    environment:
+      POSTGRES_USER: ${KOMODO_DB_USERNAME}
+      POSTGRES_PASSWORD: ${KOMODO_DB_PASSWORD}
+      POSTGRES_DB: postgres
+    volumes:
+      - ${APP_DATA_DIR}/data/postgres:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  ferretdb:
+    image: ghcr.io/ferretdb/ferretdb:2.7.0@sha256:5706414241eb84f0515512c37b46db0f1b1eac9e5ceb7e4c2523211c184b1985
+    container_name: komodo_ferretdb_1
+    user: "${PUID}:${PGID}"
+    labels:
+      komodo.skip:
+    depends_on:
+      - postgres
+    environment:
+      FERRETDB_POSTGRESQL_URL: postgres://${KOMODO_DB_USERNAME}:${KOMODO_DB_PASSWORD}@komodo_postgres_1:5432/postgres
+    volumes:
+      - ${APP_DATA_DIR}/data/ferretdb:/state
+    restart: unless-stopped
+
+  core:
+    image: ghcr.io/moghtech/komodo-core:2.0.0@sha256:518e6f4b76a9adc27b6ec0c4bb05533c8f5752986e145e3bfb64e4d15c232e32
+    container_name: komodo_core_1
+    init: true
+    labels:
+      komodo.skip:
+    depends_on:
+      - ferretdb
+    ports:
+      - "9120:9120"
+    environment:
+      TZ: ${TZ}
+      KOMODO_DATABASE_ADDRESS: komodo_ferretdb_1:27017
+      KOMODO_DATABASE_USERNAME: ${KOMODO_DB_USERNAME}
+      KOMODO_DATABASE_PASSWORD: ${KOMODO_DB_PASSWORD}
+      KOMODO_FIRST_SERVER_NAME: ds920plus
+      KOMODO_PERIPHERY_PUBLIC_KEY: file:/config/keys/periphery.pub
+      KOMODO_JWT_SECRET: ${KOMODO_JWT_SECRET}
+      KOMODO_WEBHOOK_SECRET: ${KOMODO_WEBHOOK_SECRET}
+    env_file:
+      - ${APP_DATA_DIR}/settings.env
+    volumes:
+      - ${APP_DATA_DIR}/data/core:/backups
+      - ${APP_DATA_DIR}/data/keys:/config/keys
+    restart: unless-stopped
+
+  periphery:
+    image: ghcr.io/moghtech/komodo-periphery:2.0.0@sha256:cc9aff8b621d49bbcca394e1538d9d9ea28c48bcfd2d6c8a6f9d5d3eef7f8341
+    container_name: komodo_periphery_1
+    init: true
+    environment:
+      COMPOSE_KOMODO_IMAGE_TAG: latest
+      TZ: ${TZ}
+      PERIPHERY_ROOT_DIRECTORY: /etc/komodo
+      PERIPHERY_CORE_ADDRESS: ${PERIPHERY_CORE_ADDRESS}
+      PERIPHERY_CONNECT_AS: ds920plus
+      PERIPHERY_CORE_PUBLIC_KEY: file:/config/keys/core.pub
+      PERIPHERY_DISABLE_TERMINALS: false
+      PERIPHERY_DISABLE_CONTAINER_TERMINALS: false
+      PERIPHERY_DEFAULT_TERMINAL_COMMAND: sh
+      PERIPHERY_INCLUDE_DISK_MOUNTS: /etc/hostname
+      PERIPHERY_LOGGING_PRETTY: false
+      PERIPHERY_PRETTY_STARTUP_CONFIG: false
+      PERIPHERY_CORE_TLS_INSECURE_SKIP_VERIFY: true
+      DOCKER_API_VERSION: 1.43
+      # SOPS settings
+      SOPS_AGE_KEY_FILE: /root/keys.txt
+    volumes:
+      - ${APP_DATA_DIR}/data/periphery/config:/etc/komodo
+      - ${APP_DATA_DIR}/data/keys:/config/keys
+      - /proc:/proc
+      - /var/run/docker.sock:/var/run/docker.sock
+      # - ${APP_DATA_DIR}/data/docker:/var/run
+      # SOPS binary
+      - bin:/opt:ro
+      - ${APP_DATA_DIR}/data/sops/keys.txt:/root/keys.txt:ro
+    restart: unless-stopped
+
+  sops:
+    image: ghcr.io/getsops/sops:v3.11.0@sha256:6ce00ac946e1a52b2d1e5b7087441f7b6ef7bad907753104013f8bdb8f5fd891
+    container_name: komodo_sops_1
+    labels:
+      komodo.skip:
+    entrypoint: [ "tail", "-f", "/dev/null" ]
+    volumes:
+      - bin:/usr/local/bin:ro
+    restart: unless-stopped
+
+volumes:
+  bin:
