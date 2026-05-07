@@ -2,7 +2,7 @@
 configs:
   cm:
     create: true
-    application.resourceTrackingMethod: label
+    application.resourceTrackingMethod: annotation+label
     url: https://argocd.lab.home.eudald.gr
     kustomize.buildOptions: '--enable-helm'
 
