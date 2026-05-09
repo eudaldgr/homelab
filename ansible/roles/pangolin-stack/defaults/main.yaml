@@ -1,8 +1,8 @@
 ---
-pangolin_app_version: "ee-1.16.2@sha256:b054615fc9f14e554adc0d0582ed9adb6885b581379e2007c7be8f8be6aa4e99"
-pangolin_gerbil_version: "1.3.0@sha256:7d9732af74c5851dde4b39a69a0c5d25b2f86a44464ebe0a4f116280914a8b56"
+pangolin_app_version: "ee-1.18.3@sha256:a9c33af59d950bb8e7eb12a45f7362da60b54b152a5e0de6a63e07172b85b0b6"
+pangolin_gerbil_version: "1.4.0@sha256:887355e66deac61df9583d9df23e630897f785a8e20bc66081c66e40687cc713"
 pangolin_traefik_version: "v3.6.0@sha256:18112aed2bfe3dfb8534f1045622390c3316596cff0cefab64f44e43d23e1640"
-pangolin_badger_version: "v1.3.1"
+pangolin_badger_version: "v1.4.0"
 pangolin_crowdsec_version: "latest"
 pangolin_crowdsec: false
 pangolin_email: false

@@ -101,12 +101,12 @@
     or pangolin_configs.changed
   tags: pangolin
 
-# - name: Pull images for pangolin containers based on configured versions
-#   ansible.builtin.shell:
-#     cmd: |
-#       podman pull $(awk -F'=' '/^Image=/ {print $2}' /etc/containers/systemd/pangolin_*.container)
-#   changed_when: false
-#   tags: pangolin
+- name: Pull images for pangolin containers based on configured versions
+  ansible.builtin.shell:
+    cmd: |
+      podman pull $(awk -F'=' '/^Image=/ {print $2}' /etc/containers/systemd/pangolin_*.container)
+  changed_when: false
+  tags: pangolin
 
 - name: Start and enable pangolin containers
   ansible.builtin.systemd_service:
@@ -124,21 +124,21 @@
     or pangolin_configs.changed
   tags: pangolin
 
-- name: Register pangolin token
-  ansible.builtin.shell:
-    cmd: |
-      set -o pipefail
-      journalctl -u pangolin_app_1 -n 300 | \
-      awk -F'Token: ' '/Token:/ {print $2}' | \
-      tail -n1
-  register: pangolin_token_result
-  changed_when: false
-  retries: 30
-  delay: 10
-  until: pangolin_token_result.stdout | trim | length > 0
-  tags: pangolin
+# - name: Register pangolin token
+#   ansible.builtin.shell:
+#     cmd: |
+#       set -o pipefail
+#       journalctl -u pangolin_app_1 -n 300 | \
+#       awk -F'Token: ' '/Token:/ {print $2}' | \
+#       tail -n1
+#   register: pangolin_token_result
+#   changed_when: false
+#   retries: 30
+#   delay: 10
+#   until: pangolin_token_result.stdout | trim | length > 0
+#   tags: pangolin
 
-- name: Show pangolin token
-  ansible.builtin.debug:
-    msg: "Pangolin token: {{ pangolin_token_result.stdout | trim }}"
-  tags: pangolin
+# - name: Show pangolin token
+#   ansible.builtin.debug:
+#     msg: "Pangolin token: {{ pangolin_token_result.stdout | trim }}"
+#   tags: pangolin
