@@ -1,12 +1,12 @@
 [[stack]]
-name = "adguard-ds920plus"
+name = "adguard"
 description = "Stack AdGuard Home"
 deploy = true
-tags = ["ds920plus", "prod"]
+tags = ["prod"]
 
 [stack.config]
 server_id = "ds920plus"
-linked_repo = "homelab-ds920plus"
+linked_repo = "homelab"
 run_directory = "compose/ds920plus/prod/adguard"
 auto_pull = true
 send_alerts = true

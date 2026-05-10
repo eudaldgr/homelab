@@ -1,7 +1,7 @@
 ---
 services:
   app:
-    image: docker.io/adguard/adguardhome:v0.107.71@sha256:92929135ced2554aaf94706f766a98ad348f211df61b0704e2db7e8498cc00b7
+    image: docker.io/adguard/adguardhome:v0.107.74@sha256:f29c58a91f79387cbbbb042e140814f58e830d457d44af03d662c8df43db9dea
     container_name: adguard_app_1
     environment:
       - TZ=${TZ}
@@ -34,12 +34,12 @@ services:
       # Optional: DNSCrypt Port
       # - "5443:5443/tcp"
       # - "5443:5443/udp"
+    restart: unless-stopped
     # To see real client IPs in rootless podman, use host networking.
     # WARNING: This requires port 53 to be free on the host (disable systemd-resolved stub).
     networks:
       vlan99:
-        ipv4_address: 192.168.99.5
-    restart: unless-stopped
+        ipv4_address: 10.1.99.2
 
 networks:
   vlan99:
