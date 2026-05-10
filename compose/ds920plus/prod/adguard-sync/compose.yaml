@@ -1,10 +1,10 @@
 ---
 services:
   sync:
-    image: ghcr.io/bakito/adguardhome-sync:alpine-v0.8.2@sha256:4a7f4195b15c923f0a9338220d693665162aeea3b8d8a85709c84669382629c5
+    image: ghcr.io/bakito/adguardhome-sync:alpine-v0.9.0@sha256:fc3accd883cda7d68f027811f34f213c23d8ed38c23f944fc58636456dc74329
     container_name: adguard_sync_1
     environment:
-      - CRON=*/10 * * * *
+      - CRON=*/1 * * * *
       - RUNONSTART=true
       - ORIGIN_URL=${ORIGIN_URL}
       - ORIGIN_USERNAME=${ORIGIN_USERNAME}
@@ -12,12 +12,4 @@ services:
       - REPLICA1_URL=${REPLICA1_URL}
       - REPLICA1_USERNAME=${REPLICA1_USERNAME}
       - REPLICA1_PASSWORD=${REPLICA1_PASSWORD}
-      - REPLICA2_URL=${REPLICA2_URL}
-      - REPLICA2_USERNAME=${REPLICA2_USERNAME}
-      - REPLICA2_PASSWORD=${REPLICA2_PASSWORD}
-      - REPLICA3_URL=${REPLICA3_URL}
-      - REPLICA3_USERNAME=${REPLICA3_USERNAME}
-      - REPLICA3_PASSWORD=${REPLICA3_PASSWORD}
-    ports:
-      - 1253:8080
     restart: unless-stopped
