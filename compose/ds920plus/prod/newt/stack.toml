@@ -2,7 +2,7 @@
 name = "newt"
 description = "Stack Newt"
 deploy = true
-tags = ["ds920plus", "prod"]
+tags = ["prod"]
 
 [stack.config]
 server_id = "ds920plus"
