@@ -1,0 +1,19 @@
+[[procedure]]
+name = "auto-sync-main"
+description = "Runs the main Komodo Resource Sync every 5 minutes."
+tags = ["system", "gitops"]
+
+[procedure.config]
+schedule_format = "English"
+schedule = "Every 5 minutes"
+schedule_enabled = true
+schedule_timezone = "Europe/Madrid"
+schedule_alert = false
+failure_alert = true
+
+[[procedure.config.stage]]
+name = "Sync main"
+enabled = true
+executions = [
+  { execution.type = "RunSync", execution.params.sync = "main", enabled = true },
+]

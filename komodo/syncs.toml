@@ -5,15 +5,11 @@ name = "main"
 git_provider = "github.com"
 git_account = "eudaldgr"
 repo = "eudaldgr/homelab"
+branch = "main"
+webhook_enabled = false
+delete = false
 
 resource_path = [
-  "komodo/builders.toml",
-  "komodo/repos.toml",
-  "komodo/servers.toml",
-  
-  # ds920plus specific
-  "compose/ds920plus/prod/adguard/stack.toml",
-  "compose/ds920plus/prod/adguard-sync/stack.toml",
-  "compose/ds920plus/prod/newt/stack.toml",
-  #"compose/ds920plus/prod/rustfs/stack.toml",
+  "komodo",
+  "compose/ds920plus/prod",
 ]
