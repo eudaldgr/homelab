@@ -4,7 +4,7 @@ services:
     image: ghcr.io/alam00000/bentopdf-simple:v2.8.4@sha256:2bae644d27351a4d01bbbbcce7a9948fcc66da053ec7a37fff168c3788de9096
     container_name: bentopdf_app_1
     healthcheck:
-      test: [ "CMD-SHELL", "nc -z 127.0.0.1 8080 || exit 1" ]
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 8080 || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -13,16 +13,16 @@ services:
       - 3183:8080
     labels:
       # Public Resource Configuration
-      - pangolin.proxy-resources.bentopdf.name=bentopdf
-      - pangolin.proxy-resources.bentopdf.full-domain=${BENTOPDF_HOSTNAME}
-      - pangolin.proxy-resources.bentopdf.protocol=http
-      # Target Configuration - Override to Host Hairpin
-      - pangolin.proxy-resources.bentopdf.targets[0].method=http
-      - pangolin.proxy-resources.bentopdf.targets[0].hostname=host.docker.internal
-      - pangolin.proxy-resources.bentopdf.targets[0].port=3183
+      - pangolin.public-resources.bentopdf.name=bentopdf
+      - pangolin.public-resources.bentopdf.full-domain=${BENTOPDF_HOSTNAME}
+      - pangolin.public-resources.bentopdf.protocol=http
+      # Target Configuration
+      - pangolin.public-resources.bentopdf.targets[0].method=http
+      - pangolin.public-resources.bentopdf.targets[0].hostname=host.docker.internal
+      - pangolin.public-resources.bentopdf.targets[0].port=3183
       # Health Check Configuration
-      - pangolin.proxy-resources.bentopdf.targets[0].healthcheck.enabled=true
-      - pangolin.proxy-resources.bentopdf.targets[0].healthcheck.hostname=host.docker.internal
-      - pangolin.proxy-resources.bentopdf.targets[0].healthcheck.port=3183
-      - pangolin.proxy-resources.bentopdf.targets[0].healthcheck.path=/
+      - pangolin.public-resources.bentopdf.targets[0].healthcheck.enabled=true
+      - pangolin.public-resources.bentopdf.targets[0].healthcheck.hostname=host.docker.internal
+      - pangolin.public-resources.bentopdf.targets[0].healthcheck.port=3183
+      - pangolin.public-resources.bentopdf.targets[0].healthcheck.path=/
     restart: unless-stopped

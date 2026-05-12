@@ -10,5 +10,6 @@ services:
       - DOCKER_SOCKET=/var/run/docker.sock
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-    network_mode: bridge
+    extra_hosts:
+      - host.docker.internal:host-gateway
     restart: unless-stopped
