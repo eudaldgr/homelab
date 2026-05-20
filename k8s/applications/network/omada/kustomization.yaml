@@ -6,7 +6,8 @@ namespace: omada
 resources:
 - namespace.yaml
 - tls-route.yaml
-- cert-omada.yaml
+- tcp-routes.yaml
+- udp-routes.yaml
 
 helmCharts:
 - name: omada-controller-helm

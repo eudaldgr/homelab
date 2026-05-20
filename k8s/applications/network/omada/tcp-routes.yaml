@@ -1,0 +1,104 @@
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: TCPRoute
+metadata:
+  name: omada-mgr-v1
+  namespace: omada
+spec:
+  parentRefs:
+    - name: tls-passthrough
+      namespace: gateway
+      sectionName: omada-mgr-v1
+  rules:
+    - backendRefs:
+        - name: omada-controller
+          port: 29811
+---
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: TCPRoute
+metadata:
+  name: omada-adopt-v1
+  namespace: omada
+spec:
+  parentRefs:
+    - name: tls-passthrough
+      namespace: gateway
+      sectionName: omada-adopt-v1
+  rules:
+    - backendRefs:
+        - name: omada-controller
+          port: 29812
+---
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: TCPRoute
+metadata:
+  name: omada-upgrade-v1
+  namespace: omada
+spec:
+  parentRefs:
+    - name: tls-passthrough
+      namespace: gateway
+      sectionName: omada-upgrade-v1
+  rules:
+    - backendRefs:
+        - name: omada-controller
+          port: 29813
+---
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: TCPRoute
+metadata:
+  name: omada-mgr-v2
+  namespace: omada
+spec:
+  parentRefs:
+    - name: tls-passthrough
+      namespace: gateway
+      sectionName: omada-mgr-v2
+  rules:
+    - backendRefs:
+        - name: omada-controller
+          port: 29814
+---
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: TCPRoute
+metadata:
+  name: omada-transfer-v2
+  namespace: omada
+spec:
+  parentRefs:
+    - name: tls-passthrough
+      namespace: gateway
+      sectionName: omada-transfer-v2
+  rules:
+    - backendRefs:
+        - name: omada-controller
+          port: 29815
+---
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: TCPRoute
+metadata:
+  name: omada-rtty
+  namespace: omada
+spec:
+  parentRefs:
+    - name: tls-passthrough
+      namespace: gateway
+      sectionName: omada-rtty
+  rules:
+    - backendRefs:
+        - name: omada-controller
+          port: 29816
+---
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: TCPRoute
+metadata:
+  name: omada-device-monitor
+  namespace: omada
+spec:
+  parentRefs:
+    - name: tls-passthrough
+      namespace: gateway
+      sectionName: omada-device-monitor
+  rules:
+    - backendRefs:
+        - name: omada-controller
+          port: 29817
