@@ -30,29 +30,29 @@ spec:
                   memory: 128Mi
               env:
                 - name: ORIGIN_URL
-                  value: "http://adguard-home-0.adguard.svc.cluster.local"
+                  value: "http://adguard-home-0.adguard.svc.cluster.local:80"
                 - name: ORIGIN_USERNAME
                   valueFrom:
                     secretKeyRef:
-                      name: adguard-sync-secret
-                      key: origin-username
+                      name: adguard-admin-secret
+                      key: username
                 - name: ORIGIN_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: adguard-sync-secret
-                      key: origin-password
+                      name: adguard-admin-secret
+                      key: password
                 - name: REPLICA1_URL
-                  value: "http://adguard-home-1.adguard.svc.cluster.local"
+                  value: "http://adguard-home-1.adguard.svc.cluster.local:80"
                 - name: REPLICA1_USERNAME
                   valueFrom:
                     secretKeyRef:
-                      name: adguard-sync-secret
-                      key: replica1-username
+                      name: adguard-admin-secret
+                      key: username
                 - name: REPLICA1_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: adguard-sync-secret
-                      key: replica1-password
+                      name: adguard-admin-secret
+                      key: password
                 - name: PRINT_CONFIG_ONLY
                   value: "false"
                 - name: LOG_LEVEL
