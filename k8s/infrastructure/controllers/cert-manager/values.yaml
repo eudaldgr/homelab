@@ -17,11 +17,11 @@ resources:
 replicaCount: 1
 
 webhook:
-  securePort: 10250
-  hostNetwork: false
+  securePort: 10260
+  hostNetwork: true
   serviceType: ClusterIP
   extraArgs:
-    - --secure-port=10250
+    - --secure-port=10260
   resources:
     limits:
       cpu: 125m

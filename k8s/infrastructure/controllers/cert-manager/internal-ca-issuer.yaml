@@ -2,7 +2,8 @@ apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
   name: internal-ca-issuer
-  namespace: cert-manager
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
 spec:
   selfSigned: {}
 ---
@@ -11,6 +12,8 @@ kind: Certificate
 metadata:
   name: internal-ca-certificate
   namespace: cert-manager
+  annotations:
+    argocd.argoproj.io/sync-wave: "20"
 spec:
   commonName: internal-ca
   isCA: true
@@ -23,6 +26,7 @@ spec:
   privateKey:
     algorithm: RSA
     encoding: PKCS8
+    rotationPolicy: Never
     size: 2048
   issuerRef:
     name: internal-ca-issuer
@@ -33,6 +37,8 @@ apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
   name: internal-issuer
+  annotations:
+    argocd.argoproj.io/sync-wave: "30"
 spec:
   ca:
     secretName: internal-ca-tls
