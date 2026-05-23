@@ -52,13 +52,11 @@ spec:
           protocol: UDP
         - containerPort: 3000
           name: http-initial
-        - containerPort: 80
-          name: http
         volumeMounts:
         - name: adguard-data
-          mountPath: /opt/adguardhome/work/
+          mountPath: /adguard/var
         - name: adguard-config
-          mountPath: /opt/adguardhome/conf/
+          mountPath: /adguard/etc
   volumeClaimTemplates:
   - metadata:
       name: adguard-data
