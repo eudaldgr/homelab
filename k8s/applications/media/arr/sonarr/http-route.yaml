@@ -8,7 +8,7 @@ spec:
     - name: internal
       namespace: gateway
   hostnames:
-    - 'sonarr.lab.home.eudald.gr'
+    - 'sonarr.home.eudald.gr'
   rules:
     - matches:
         - path:

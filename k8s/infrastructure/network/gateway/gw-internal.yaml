@@ -12,7 +12,7 @@ spec:
     - protocol: HTTPS
       port: 443
       name: https-gateway
-      hostname: "*.lab.home.eudald.gr"
+      hostname: "*.home.eudald.gr"
       tls:
         certificateRefs:
           - kind: Secret
@@ -23,7 +23,7 @@ spec:
     - protocol: HTTPS
       port: 443
       name: https-domain-gateway
-      hostname: lab.home.eudald.gr
+      hostname: home.eudald.gr
       tls:
         certificateRefs:
           - kind: Secret
@@ -31,7 +31,7 @@ spec:
     - protocol: HTTP
       port: 80
       name: http-gateway
-      hostname: "*.lab.home.eudald.gr"
+      hostname: "*.home.eudald.gr"
       allowedRoutes:
         namespaces:
           from: All

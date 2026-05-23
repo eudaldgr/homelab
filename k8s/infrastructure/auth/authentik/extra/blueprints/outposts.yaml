@@ -20,7 +20,7 @@ entries:
       providers: []
       config:
         log_level: info
-        authentik_host: https://sso.lab.home.eudald.gr
+        authentik_host: https://sso.home.eudald.gr
         object_naming_template: ak-outpost-%(name)s
         kubernetes_disabled_components:
           - ingress

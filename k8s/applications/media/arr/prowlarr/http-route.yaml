@@ -8,7 +8,7 @@ spec:
     - name: internal
       namespace: gateway
   hostnames:
-    - 'prowlarr.lab.home.eudald.gr'
+    - 'prowlarr.home.eudald.gr'
   rules:
     - matches:
         - path:
