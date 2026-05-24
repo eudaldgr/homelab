@@ -1,4 +1,6 @@
 resource "null_resource" "argocd_kustomize" {
+  depends_on = [null_resource.wait_for_sealed_secrets]
+
   provisioner "local-exec" {
     command     = <<-EOT
       kustomize build --enable-helm . | kubectl apply \
@@ -30,10 +32,7 @@ resource "null_resource" "wait_for_argocd" {
 
 # Infrastructure
 resource "null_resource" "infrastructure_project" {
-  depends_on = [
-    null_resource.wait_for_argocd,
-    null_resource.wait_for_sealed_secrets
-  ]
+  depends_on = [null_resource.wait_for_argocd]
 
   provisioner "local-exec" {
     command = <<-EOT

@@ -2,13 +2,17 @@ resource "kubernetes_namespace_v1" "sealed_secrets" {
   metadata {
     name = "sealed-secrets"
   }
+
+  lifecycle {
+    ignore_changes = [
+      metadata[0].annotations,
+      metadata[0].labels
+    ]
+  }
 }
 
 resource "null_resource" "restore_sealed_secrets_master_key" {
-  depends_on = [
-    kubernetes_namespace_v1.sealed_secrets,
-    null_resource.wait_for_sealed_secrets
-  ]
+  depends_on = [kubernetes_namespace_v1.sealed_secrets]
 
   count = var.restore_sealed_secrets_master_key ? 1 : 0
 
