@@ -5,6 +5,8 @@ kind: ObjectStore
 metadata:
   name: authentik-rustfs-store
   namespace: auth
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
 spec:
   retentionPolicy: "14d"
   configuration:
@@ -24,6 +26,8 @@ kind: ObjectStore
 metadata:
   name: authentik-b2-store
   namespace: auth
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
 spec:
   retentionPolicy: "30d"
   configuration:
@@ -42,6 +46,8 @@ kind: Cluster
 metadata:
   name: authentik-postgresql
   namespace: auth
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
 spec:
   instances: 2
   imageName: ghcr.io/cloudnative-pg/postgresql:17

@@ -4,6 +4,8 @@ kind: ScheduledBackup
 metadata:
   name: authentik-postgresql-backup
   namespace: auth
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   schedule: "0 0 2 * * *"  # Daily at 2 AM instead of weekly
   backupOwnerReference: self
