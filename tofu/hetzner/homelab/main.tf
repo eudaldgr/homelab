@@ -49,6 +49,17 @@ resource "hcloud_firewall" "homelab" {
     ]
   }
 
+  # HTTP/3 (opcional, però recomanat per Pangolin)
+  rule {
+    direction = "in"
+    port      = "443"
+    protocol  = "udp"
+    source_ips = [
+      "0.0.0.0/0",
+      "::/0"
+    ]
+  }
+
   # Pangolin/Gerbil site tunnels (Newt -> Gerbil)
   rule {
     direction = "in"
