@@ -6,12 +6,12 @@ After=network.target
 Pod=pangolin_proxy_1.pod
 ContainerName=pangolin_app_1
 Image=ghcr.io/fosrl/pangolin:{{ pangolin_app_version }}
-Mount=type=bind,src=/etc/pangolin,dst=/app/config,relabel=shared,U=true
+Volume=/etc/pangolin:/app/config:z,U
 Notify=healthy
 HealthCmd="/usr/bin/curl -f http://127.0.0.1:3001/api/v1/"
-HealthInterval=3s
+HealthInterval=10s
+HealthTimeout=10s
 HealthRetries=15
-HealthTimeout=15s
 
 [Service]
 Restart=always

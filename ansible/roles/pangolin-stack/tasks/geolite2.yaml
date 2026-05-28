@@ -1,39 +1,61 @@
 ---
-- name: Download GeoLite2 Country database
+- name: Download GeoLite2 databases
   ansible.builtin.get_url:
-    url: https://github.com/GitSquared/node-geolite2-redist/raw/refs/heads/master/redist/GeoLite2-Country.tar.gz
-    dest: /tmp/GeoLite2-Country.tar.gz
+    url: "https://github.com/GitSquared/node-geolite2-redist/raw/refs/heads/master/redist/{{ item }}.tar.gz"
+    dest: "/tmp/{{ item }}.tar.gz"
     mode: "0644"
+  loop:
+    - GeoLite2-Country
+    - GeoLite2-ASN
 
-- name: Extract GeoLite2 Country database
+- name: Extract GeoLite2 databases
   ansible.builtin.unarchive:
-    src: /tmp/GeoLite2-Country.tar.gz
+    src: "/tmp/{{ item }}.tar.gz"
     dest: /tmp
     remote_src: true
+  loop:
+    - GeoLite2-Country
+    - GeoLite2-ASN
 
-- name: Find extracted GeoLite2 Country database
+- name: Find extracted GeoLite2 databases
   ansible.builtin.find:
     paths: /tmp
-    patterns: "GeoLite2-Country.mmdb"
+    patterns: "{{ item }}"
     recurse: true
     file_type: file
+  loop:
+    - GeoLite2-Country.mmdb
+    - GeoLite2-ASN.mmdb
+  loop_control:
+    loop_var: item
   register: geolite2_file
 
-- name: Move GeoLite2 Country database to Pangolin config directory
+- name: Move GeoLite2 databases to Pangolin config directory
   ansible.builtin.copy:
-    src: "{{ geolite2_file.files[0].path }}"
-    dest: "/etc/pangolin/GeoLite2-Country.mmdb"
+    src: "{{ item.files[0].path }}"
+    dest: "/etc/pangolin/{{ item.item }}"
     owner: root
     group: root
     mode: "0644"
     remote_src: true
-  when: geolite2_file.files | length > 0
+  loop: "{{ geolite2_file.results }}"
+  loop_control:
+    loop_var: item
+  when: item.files | length > 0
 
-- name: Clean up GeoLite2 Country database temporary files
+- name: Clean up GeoLite2 database temporary files
   ansible.builtin.file:
-    path: "{{ item }}"
+    path: "/tmp/{{ item }}.tar.gz"
     state: absent
   loop:
-    - /tmp/GeoLite2-Country.tar.gz
-    - "{{ geolite2_file.files[0].path | dirname }}"
-  when: geolite2_file.files | length > 0
+    - GeoLite2-Country
+    - GeoLite2-ASN
+
+- name: Clean up extracted GeoLite2 directories
+  ansible.builtin.file:
+    path: "{{ item.files[0].path | dirname }}"
+    state: absent
+  loop: "{{ geolite2_file.results }}"
+  loop_control:
+    loop_var: item
+  when: item.files | length > 0

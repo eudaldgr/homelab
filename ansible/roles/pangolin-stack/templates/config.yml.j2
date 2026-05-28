@@ -20,7 +20,7 @@ domains:
 server:
   # Badger middleware uses this to generate apiBaseUrl for Traefik authentication.
   # Must be 'localhost' when containers share network namespace (e.g., rootless Podman pod).
-  internal_hostname: "localhost"
+  internal_hostname: "pangolin_app_1"
 
   secret: "{{ pangolin_server_secret }}"
   cors:
@@ -29,6 +29,7 @@ server:
     allowed_headers: ["X-CSRF-Token", "Content-Type"]
     credentials: false
   maxmind_db_path: "./config/GeoLite2-Country.mmdb"
+  maxmind_asn_path: "./config/GeoLite2-ASN.mmdb"
 
 {% if pangolin_email %}
 email:
@@ -43,5 +44,5 @@ email:
 flags:
   require_email_verification: false
   disable_signup_without_invite: true
-  disable_user_create_org: true
+  disable_user_create_org: false
   allow_raw_resources: true

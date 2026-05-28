@@ -10,7 +10,7 @@
     - /etc/containers/systemd
     - /etc/pangolin
     - /etc/pangolin/traefik
-    - /etc/pangolin/traefik/letsencrypt
+    - /etc/pangolin/letsencrypt
     - /etc/pangolin/traefik/logs
     - /etc/systemd/system
   loop_control:
@@ -67,21 +67,20 @@
     owner: root
     group: root
     mode: "0644"
+  register: pangolin_traefik_selinux_policy
   tags: [pangolin, selinux]
 
-- name: Check periphery SELinux policy installed
-  ansible.builtin.command: semodule -l | grep -w pangolin_traefik_1
+- name: Check Pangolin Traefik SELinux policy installed
+  ansible.builtin.command: semodule -l
   register: selinux_policy_check
   failed_when: false
   changed_when: false
   tags: [pangolin, selinux]
 
-- name: Install periphery SELinux policy # noqa: command-instead-of-shell
+- name: Install Pangolin Traefik SELinux policy # noqa: command-instead-of-shell
   ansible.builtin.shell: |
     semodule -i /etc/pangolin/pangolin_traefik_1.cil /usr/share/udica/templates/base_container.cil
-  args:
-    creates: /var/lib/selinux/targeted/active/modules/400/pangolin_traefik_1
-  when: selinux_policy_check.rc != 0
+  when: pangolin_traefik_selinux_policy.changed or 'pangolin_traefik_1' not in selinux_policy_check.stdout
   tags: [pangolin, selinux]
 
 - name: Include GeoLite2 database tasks
@@ -108,10 +107,42 @@
   changed_when: false
   tags: pangolin
 
+- name: Stop pangolin containers before restart
+  ansible.builtin.systemd_service:
+    name: "{{ container }}.service"
+    state: stopped
+  loop:
+    - pangolin_traefik_1
+    - pangolin_gerbil_1
+    - pangolin_app_1
+  loop_control:
+    loop_var: container
+  when: pangolin_quadlets.changed
+    or pangolin_pod.changed
+    or pangolin_configs.changed
+    or pangolin_traefik_selinux_policy.changed
+  tags: pangolin
+
+- name: Stop pangolin pod before restart
+  ansible.builtin.systemd_service:
+    name: pangolin_proxy_1-pod.service
+    state: stopped
+  when: pangolin_quadlets.changed
+    or pangolin_pod.changed
+    or pangolin_configs.changed
+    or pangolin_traefik_selinux_policy.changed
+  tags: pangolin
+
+- name: Reset failed pangolin units before start
+  ansible.builtin.command:
+    cmd: systemctl reset-failed pangolin_app_1.service pangolin_gerbil_1.service pangolin_traefik_1.service pangolin_proxy_1-pod.service
+  changed_when: false
+  tags: pangolin
+
 - name: Start and enable pangolin containers
   ansible.builtin.systemd_service:
     name: "{{ container }}.service"
-    state: restarted
+    state: started
     enabled: true
   loop:
     - pangolin_app_1
@@ -119,26 +150,23 @@
     - pangolin_traefik_1
   loop_control:
     loop_var: container
-  when: pangolin_quadlets.changed
-    or pangolin_pod.changed
-    or pangolin_configs.changed
   tags: pangolin
 
-# - name: Register pangolin token
-#   ansible.builtin.shell:
-#     cmd: |
-#       set -o pipefail
-#       journalctl -u pangolin_app_1 -n 300 | \
-#       awk -F'Token: ' '/Token:/ {print $2}' | \
-#       tail -n1
-#   register: pangolin_token_result
-#   changed_when: false
-#   retries: 30
-#   delay: 10
-#   until: pangolin_token_result.stdout | trim | length > 0
-#   tags: pangolin
+- name: Register pangolin token
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      journalctl -u pangolin_app_1 -n 300 | \
+      awk -F'Token: ' '/Token:/ {print $2}' | \
+      tail -n1
+  register: pangolin_token_result
+  changed_when: false
+  retries: 30
+  delay: 10
+  until: pangolin_token_result.stdout | trim | length > 0
+  tags: pangolin
 
-# - name: Show pangolin token
-#   ansible.builtin.debug:
-#     msg: "Pangolin token: {{ pangolin_token_result.stdout | trim }}"
-#   tags: pangolin
+- name: Show pangolin token
+  ansible.builtin.debug:
+    msg: "Pangolin token: {{ pangolin_token_result.stdout | trim }}"
+  tags: pangolin
