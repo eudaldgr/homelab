@@ -53,6 +53,7 @@ locals {
     printf "%s\n" \
       "ip_tables" \
       "ip6_tables" \
+      "wireguard" \
       > /etc/modules-load.d/50-hcloud.conf
 
     printf "%s\n" \
