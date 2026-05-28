@@ -18,11 +18,11 @@ services:
       - pangolin.public-resources.bentopdf.protocol=http
       # Target Configuration
       - pangolin.public-resources.bentopdf.targets[0].method=http
-      - pangolin.public-resources.bentopdf.targets[0].hostname=host.docker.internal
+      - pangolin.public-resources.bentopdf.targets[0].hostname=127.0.0.1
       - pangolin.public-resources.bentopdf.targets[0].port=3183
       # Health Check Configuration
       - pangolin.public-resources.bentopdf.targets[0].healthcheck.enabled=true
-      - pangolin.public-resources.bentopdf.targets[0].healthcheck.hostname=host.docker.internal
+      - pangolin.public-resources.bentopdf.targets[0].healthcheck.hostname=127.0.0.1
       - pangolin.public-resources.bentopdf.targets[0].healthcheck.port=3183
       - pangolin.public-resources.bentopdf.targets[0].healthcheck.path=/
     restart: unless-stopped
