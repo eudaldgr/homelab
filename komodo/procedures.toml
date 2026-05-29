@@ -1,7 +1,7 @@
 [[procedure]]
-name = "auto-sync-main"
+name = "Auto Sync Main"
 description = "Runs the main Komodo Resource Sync every 5 minutes."
-tags = ["system", "gitops"]
+tags = ["system"]
 
 [procedure.config]
 schedule_format = "English"
@@ -10,10 +10,32 @@ schedule_enabled = true
 schedule_timezone = "Europe/Madrid"
 schedule_alert = false
 failure_alert = true
+webhook_enabled = true
+
+[[procedure.config.stage]]
+name = "Pull stack repo"
+enabled = true
+executions = [
+  { execution.type = "PullRepo", execution.params.repo = "homelab", enabled = true },
+]
+
+[[procedure.config.stage]]
+name = "Destroy removed GitOps stacks"
+enabled = true
+executions = [
+  { execution.type = "RunAction", execution.params.action = "destroy-removed-gitops-stacks", enabled = true },
+]
 
 [[procedure.config.stage]]
 name = "Sync main"
 enabled = true
 executions = [
   { execution.type = "RunSync", execution.params.sync = "main", enabled = true },
+]
+
+[[procedure.config.stage]]
+name = "Deploy changed GitOps stacks"
+enabled = true
+executions = [
+  { execution.type = "RunAction", execution.params.action = "deploy-changed-gitops-stacks", enabled = true },
 ]

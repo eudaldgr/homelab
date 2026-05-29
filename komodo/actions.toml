@@ -1,0 +1,78 @@
+[[action]]
+name = "destroy-removed-gitops-stacks"
+description = "Destroys GitOps stacks that Resource Sync is about to delete."
+tags = ["system"]
+
+[action.config]
+run_at_startup = false
+schedule_enabled = false
+failure_alert = true
+webhook_enabled = false
+reload_deno_deps = false
+file_contents = """
+const SYNC = "main";
+
+function stackTargetId(target) {
+  if (!target || target.type !== "Stack" || !target.id) {
+    return null;
+  }
+  return target.id;
+}
+
+const sync = await komodo.write("RefreshResourceSyncPending", { sync: SYNC });
+const updates = sync?.info?.resource_updates ?? [];
+const deletes = updates.filter((update) => update?.data?.type === "Delete");
+let destroyed = 0;
+
+for (const update of deletes) {
+  const stack = stackTargetId(update.target);
+  if (!stack) {
+    continue;
+  }
+
+  console.log(`Destroying removed GitOps stack: ${stack}`);
+  await komodo.execute("DestroyStack", {
+    stack,
+    services: [],
+    remove_orphans: true,
+    stop_time: null,
+  });
+  destroyed += 1;
+}
+
+console.log(`Destroyed ${destroyed} removed GitOps stack(s).`);
+"""
+
+[[action]]
+name = "deploy-changed-gitops-stacks"
+description = "Deploys changed GitOps stacks without a hard-coded stack list."
+tags = ["system"]
+
+[action.config]
+run_at_startup = false
+schedule_enabled = false
+failure_alert = true
+webhook_enabled = false
+reload_deno_deps = false
+file_contents = """
+const stacks = await komodo.read("ListStacks", {
+  query: {},
+});
+
+let checked = 0;
+for (const stack of stacks) {
+  const name = stack.name ?? stack.id;
+  if (!name) {
+    continue;
+  }
+
+  console.log(`Checking GitOps stack for changes: ${name}`);
+  await komodo.execute("DeployStackIfChanged", {
+    stack: name,
+    stop_time: null,
+  });
+  checked += 1;
+}
+
+console.log(`Checked ${checked} GitOps stack(s) for changes.`);
+"""
