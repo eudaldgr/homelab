@@ -20,7 +20,7 @@ domains:
 server:
   # Badger middleware uses this to generate apiBaseUrl for Traefik authentication.
   # Must be 'localhost' when containers share network namespace (e.g., rootless Podman pod).
-  internal_hostname: "pangolin_app_1"
+  internal_hostname: "localhost"
 
   secret: "{{ pangolin_server_secret }}"
   cors:
