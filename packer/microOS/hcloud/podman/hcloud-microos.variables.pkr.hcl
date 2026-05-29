@@ -53,6 +53,18 @@ locals {
     printf "%s\n" \
       "ip_tables" \
       "ip6_tables" \
+      "iptable_filter" \
+      "iptable_mangle" \
+      "nf_conntrack" \
+      "xt_conntrack" \
+      "xt_tcpudp" \
+      "xt_TCPMSS" \
+      "rtnl-link-wireguard" \
+      "net-pf-16-proto-16-family-wireguard" \
+      "nfnetlink-subsys-11" \
+      "nft-expr-target" \
+      "ipt_tcp" \
+      "ipt_TCPMSS" \
       "wireguard" \
       > /etc/modules-load.d/50-hcloud.conf
 
