@@ -1,0 +1,65 @@
+---
+services:
+  chown:
+    image: ghcr.io/vegops/chown:latest
+    container_name: vaultwarden_chown_1
+    volumes:
+      - ${APP_DATA_DIR}/data:/chown
+    command: "-R 65532:65532 /chown"
+
+  app:
+    image: ghcr.io/vegops/vaultwarden:latest
+    container_name: vaultwarden_app_1
+    depends_on:
+      chown:
+        condition: service_completed_successfully
+    environment:
+      - SIGNUPS_ALLOWED=false
+      - ADMIN_TOKEN=${VAULTWARDEN_ADMIN_TOKEN}
+      - ROCKET_PORT=8000
+    volumes:
+      - ${APP_DATA_DIR}/data:/vaultwarden/var
+    ports:
+      - 3012:3012
+      - 8122:8000
+    labels:
+      # Public Resource Configuration
+      - pangolin.public-resources.vaultwarden.name=vaultwarden
+      - pangolin.public-resources.vaultwarden.full-domain=${VAULTWARDEN_HOSTNAME}
+      - pangolin.public-resources.vaultwarden.protocol=http
+      # Auth: do not put Vaultwarden behind Pangolin SSO; block the admin UI entirely.
+      - pangolin.public-resources.vaultwarden.auth.sso-enabled=false
+      - pangolin.public-resources.vaultwarden.rules[0].action=deny
+      - pangolin.public-resources.vaultwarden.rules[0].match=path
+      - pangolin.public-resources.vaultwarden.rules[0].value=/admin
+
+      - pangolin.public-resources.vaultwarden.rules[1].action=deny
+      - pangolin.public-resources.vaultwarden.rules[1].match=path
+      - pangolin.public-resources.vaultwarden.rules[1].value=/admin/*
+      # Target Configuration - Override to Host Hairpin
+      - pangolin.public-resources.vaultwarden.targets[0].method=http
+      - pangolin.public-resources.vaultwarden.targets[0].hostname=127.0.0.1
+      - pangolin.public-resources.vaultwarden.targets[0].port=8122
+      # Health Check Configuration
+      - pangolin.public-resources.vaultwarden.targets[0].healthcheck.enabled=true
+      - pangolin.public-resources.vaultwarden.targets[0].healthcheck.hostname=127.0.0.1
+      - pangolin.public-resources.vaultwarden.targets[0].healthcheck.port=8122
+      - pangolin.public-resources.vaultwarden.targets[0].healthcheck.path=/alive
+    restart: unless-stopped
+
+  backup:
+    image: docker.io/alpine/sqlite:3.49.2@sha256:519bc9c493ffd696d3861a9b0118dc8938161f155b1dba623d334c271a7f92ac
+    container_name: vaultwarden_backup_1
+    mem_limit: 512m
+    depends_on:
+      chown:
+        condition: service_completed_successfully
+    volumes:
+      - ${APP_DATA_DIR}/data:/data:ro
+      - ${APP_DATA_DIR}/backup:/backup
+      - ${APP_DATA_DIR}/backup.sh:/backup.sh:ro
+    entrypoint: ["/bin/sh", "/backup.sh"]
+    environment:
+      - MAX_BACKUPS=128
+      - SLEEP_SECONDS=43200 # 43200 seconds equals to 12h
+    restart: unless-stopped
