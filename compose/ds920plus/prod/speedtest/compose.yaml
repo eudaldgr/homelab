@@ -1,0 +1,32 @@
+---
+services:
+  chown:
+    image: ghcr.io/vegops/chown:latest
+    container_name: speedtest_chown_1
+    volumes:
+      - ${APP_DATA_DIR}/data:/chown
+    command: "-R 65532:65532 /chown"
+
+  tracker:
+    image: lscr.io/linuxserver/speedtest-tracker:1.13.4@sha256:d3a733cb62b67866fcae7d8e982feeeee48635dc09a5ecf730c37088de55803c
+    container_name: speedtest_tracker_1
+    depends_on:
+      chown:
+        condition: service_completed_successfully
+    ports:
+      - 8080:80
+      - 8443:443
+    environment:
+      - PUID=65532
+      - PGID=65532
+      - APP_KEY=${APP_KEY}
+      - APP_URL=${APP_URL}
+      - DB_CONNECTION=sqlite
+
+      - APP_TIMEZONE=${TZ}
+      - DISPLAY_TIMEZONE=${TZ}
+      - SPEEDTEST_SCHEDULE=0 * * * *
+    volumes:
+      - ${APP_DATA_DIR}/data/etc:/config
+      - ${APP_DATA_DIR}/data/keys:/config/keys
+    restart: unless-stopped
