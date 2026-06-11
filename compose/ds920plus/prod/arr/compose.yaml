@@ -1,0 +1,256 @@
+name: arr
+
+x-lockdown: &lockdown
+  security_opt:
+    - "no-new-privileges=true"
+
+x-chown: &chown
+  depends_on:
+    chown:
+      condition: service_completed_successfully
+
+x-restart: &restart
+  restart: unless-stopped
+
+services:
+  chown:
+    image: ghcr.io/vegops/chown:latest
+    container_name: arr_chown_1
+    volumes:
+      - ${APP_DATA_DIR}/arr:/chown/arr
+      - ${MEDIA_DATA_DIR:-/}:/chown/media
+    command: "-R 65532:65532 /chown"
+
+  radarr:
+    image: ghcr.io/vegops/radarr:latest
+    <<: [*lockdown, *chown, *restart]
+    container_name: arr_radarr_1
+    environment:
+      - TZ=${TZ}
+    volumes:
+      - ${APP_DATA_DIR}/arr/radarr:/radarr/data
+      - ${MEDIA_DATA_DIR:-/}:/data
+    ports:
+      - 7878:7878
+    labels:
+      # Public Resource Configuration
+      - pangolin.public-resources.radarr.name=radarr
+      - pangolin.public-resources.radarr.full-domain=${RADARR_HOSTNAME}
+      - pangolin.public-resources.radarr.protocol=http
+      # Auth: protect all but API
+      - pangolin.public-resources.radarr.auth.sso-enabled=true
+      - pangolin.public-resources.radarr.rules[0].action=allow
+      - pangolin.public-resources.radarr.rules[0].match=path
+      - pangolin.public-resources.radarr.rules[0].value=/api/*
+      # Target Configuration - Override to Host Hairpin
+      - pangolin.public-resources.radarr.targets[0].method=http
+      - pangolin.public-resources.radarr.targets[0].hostname=127.0.0.1
+      - pangolin.public-resources.radarr.targets[0].port=7878
+      # Health Check Configuration
+      - pangolin.public-resources.radarr.targets[0].healthcheck.enabled=true
+      - pangolin.public-resources.radarr.targets[0].healthcheck.hostname=127.0.0.1
+      - pangolin.public-resources.radarr.targets[0].healthcheck.port=7878
+      - pangolin.public-resources.radarr.targets[0].healthcheck.path=/
+
+  sonarr:
+    image: ghcr.io/vegops/sonarr:latest
+    <<: [*lockdown, *chown, *restart]
+    container_name: arr_sonarr_1
+    environment:
+      - TZ=${TZ}
+    volumes:
+      - ${APP_DATA_DIR}/arr/sonarr:/sonarr/data
+      - ${MEDIA_DATA_DIR:-/}:/data
+    ports:
+      - 8989:8989
+    labels:
+      # Public Resource Configuration
+      - pangolin.public-resources.sonarr.name=sonarr
+      - pangolin.public-resources.sonarr.full-domain=${SONARR_HOSTNAME}
+      - pangolin.public-resources.sonarr.protocol=http
+      # Auth: protect all but API
+      - pangolin.public-resources.sonarr.auth.sso-enabled=true
+      - pangolin.public-resources.sonarr.rules[0].action=allow
+      - pangolin.public-resources.sonarr.rules[0].match=path
+      - pangolin.public-resources.sonarr.rules[0].value=/api/*
+      # Target Configuration - Override to Host Hairpin
+      - pangolin.public-resources.sonarr.targets[0].method=http
+      - pangolin.public-resources.sonarr.targets[0].hostname=127.0.0.1
+      - pangolin.public-resources.sonarr.targets[0].port=8989
+      # Health Check Configuration
+      - pangolin.public-resources.sonarr.targets[0].healthcheck.enabled=true
+      - pangolin.public-resources.sonarr.targets[0].healthcheck.hostname=127.0.0.1
+      - pangolin.public-resources.sonarr.targets[0].healthcheck.port=8989
+      - pangolin.public-resources.sonarr.targets[0].healthcheck.path=/
+
+  prowlarr:
+    image: ghcr.io/vegops/prowlarr:latest
+    <<: [*lockdown, *chown, *restart]
+    container_name: arr_prowlarr_1
+    environment:
+      - TZ=${TZ}
+    volumes:
+      - ${APP_DATA_DIR}/arr/prowlarr:/prowlarr/data
+    ports:
+      - 9696:9696
+    labels:
+      # Public Resource Configuration
+      - pangolin.public-resources.prowlarr.name=prowlarr
+      - pangolin.public-resources.prowlarr.full-domain=${PROWLARR_HOSTNAME}
+      - pangolin.public-resources.prowlarr.protocol=http
+      # Auth: protect all
+      - pangolin.public-resources.prowlarr.auth.sso-enabled=true
+      # Target Configuration - Override to Host Hairpin
+      - pangolin.public-resources.prowlarr.targets[0].method=http
+      - pangolin.public-resources.prowlarr.targets[0].hostname=127.0.0.1
+      - pangolin.public-resources.prowlarr.targets[0].port=9696
+      # Health Check Configuration
+      - pangolin.public-resources.prowlarr.targets[0].healthcheck.enabled=true
+      - pangolin.public-resources.prowlarr.targets[0].healthcheck.hostname=127.0.0.1
+      - pangolin.public-resources.prowlarr.targets[0].healthcheck.port=9696
+      - pangolin.public-resources.prowlarr.targets[0].healthcheck.path=/
+
+  configarr:
+    image: ghcr.io/vegops/configarr:latest
+    <<: [*lockdown, *chown, *restart]
+    container_name: arr_configarr_1
+    environment:
+      - TZ=${TZ}
+      - CONFIGARR_SCHEDULE="0 0 * * *"
+    volumes:
+      - ${APP_DATA_DIR}/arr/configarr/etc:/configarr/etc
+      - configarr.var:/configarr/var
+
+  qbittorrent:
+    image: ghcr.io/vegops/qbittorrent:latest
+    <<: [*lockdown, *chown, *restart]
+    container_name: arr_qbittorrent_1
+    environment:
+      - TZ=${TZ}
+    mem_limit: 2048M
+    volumes:
+      - ${APP_DATA_DIR}/arr/qbittorrent/etc:/qbittorrent/etc
+      - ${APP_DATA_DIR}/arr/qbittorrent/var:/qbittorrent/var
+      - ${MEDIA_DATA_DIR:-/}/torrents:/data/torrents
+      - ${MEDIA_DATA_DIR:-/}/torrents:/qbittorrent/media
+    ports:
+      - 65211:65211
+      - 65211:65211/udp
+      - 8090:8080
+    labels:
+      # Public Resource Configuration
+      - pangolin.public-resources.qbittorrent.name=qbittorrent
+      - pangolin.public-resources.qbittorrent.full-domain=${QBITTORRENT_HOSTNAME}
+      - pangolin.public-resources.qbittorrent.protocol=http
+      # Auth: protect all but API
+      - pangolin.public-resources.qbittorrent.auth.sso-enabled=true
+      # Target Configuration - Override to Host Hairpin
+      - pangolin.public-resources.qbittorrent.targets[0].method=http
+      - pangolin.public-resources.qbittorrent.targets[0].hostname=127.0.0.1
+      - pangolin.public-resources.qbittorrent.targets[0].port=8090
+      # Health Check Configuration
+      - pangolin.public-resources.qbittorrent.targets[0].healthcheck.enabled=true
+      - pangolin.public-resources.qbittorrent.targets[0].healthcheck.hostname=127.0.0.1
+      - pangolin.public-resources.qbittorrent.targets[0].healthcheck.port=8090
+      - pangolin.public-resources.qbittorrent.targets[0].healthcheck.path=/
+
+  seerr:
+    image: ghcr.io/vegops/seerr:latest
+    <<: [*lockdown, *chown, *restart]
+    container_name: arr_seerr_1
+    environment:
+      - TZ=${TZ}
+    volumes:
+      - ${APP_DATA_DIR}/arr/seerr/etc:/seerr/config
+    ports:
+      - 5055:5055
+    labels:
+      # Public Resource Configuration
+      - pangolin.public-resources.seerr.name=seerr
+      - pangolin.public-resources.seerr.full-domain=${SEERR_HOSTNAME}
+      - pangolin.public-resources.seerr.protocol=http
+      # Target Configuration - Override to Host Hairpin
+      - pangolin.public-resources.seerr.targets[0].method=http
+      - pangolin.public-resources.seerr.targets[0].hostname=127.0.0.1
+      - pangolin.public-resources.seerr.targets[0].port=5055
+      # Health Check Configuration
+      - pangolin.public-resources.seerr.targets[0].healthcheck.enabled=true
+      - pangolin.public-resources.seerr.targets[0].healthcheck.hostname=127.0.0.1
+      - pangolin.public-resources.seerr.targets[0].healthcheck.port=5055
+      - pangolin.public-resources.seerr.targets[0].healthcheck.path=/
+
+  tautulli:
+    image: ghcr.io/vegops/tautulli:latest
+    <<: [*lockdown, *chown, *restart]
+    container_name: arr_tautulli_1
+    environment:
+      - TZ=${TZ}
+    volumes:
+      - ${APP_DATA_DIR}/arr/tautulli/etc:/tautulli/etc
+      - ${APP_DATA_DIR}/arr/tautulli/var:/tautulli/var
+    ports:
+      - 8181:8181
+    labels:
+      # Public Resource Configuration
+      - pangolin.public-resources.tautulli.name=tautulli
+      - pangolin.public-resources.tautulli.full-domain=${TAUTULLI_HOSTNAME}
+      - pangolin.public-resources.tautulli.protocol=http
+      # Auth: protect all but API
+      - pangolin.public-resources.tautulli.auth.sso-enabled=true
+      - pangolin.public-resources.tautulli.rules[0].action=allow
+      - pangolin.public-resources.tautulli.rules[0].match=path
+      - pangolin.public-resources.tautulli.rules[0].value=/api/*
+      # Target Configuration - Override to Host Hairpin
+      - pangolin.public-resources.tautulli.targets[0].method=http
+      - pangolin.public-resources.tautulli.targets[0].hostname=127.0.0.1
+      - pangolin.public-resources.tautulli.targets[0].port=8181
+      # Health Check Configuration
+      - pangolin.public-resources.tautulli.targets[0].healthcheck.enabled=true
+      - pangolin.public-resources.tautulli.targets[0].healthcheck.hostname=127.0.0.1
+      - pangolin.public-resources.tautulli.targets[0].healthcheck.port=8181
+      - pangolin.public-resources.tautulli.targets[0].healthcheck.path=/
+
+  plex:
+    image: ghcr.io/vegops/plex:latest
+    <<: [*lockdown, *chown, *restart]
+    container_name: arr_plex_1
+    environment:
+      - TZ=${TZ}
+    volumes:
+      - ${MEDIA_DATA_DIR:-/}/media:/data/media
+      - ${APP_DATA_DIR}/arr/plex:/plex/etc
+    ports:
+      - 32400:32400
+      # Plex Companion
+      - 3005:3005/tcp
+      # Roku via Plex Companion
+      - 8324:8324/tcp
+      # Plex DLNA Server
+      - 32469:32469/tcp
+      - 1900:1900/udp
+      # older Bonjour/Avahi network discovery
+      - 5353:5353/udp
+      # Network discovery
+      - 32410:32410/udp
+      - 32412:32412/udp
+      - 32413:32413/udp
+      - 32414:32414/udp
+    devices:
+      - /dev/dri:/dev/dri
+    labels:
+      # Public Resource Configuration
+      - pangolin.public-resources.plex.name=plex
+      - pangolin.public-resources.plex.full-domain=${PLEX_HOSTNAME}
+      - pangolin.public-resources.plex.protocol=http
+      # Target Configuration - Override to Host Hairpin
+      - pangolin.public-resources.plex.targets[0].method=http
+      - pangolin.public-resources.plex.targets[0].hostname=127.0.0.1
+      - pangolin.public-resources.plex.targets[0].port=32400
+      # Health Check Configuration
+      - pangolin.public-resources.plex.targets[0].healthcheck.enabled=true
+      - pangolin.public-resources.plex.targets[0].healthcheck.hostname=127.0.0.1
+      - pangolin.public-resources.plex.targets[0].healthcheck.port=32400
+      - pangolin.public-resources.plex.targets[0].healthcheck.path=/identity
+
+volumes:
+  configarr.var:
