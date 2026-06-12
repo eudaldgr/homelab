@@ -76,7 +76,7 @@ services:
     restart: unless-stopped
 
   periphery:
-    image: ghcr.io/moghtech/komodo-periphery:2.0.0@sha256:cc9aff8b621d49bbcca394e1538d9d9ea28c48bcfd2d6c8a6f9d5d3eef7f8341
+    image: ghcr.io/moghtech/komodo-periphery:2.2.0@sha256:7fb1a4807d125ce036a17d37c940b4001402afcaf342a2c720c98d096b1b54da
     container_name: komodo_periphery_1
     init: true
     environment:
