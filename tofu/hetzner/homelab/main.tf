@@ -81,6 +81,17 @@ resource "hcloud_firewall" "homelab" {
       "::/0"
     ]
   }
+
+  # Synology Drive Server sync/backup via Pangolin raw TCP resource
+  rule {
+    direction = "in"
+    port      = "6690"
+    protocol  = "tcp"
+    source_ips = [
+      "0.0.0.0/0",
+      "::/0"
+    ]
+  }
 }
 
 # Homelab pangolin server
