@@ -50,7 +50,7 @@ services:
     restart: unless-stopped
 
   core:
-    image: ghcr.io/moghtech/komodo-core:2.0.0@sha256:518e6f4b76a9adc27b6ec0c4bb05533c8f5752986e145e3bfb64e4d15c232e32
+    image: ghcr.io/moghtech/komodo-core:2.2.0@sha256:7afbcfa99674bf3f51539ec3aa7235795e9b994af9b7099a6c4c654d5d8a5b6b
     container_name: komodo_core_1
     init: true
     labels:
