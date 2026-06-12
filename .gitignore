@@ -105,9 +105,6 @@ kubeconfig
 # BIOS dumps
 *.rom
 
-# Secrets
-secrets/age-key.txt
-
 # Misc
 *.backup
 *.old
