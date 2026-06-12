@@ -18,9 +18,9 @@ http:
             - 100.89.137.0/20
           crowdsecAppsecBodyLimit: 10485760
           crowdsecAppsecEnabled: true
-          crowdsecAppsecFailureBlock: true
+          crowdsecAppsecFailureBlock: {{ (not pangolin_crowdsec_fail_open) | lower }}
           crowdsecAppsecHost: 127.0.0.1:7422
-          crowdsecAppsecUnreachableBlock: true
+          crowdsecAppsecUnreachableBlock: {{ (not pangolin_crowdsec_fail_open) | lower }}
           crowdsecLapiHost: 127.0.0.1:8080
           crowdsecLapiKey: "{{ existing_crowdsec_key.stdout | default('__CROWDSEC_LAPI_KEY__', true) if existing_crowdsec_key.stdout is defined and existing_crowdsec_key.stdout | length > 0 and existing_crowdsec_key.stdout != '__CROWDSEC_LAPI_KEY__' else '__CROWDSEC_LAPI_KEY__' }}"
           crowdsecLapiScheme: http

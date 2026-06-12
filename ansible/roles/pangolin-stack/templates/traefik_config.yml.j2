@@ -57,7 +57,7 @@ experimental:
 {% if pangolin_crowdsec %}
     crowdsec:
       moduleName: github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin
-      version: v1.4.4
+      version: "{{ pangolin_crowdsec_bouncer_version }}"
 {% endif %}
 
 log:
@@ -97,6 +97,10 @@ entryPoints:
       encodedCharacters:
         allowEncodedSlash: true
         allowEncodedQuestionMark: true
+{% for raw_tcp_port in pangolin_raw_tcp_ports %}
+  tcp-{{ raw_tcp_port }}:
+    address: ":{{ raw_tcp_port }}/tcp"
+{% endfor %}
 
 serversTransport:
   insecureSkipVerify: true

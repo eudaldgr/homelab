@@ -1,0 +1,10 @@
+[Pod]
+PodName=pangolin_proxy_1
+PublishPort=51820:51820/udp
+PublishPort=21820:21820/udp
+PublishPort=443:443
+PublishPort=443:443/udp
+PublishPort=80:80
+{% for raw_tcp_port in pangolin_raw_tcp_ports %}
+PublishPort={{ raw_tcp_port }}:{{ raw_tcp_port }}/tcp
+{% endfor %}

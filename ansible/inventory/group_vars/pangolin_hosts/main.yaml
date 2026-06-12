@@ -15,3 +15,6 @@ no_reply_email: "{{ secret_pangolin_smtp_no_reply_email }}"
 letsencrypt_mail: "{{ secret_pangolin_traefik_letsencrypt_mail }}"
 pangolin_server_secret: "{{ secret_pangolin_server_secret }}"
 pangolin_crowdsec_lapi_key: "{{ secret_pangolin_crowdsec_lapi_key }}"
+
+pangolin_raw_tcp_ports:
+  - 6690

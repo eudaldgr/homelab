@@ -34,14 +34,24 @@
   tags: pangolin
 
 - name: Copiar fitxers de configuració de Pangolin Stack
-  ansible.builtin.copy:
-    src: "{{ role_path }}/files/pangolin_proxy_1.pod"
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/pangolin_proxy_1.pod.j2"
     dest: "/etc/containers/systemd/pangolin_proxy_1.pod"
     owner: root
     group: root
     mode: "0644"
   register: pangolin_pod
   tags: pangolin
+
+- name: Check for existing Crowdsec API key
+  ansible.builtin.shell: |
+    set -o pipefail
+    grep "crowdsecLapiKey:" /etc/pangolin/traefik/dynamic_config.yml | awk '{print $2}' | tr -d '"'
+  register: existing_crowdsec_key
+  failed_when: false
+  changed_when: false
+  when: pangolin_crowdsec
+  tags: [pangolin, crowdsec]
 
 - name: Copiar fitxers de configuració de Pangolin Stack
   ansible.builtin.template:
@@ -75,6 +85,20 @@
   register: selinux_policy_check
   failed_when: false
   changed_when: false
+  tags: [pangolin, selinux]
+
+- name: Register Pangolin raw TCP ports with SELinux as http_port_t
+  ansible.builtin.command:
+    cmd: "semanage port -a -t http_port_t -p tcp {{ item }}"
+  loop: "{{ pangolin_raw_tcp_ports }}"
+  register: pangolin_semanage_register
+  failed_when: false
+  changed_when: pangolin_semanage_register.rc == 0
+  when:
+    - pangolin_raw_tcp_ports is defined
+    - pangolin_raw_tcp_ports | length > 0
+    - ansible_selinux is defined
+    - ansible_selinux.status == 'enabled'
   tags: [pangolin, selinux]
 
 - name: Install Pangolin Traefik SELinux policy # noqa: command-instead-of-shell
@@ -111,10 +135,7 @@
   ansible.builtin.systemd_service:
     name: "{{ container }}.service"
     state: stopped
-  loop:
-    - pangolin_traefik_1
-    - pangolin_gerbil_1
-    - pangolin_app_1
+  loop: "{{ (['pangolin_crowdsec_1'] if pangolin_crowdsec else []) + ['pangolin_traefik_1', 'pangolin_gerbil_1', 'pangolin_app_1'] }}"
   loop_control:
     loop_var: container
   when: pangolin_quadlets.changed
@@ -135,7 +156,15 @@
 
 - name: Reset failed pangolin units before start
   ansible.builtin.command:
-    cmd: systemctl reset-failed pangolin_app_1.service pangolin_gerbil_1.service pangolin_traefik_1.service pangolin_proxy_1-pod.service
+    cmd: >-
+      systemctl reset-failed
+      {{
+        (
+          ['pangolin_app_1.service', 'pangolin_gerbil_1.service', 'pangolin_traefik_1.service']
+          + (['pangolin_crowdsec_1.service'] if pangolin_crowdsec else [])
+          + ['pangolin_proxy_1-pod.service']
+        ) | join(' ')
+      }}
   changed_when: false
   tags: pangolin
 
@@ -144,29 +173,72 @@
     name: "{{ container }}.service"
     state: started
     enabled: true
-  loop:
-    - pangolin_app_1
-    - pangolin_gerbil_1
-    - pangolin_traefik_1
+  loop: "{{ ['pangolin_app_1', 'pangolin_gerbil_1', 'pangolin_traefik_1'] + (['pangolin_crowdsec_1'] if pangolin_crowdsec else []) }}"
   loop_control:
     loop_var: container
   tags: pangolin
 
-- name: Register pangolin token
+# --- Initial setup token handling -------------------------------------------
+# Pangolin prints a one-time setup token the first time the container starts.
+# After the first admin is created, the token is invalidated and never reappears.
+# We persist the token to a host file so it survives journal rotation, and we
+# skip the capture on subsequent deploys so the playbook stays idempotent.
+
+- name: Check whether Pangolin initial setup is still pending
+  ansible.builtin.stat:
+    path: /etc/pangolin/db.sqlite
+  register: pangolin_db_stat
+  changed_when: false
+  tags: pangolin
+
+- name: Read persisted Pangolin setup token (if any)
+  ansible.builtin.slurp:
+    src: /etc/pangolin/.initial_setup_token
+  register: pangolin_persisted_token
+  failed_when: false
+  changed_when: false
+  when: pangolin_db_stat.stat.exists
+  tags: pangolin
+
+- name: Capture Pangolin initial setup token from container logs
   ansible.builtin.shell:
     cmd: |
       set -o pipefail
-      journalctl -u pangolin_app_1 -n 300 | \
-      awk -F'Token: ' '/Token:/ {print $2}' | \
-      tail -n1
-  register: pangolin_token_result
+      # Pangolin emits the token between two markers; grab the line right after.
+      podman logs pangolin_app_1 2>&1 | \
+        awk '/=== SETUP TOKEN (GENERATED|EXISTS) ===/{flag=1; next} flag && /Token: /{sub(/.*Token: /,""); print; exit}'
+  register: pangolin_token_capture
   changed_when: false
   retries: 30
   delay: 10
-  until: pangolin_token_result.stdout | trim | length > 0
+  until: pangolin_token_capture.stdout | trim | length > 0
+  when: not pangolin_db_stat.stat.exists
   tags: pangolin
 
-- name: Show pangolin token
-  ansible.builtin.debug:
-    msg: "Pangolin token: {{ pangolin_token_result.stdout | trim }}"
+- name: Persist Pangolin initial setup token
+  ansible.builtin.copy:
+    content: "{{ pangolin_token_capture.stdout | trim }}"
+    dest: /etc/pangolin/.initial_setup_token
+    owner: root
+    group: root
+    mode: "0600"
+  when: not pangolin_db_stat.stat.exists
   tags: pangolin
+
+- name: Show Pangolin initial setup token (first deploy)
+  ansible.builtin.debug:
+    msg: >-
+      Pangolin initial setup token: {{ pangolin_token_capture.stdout | trim }}
+      Visit https://{{ pangolin_domain }}/auth/initial-setup to create the first admin.
+      The token has been saved to /etc/pangolin/.initial_setup_token (mode 0600).
+  when: not pangolin_db_stat.stat.exists
+  tags: pangolin
+
+- name: Show persisted Pangolin token (admin already provisioned)
+  ansible.builtin.debug:
+    msg: >-
+      Pangolin initial setup token: {{ pangolin_persisted_token.content | b64decode | trim }}
+      (loaded from /etc/pangolin/.initial_setup_token — admin already provisioned, token is invalidated)
+  when: pangolin_db_stat.stat.exists
+  tags: pangolin
+# ---------------------------------------------------------------------------

@@ -19,16 +19,8 @@
     owner: root
     group: root
     mode: "0644"
+  register: pangolin_crowdsec_quadlet
   tags: pangolin
-
-- name: Check for existing Crowdsec API key
-  ansible.builtin.shell: |
-    set -o pipefail
-    grep "crowdsecLapiKey:" /etc/pangolin/traefik/dynamic_config.yml | awk '{print $2}' | tr -d '"'
-  register: existing_crowdsec_key
-  failed_when: false
-  changed_when: false
-  tags: pangolin, crowdsec
 
 - name: Copiar fitxers de configuració de Crowdsec
   ansible.builtin.copy:
@@ -51,23 +43,22 @@
     mode: "0664"
   tags: pangolin, crowdsec
 
-# - name: Pull images for pangolin containers based on configured versions
-#   ansible.builtin.shell:
-#     cmd: |
-#       podman pull $(awk -F'=' '/^Image=/ {print $2}' /etc/containers/systemd/pangolin_crowdsec_1.container)
-#   changed_when: false
-#   tags: pangolin
-
-- name: Start and enable pangolin containers
+- name: Reload systemd if Crowdsec quadlet changed
   ansible.builtin.systemd_service:
-    name: pangolin_traefik_1
+    daemon_reload: true
+  when: pangolin_crowdsec_quadlet.changed
+  tags: pangolin
+
+- name: Start and enable Crowdsec container
+  ansible.builtin.systemd_service:
+    name: pangolin_crowdsec_1.service
     state: started
     enabled: true
   tags: pangolin
 
 - name: Wait for Crowdsec to be ready
   ansible.builtin.shell: |
-    podman exec pangolin_crowdsec_1 cscli capi status
+    podman exec pangolin_crowdsec_1 cscli lapi status
   register: crowdsec_status
   until: crowdsec_status.rc == 0
   retries: 30

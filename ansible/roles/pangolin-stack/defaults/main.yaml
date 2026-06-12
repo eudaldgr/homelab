@@ -1,8 +1,10 @@
 ---
 pangolin_app_version: "ee-1.18.4@sha256:2ec22c80f231795852f5a6251666bce772f795ad4c9e3c17a6ac9f417f0fe5e3"
-pangolin_gerbil_version: "1.4.0@sha256:887355e66deac61df9583d9df23e630897f785a8e20bc66081c66e40687cc713"
+pangolin_gerbil_version: "1.4.1@sha256:1d462197478cef9eb7c6e7f8b9aa1b6bef82073ec5e4e81f1ad87069f330731b"
 pangolin_traefik_version: "v3.6.16@sha256:f79c88ed5252ae1e31c757a9796d751461ddb502437b8d8526db9e12605a82eb"
-pangolin_badger_version: "v1.4.0"
-pangolin_crowdsec_version: "latest"
+pangolin_badger_version: "v1.4.1"
+pangolin_crowdsec_version: "v1.7.8@sha256:2f527c9bb8b367120eb08b82890aa912ce96bfa1ada93dda0721700e4b4e0dde"
+pangolin_crowdsec_bouncer_version: "v1.6.0"
+pangolin_crowdsec_fail_open: true
 pangolin_crowdsec: false
 pangolin_email: false

@@ -1,7 +1,0 @@
-[Pod]
-PodName=pangolin_proxy_1
-PublishPort=51820:51820/udp
-PublishPort=21820:21820/udp
-PublishPort=443:443
-PublishPort=443:443/udp
-PublishPort=80:80

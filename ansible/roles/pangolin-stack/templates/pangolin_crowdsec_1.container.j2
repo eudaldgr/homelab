@@ -18,10 +18,11 @@ Volume=/etc/pangolin/crowdsec/db:/var/lib/crowdsec/data:z
 Volume=/etc/pangolin/traefik/logs:/var/log/traefik:z
 Exec='-t'
 Notify=healthy
-HealthCmd="cscli capi status"
+HealthCmd="cscli lapi status"
 HealthInterval=10s
-HealthRetries=15
-HealthTimeout=10s
+HealthRetries=3
+HealthTimeout=5s
+HealthStartPeriod=30s
 
 [Service]
 Restart=always
