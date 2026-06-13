@@ -8,7 +8,7 @@ services:
     command: "-R 65532:65532 /chown"
 
   tracker:
-    image: lscr.io/linuxserver/speedtest-tracker:1.13.4@sha256:ff645c6421782d14538aa81846ea0f0417064c43c0078ffb047dbce808185bfa
+    image: lscr.io/linuxserver/speedtest-tracker:1.14.3@sha256:c3750c40948a9360000ce62d694da92e85584b4ab6d3d9a9d1432d76fa5e0726
     container_name: speedtest_tracker_1
     depends_on:
       chown:
