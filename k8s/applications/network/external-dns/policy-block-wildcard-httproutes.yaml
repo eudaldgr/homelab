@@ -1,0 +1,73 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: block-external-dns-wildcard-httproutes
+  annotations:
+    policies.kyverno.io/title: Block ExternalDNS Wildcard HTTPRoutes
+    policies.kyverno.io/category: DNS
+    policies.kyverno.io/subject: HTTPRoute
+    policies.kyverno.io/description: >-
+      Prevent HTTPRoutes from publishing wildcard DNS records through ExternalDNS
+      unless they are explicitly excluded from ExternalDNS.
+spec:
+  background: true
+  rules:
+    - name: require-external-dns-exclude-for-wildcard-hostnames
+      match:
+        any:
+          - resources:
+              kinds:
+                - gateway.networking.k8s.io/v1/HTTPRoute
+      validate:
+        failureAction: Enforce
+        message: >-
+          HTTPRoutes with *.home.eudald.gr hostnames must set
+          external-dns.alpha.kubernetes.io/exclude=true so ExternalDNS cannot
+          publish a wildcard DNS record.
+        cel:
+          expressions:
+            - expression: >-
+                (
+                  has(object.metadata.annotations) &&
+                  'external-dns.alpha.kubernetes.io/exclude' in object.metadata.annotations &&
+                  object.metadata.annotations['external-dns.alpha.kubernetes.io/exclude'] == 'true'
+                ) ||
+                !(
+                  has(object.spec.hostnames) &&
+                  object.spec.hostnames.exists(hostname, hostname == '*.home.eudald.gr')
+                )
+    - name: require-external-dns-exclude-for-hostnameless-internal-gateway-routes
+      match:
+        any:
+          - resources:
+              kinds:
+                - gateway.networking.k8s.io/v1/HTTPRoute
+      validate:
+        failureAction: Enforce
+        message: >-
+          HTTPRoutes without hostnames that attach to gateway/internal wildcard
+          listeners must set external-dns.alpha.kubernetes.io/exclude=true so
+          ExternalDNS cannot inherit *.home.eudald.gr from the Gateway listener.
+        cel:
+          expressions:
+            - expression: >-
+                (
+                  has(object.metadata.annotations) &&
+                  'external-dns.alpha.kubernetes.io/exclude' in object.metadata.annotations &&
+                  object.metadata.annotations['external-dns.alpha.kubernetes.io/exclude'] == 'true'
+                ) ||
+                !(
+                  (!has(object.spec.hostnames) || object.spec.hostnames.size() == 0) &&
+                  has(object.spec.parentRefs) &&
+                  object.spec.parentRefs.exists(parentRef,
+                    parentRef.name == 'internal' &&
+                    (
+                      (has(parentRef.namespace) && parentRef.namespace == 'gateway') ||
+                      (!has(parentRef.namespace) && object.metadata.namespace == 'gateway')
+                    ) &&
+                    (
+                      !has(parentRef.sectionName) ||
+                      parentRef.sectionName in ['https-gateway', 'http-gateway']
+                    )
+                  )
+                )
