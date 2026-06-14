@@ -18,6 +18,7 @@ data "talos_machine_configuration" "controlplane" {
       cluster_name         = var.cluster_name
       node_name            = each.value.node
       hostname             = each.key
+      mac                  = each.value.mac
     }),
     local.cilium_patch,
     local.coredns_patch,
@@ -42,6 +43,7 @@ data "talos_machine_configuration" "worker" {
       cluster_name         = var.cluster_name
       node_name            = each.value.node
       hostname             = each.key
+      mac                  = each.value.mac
     }),
   ]
 }

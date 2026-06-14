@@ -62,3 +62,10 @@ apiVersion: v1alpha1
 kind: HostnameConfig
 auto: off
 hostname: ${hostname}
+
+---
+apiVersion: v1alpha1
+kind: LinkAliasConfig
+name: net0
+selector:
+  match: mac(link.permanent_addr) == "${mac}"
