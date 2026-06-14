@@ -53,8 +53,6 @@ services:
     image: ghcr.io/moghtech/komodo-core:2.2.0@sha256:7afbcfa99674bf3f51539ec3aa7235795e9b994af9b7099a6c4c654d5d8a5b6b
     container_name: komodo_core_1
     init: true
-    labels:
-      komodo.skip:
     depends_on:
       - ferretdb
     ports:
@@ -73,6 +71,23 @@ services:
     volumes:
       - ${APP_DATA_DIR}/data/core:/backups
       - ${APP_DATA_DIR}/data/keys:/config/keys
+    labels:
+      - komodo.skip=
+      # Public Resource Configuration
+      - pangolin.public-resources.komodo.name=komodo
+      - pangolin.public-resources.komodo.full-domain=${KOMODO_HOSTNAME}
+      - pangolin.public-resources.komodo.protocol=http
+      # Auth: SSO
+      - pangolin.public-resources.komodo.auth.sso-enabled=true
+      # Target Configuration - Override to Host Hairpin
+      - pangolin.public-resources.komodo.targets[0].method=http
+      - pangolin.public-resources.komodo.targets[0].hostname=127.0.0.1
+      - pangolin.public-resources.komodo.targets[0].port=9120
+      # Health Check Configuration
+      - pangolin.public-resources.komodo.targets[0].healthcheck.enabled=true
+      - pangolin.public-resources.komodo.targets[0].healthcheck.hostname=127.0.0.1
+      - pangolin.public-resources.komodo.targets[0].healthcheck.port=9120
+      - pangolin.public-resources.komodo.targets[0].healthcheck.path=/
     restart: unless-stopped
 
   periphery:
@@ -112,7 +127,7 @@ services:
     container_name: komodo_sops_1
     labels:
       komodo.skip:
-    entrypoint: [ "tail", "-f", "/dev/null" ]
+    entrypoint: ["tail", "-f", "/dev/null"]
     volumes:
       - bin:/usr/local/bin:ro
     restart: unless-stopped
