@@ -1,4 +1,5 @@
----
+name: speedtest
+
 services:
   chown:
     image: ghcr.io/vegops/chown:latest

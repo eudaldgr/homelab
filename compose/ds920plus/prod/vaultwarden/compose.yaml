@@ -1,4 +1,5 @@
----
+name: vaultwarden
+
 services:
   chown:
     image: ghcr.io/vegops/chown:latest
