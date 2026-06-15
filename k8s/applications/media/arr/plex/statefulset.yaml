@@ -43,10 +43,6 @@ spec:
         - name: run
           emptyDir:
             sizeLimit: 100Mi
-        - name: dri
-          hostPath:
-            path: /dev/dri
-            type: Directory
       containers:
         - name: plex
           image: ghcr.io/vegops/plex:1.43.2.10687-r1@sha256:db75b0441afaf9f6ca1bf4fc2123b8d4bcdf7825e825a86e3499c4f662268a37
@@ -66,15 +62,15 @@ spec:
               mountPath: /plex/tmp
             - name: run
               mountPath: /run
-            - name: dri
-              mountPath: /dev/dri
           resources:
             requests:
               cpu: 500m
               memory: 1Gi
+              gpu.intel.com/i915: "1"
             limits:
               cpu: 4000m
               memory: 4Gi
+              gpu.intel.com/i915: "1"
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: false
@@ -98,7 +94,7 @@ spec:
             timeoutSeconds: 10
             failureThreshold: 3
       nodeSelector:
-        feature.node.kubernetes.io/pci-0300_8086.present: "true"
+        intel.feature.node.kubernetes.io/gpu: "true"
         kubernetes.io/arch: amd64
   volumeClaimTemplates:
     - metadata:
