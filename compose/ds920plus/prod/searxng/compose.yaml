@@ -43,6 +43,8 @@ services:
       - pangolin.public-resources.searxng.targets[0].healthcheck.hostname=127.0.0.1
       - pangolin.public-resources.searxng.targets[0].healthcheck.port=5147
       - pangolin.public-resources.searxng.targets[0].healthcheck.path=/healthz
+      - pangolin.public-resources.searxng.targets[0].healthcheck.headers[0].name=X-Real-IP
+      - pangolin.public-resources.searxng.targets[0].healthcheck.headers[0].value=127.0.0.1
     restart: unless-stopped
 
   valkey:
