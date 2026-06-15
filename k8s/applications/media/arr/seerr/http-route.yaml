@@ -1,19 +1,19 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: plex
-  namespace: plex
+  name: seerr
+  namespace: arr
 spec:
   parentRefs:
     - name: internal
       namespace: gateway
   hostnames:
-    - plex.home.eudald.gr
+    - seerr.home.eudald.gr
   rules:
     - matches:
         - path:
             type: PathPrefix
             value: /
       backendRefs:
-        - name: plex
-          port: 32400
+        - name: seerr
+          port: 5055

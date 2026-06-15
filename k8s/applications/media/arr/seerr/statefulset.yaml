@@ -1,42 +1,35 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: plex
-  namespace: plex
+  name: seerr
+  namespace: arr
   labels:
-    app: plex
+    app: seerr
 spec:
-  serviceName: plex
+  serviceName: seerr
   replicas: 1
   selector:
     matchLabels:
-      app: plex
+      app: seerr
   template:
     metadata:
       annotations:
         backup.velero.io/backup-volumes: config
-        backup.velero.io/backup-volumes-excludes: media,tmp,run
       labels:
-        app: plex
+        app: seerr
     spec:
       hostNetwork: false
       hostPID: false
       hostIPC: false
       securityContext:
         runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
         fsGroupChangePolicy: OnRootMismatch
-        supplementalGroups:
-          - 44
-          - 104
         seccompProfile:
           type: RuntimeDefault
       volumes:
-        - name: media
-          persistentVolumeClaim:
-            claimName: media-share
         - name: tmp
           emptyDir:
             sizeLimit: 1Gi
@@ -44,35 +37,28 @@ spec:
           emptyDir:
             sizeLimit: 100Mi
       containers:
-        - name: plex
-          image: ghcr.io/home-operations/plex:1.43.0.10492@sha256:8cb062f2b0660bd7811387e6c799da0ce5f18112078fe21485c11adcc83a9c1c
+        - name: seerr
+          image: ghcr.io/vegops/seerr:3.3.0-r3@sha256:687ee61cfa3180f910088e2840fe8f6315ef1080a3e705ea5c4c35f958460a30
           ports:
             - name: http
-              containerPort: 32400
+              containerPort: 5055
           env:
             - name: TZ
               value: Europe/Madrid
-            - name: PUID
-              value: "1000"
-            - name: PGID
-              value: "1000"
           volumeMounts:
             - name: config
-              mountPath: /config
-            - name: media
-              mountPath: /data/media
-              subPath: media
+              mountPath: /seerr/config
             - name: tmp
               mountPath: /tmp
             - name: run
               mountPath: /run
           resources:
             requests:
-              cpu: 500m
-              memory: 1Gi
+              cpu: 50m
+              memory: 256Mi
             limits:
-              cpu: 4000m
-              memory: 4Gi
+              cpu: 1000m
+              memory: 768Mi
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: false
@@ -81,22 +67,20 @@ spec:
                 - ALL
           livenessProbe:
             httpGet:
-              path: /identity
-              port: 32400
-            initialDelaySeconds: 30
+              path: /
+              port: 5055
+            initialDelaySeconds: 20
             periodSeconds: 15
             timeoutSeconds: 10
             failureThreshold: 3
           readinessProbe:
             httpGet:
-              path: /identity
-              port: 32400
-            initialDelaySeconds: 20
+              path: /
+              port: 5055
+            initialDelaySeconds: 15
             periodSeconds: 15
             timeoutSeconds: 10
             failureThreshold: 3
-      nodeSelector:
-        kubernetes.io/arch: amd64
   volumeClaimTemplates:
     - metadata:
         name: config
@@ -105,4 +89,4 @@ spec:
         storageClassName: proxmox-csi
         resources:
           requests:
-            storage: 10Gi
+            storage: 5Gi

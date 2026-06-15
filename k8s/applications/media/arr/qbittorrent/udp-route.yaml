@@ -1,0 +1,14 @@
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: UDPRoute
+metadata:
+  name: qbittorrent-peer
+  namespace: arr
+spec:
+  parentRefs:
+    - name: tls-passthrough
+      namespace: gateway
+      sectionName: qbittorrent-peer-udp
+  rules:
+    - backendRefs:
+        - name: qbittorrent
+          port: 65211

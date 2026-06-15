@@ -1,14 +1,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: plex
-  namespace: plex
+  name: lidarr
+  namespace: arr
 spec:
   clusterIP: None
   type: ClusterIP
   selector:
-    app: plex
+    app: lidarr
   ports:
-    - name: http
-      port: 32400
+    - name: lidarr-web
+      port: 80
       targetPort: http

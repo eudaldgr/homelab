@@ -8,6 +8,11 @@ resources:
 - nfs-pv.yaml
 - media-share-pvc.yaml
 - configarr
+- lidarr
+- plex
 - prowlarr
+- qbittorrent
 - radarr
+- seerr
 - sonarr
+- tautulli
