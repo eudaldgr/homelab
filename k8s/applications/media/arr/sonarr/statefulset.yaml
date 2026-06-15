@@ -24,9 +24,9 @@ spec:
       hostIPC: false
       securityContext:
         runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
         fsGroupChangePolicy: OnRootMismatch
         seccompProfile:
           type: RuntimeDefault
@@ -42,20 +42,16 @@ spec:
             sizeLimit: 100Mi
       containers:
         - name: sonarr
-          image: ghcr.io/home-operations/sonarr:4.0.16.2946@sha256:22651c750eedb091f6d76ade95dbecae0eeafe2b55432c3b8d8b042e8745f344
+          image: ghcr.io/vegops/sonarr:4.0.17.2952-r2@sha256:c1a84eace1d9aace79447e0e53a46d05d697fc261591541bfb9e3c8513c8ae5e
           ports:
             - name: http
               containerPort: 8989
           env:
             - name: TZ
               value: Europe/Madrid
-            - name: PUID
-              value: "1000"
-            - name: PGID
-              value: "1000"
           volumeMounts:
             - name: config
-              mountPath: /config
+              mountPath: /sonarr/data
             - name: media
               mountPath: /data
             - name: tmp

@@ -24,9 +24,9 @@ spec:
       hostIPC: false
       securityContext:
         runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
         fsGroupChangePolicy: OnRootMismatch
         seccompProfile:
           type: RuntimeDefault
@@ -42,20 +42,16 @@ spec:
             sizeLimit: 100Mi
       containers:
         - name: radarr
-          image: ghcr.io/home-operations/radarr:6.1.1.10317@sha256:5e08c0eefd2770d1d29395c4f84fe5bf7dfc3a986598021306a5d8ac017a3989
+          image: ghcr.io/vegops/radarr:6.2.1.10461-r0@sha256:7cf5a6d3bd03ba97fc983280b23ec65006a5cc71f3f09804c05a7658ae5f0a4c
           ports:
             - name: http
               containerPort: 7878
           env:
             - name: TZ
               value: Europe/Madrid
-            - name: PUID
-              value: "1000"
-            - name: PGID
-              value: "1000"
           volumeMounts:
             - name: config
-              mountPath: /config
+              mountPath: /radarr/data
             - name: media
               mountPath: /data
             - name: tmp

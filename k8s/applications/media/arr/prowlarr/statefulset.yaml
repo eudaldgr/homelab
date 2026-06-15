@@ -24,9 +24,9 @@ spec:
       hostIPC: false
       securityContext:
         runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
         fsGroupChangePolicy: OnRootMismatch
         seccompProfile:
           type: RuntimeDefault
@@ -42,20 +42,16 @@ spec:
             sizeLimit: 100Mi
       containers:
         - name: prowlarr
-          image: ghcr.io/home-operations/prowlarr:2.3.3.5296@sha256:77af331ea53601fe4b8cc865d0bd3dc6eb73903a04483b49f7d5f78ee723510e
+          image: ghcr.io/vegops/prowlarr:2.4.0.5397-r2@sha256:48b9b6d55f2d84a0ddbe7820c5318d7630fc21d04f1c828ecc796748fdf2d539
           ports:
             - name: http
               containerPort: 9696
           env:
             - name: TZ
               value: Europe/Madrid
-            - name: PUID
-              value: "1000"
-            - name: PGID
-              value: "1000"
           volumeMounts:
             - name: config
-              mountPath: /config
+              mountPath: /prowlarr/data
             - name: media
               mountPath: /data
             - name: tmp
