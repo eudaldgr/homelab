@@ -1,4 +1,5 @@
 global:
+  fullnameOverride: newt
   image:
     registry: docker.io
     repository: fosrl/newt
