@@ -18,6 +18,12 @@ variable "kubernetes_version" {
   type        = string
 }
 
+variable "check_cluster_health" {
+  description = "Run the Talos cluster health data source during planning/apply. Keep disabled for routine plans to avoid long health checks."
+  type        = bool
+  default     = false
+}
+
 variable "vip" {
   description = "Virtual IP for the Kubernetes API server"
   type        = string

@@ -18,7 +18,7 @@ data "talos_image_factory_urls" "std" {
   architecture  = "amd64"
 }
 
-resource "proxmox_virtual_environment_download_file" "talos_std" {
+resource "proxmox_download_file" "talos_std" {
   node_name    = sort(keys(var.nodes))[0]
   content_type = "iso"
   datastore_id = var.nodes[sort(keys(var.nodes))[0]].iso_storage
@@ -52,7 +52,7 @@ data "talos_image_factory_urls" "gpu" {
   architecture  = "amd64"
 }
 
-resource "proxmox_virtual_environment_download_file" "talos_gpu" {
+resource "proxmox_download_file" "talos_gpu" {
   node_name    = sort(keys(var.nodes))[0]
   content_type = "iso"
   datastore_id = var.nodes[sort(keys(var.nodes))[0]].iso_storage

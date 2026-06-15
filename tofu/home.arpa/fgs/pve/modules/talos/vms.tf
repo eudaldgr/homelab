@@ -50,7 +50,7 @@ resource "proxmox_virtual_environment_vm" "talos" {
     size         = each.value.disk
     datastore_id = var.nodes[each.value.node].local_storage
     file_format  = "raw"
-    file_id      = each.value.igpu ? proxmox_virtual_environment_download_file.talos_gpu.id : proxmox_virtual_environment_download_file.talos_std.id
+    file_id      = each.value.igpu ? proxmox_download_file.talos_gpu.id : proxmox_download_file.talos_std.id
     discard      = "on"
     ssd          = true
   }
@@ -68,6 +68,10 @@ resource "proxmox_virtual_environment_vm" "talos" {
 
   agent {
     enabled = true
+
+    wait_for_ip {
+      disabled = true
+    }
   }
 
   dynamic "hostpci" {
@@ -86,7 +90,7 @@ resource "proxmox_virtual_environment_vm" "talos" {
   }
 
   depends_on = [
-    proxmox_virtual_environment_download_file.talos_std,
-    proxmox_virtual_environment_download_file.talos_gpu,
+    proxmox_download_file.talos_std,
+    proxmox_download_file.talos_gpu,
   ]
 }

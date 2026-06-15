@@ -20,6 +20,13 @@ data "talos_machine_configuration" "controlplane" {
       hostname             = each.key
       mac                  = each.value.mac
     }),
+    yamlencode({
+      machine = {
+        install = {
+          image = data.talos_image_factory_urls.std.urls.installer
+        }
+      }
+    }),
     local.cilium_patch,
     local.coredns_patch,
   ]
@@ -44,6 +51,13 @@ data "talos_machine_configuration" "worker" {
       node_name            = each.value.node
       hostname             = each.key
       mac                  = each.value.mac
+    }),
+    yamlencode({
+      machine = {
+        install = {
+          image = each.value.igpu ? data.talos_image_factory_urls.gpu.urls.installer : data.talos_image_factory_urls.std.urls.installer
+        }
+      }
     }),
   ]
 }

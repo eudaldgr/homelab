@@ -24,6 +24,8 @@ data "talos_client_configuration" "this" {
 }
 
 data "talos_cluster_health" "this" {
+  count = var.check_cluster_health ? 1 : 0
+
   client_configuration = talos_machine_secrets.this.client_configuration
   control_plane_nodes  = [for k, v in talos_machine_configuration_apply.controlplane : v.node]
   worker_nodes         = [for k, v in talos_machine_configuration_apply.worker : v.node]
