@@ -83,6 +83,59 @@ services:
       - pangolin.public-resources.sonarr.targets[0].healthcheck.port=8989
       - pangolin.public-resources.sonarr.targets[0].healthcheck.path=/
 
+  lidarr:
+    image: ghcr.io/vegops/lidarr:latest
+    <<: [*lockdown, *chown, *restart]
+    container_name: arr_lidarr_1
+    environment:
+      - TZ=${TZ}
+    volumes:
+      - ${APP_DATA_DIR}/arr/lidarr:/lidarr/data
+      - ${MEDIA_DATA_DIR:-/}:/data
+    ports:
+      - 8686:8686
+    labels:
+      # Public Resource Configuration
+      - pangolin.public-resources.lidarr.name=lidarr
+      - pangolin.public-resources.lidarr.full-domain=${LIDARR_HOSTNAME}
+      - pangolin.public-resources.lidarr.protocol=http
+      # Auth: protect all but API
+      - pangolin.public-resources.lidarr.auth.sso-enabled=true
+      - pangolin.public-resources.lidarr.rules[0].action=allow
+      - pangolin.public-resources.lidarr.rules[0].match=path
+      - pangolin.public-resources.lidarr.rules[0].value=/api/*
+      # Target Configuration - Override to Host Hairpin
+      - pangolin.public-resources.lidarr.targets[0].method=http
+      - pangolin.public-resources.lidarr.targets[0].hostname=127.0.0.1
+      - pangolin.public-resources.lidarr.targets[0].port=8686
+      # Health Check Configuration
+      - pangolin.public-resources.lidarr.targets[0].healthcheck.enabled=true
+      - pangolin.public-resources.lidarr.targets[0].healthcheck.hostname=127.0.0.1
+      - pangolin.public-resources.lidarr.targets[0].healthcheck.port=8686
+      - pangolin.public-resources.lidarr.targets[0].healthcheck.path=/
+
+  #  bazarr:
+  #    image: lscr.io/linuxserver/bazarr:latest
+  #    container_name: arr_bazarr_1
+  #    environment:
+  #      - TZ=${TZ}
+  #    volumes:
+  #      - ${APP_DATA_DIR}/arr/bazarr:/config
+  #      - ${MEDIA_DATA_DIR:-/}/media:/data/media
+  #    ports:
+  #      - 6767:6767
+
+  # readarr:
+  #   image: lscr.io/linuxserver/readarr:develop
+  #   container_name: arr_readarr_1
+  #   environment:
+  #     - TZ=${TZ}
+  #   volumes:
+  #     - ${APP_DATA_DIR}/arr/readarr:/config
+  #     - ${MEDIA_DATA_DIR:-/}:/data
+  #   ports:
+  #     - 8787:8787
+
   prowlarr:
     image: ghcr.io/vegops/prowlarr:latest
     <<: [*lockdown, *chown, *restart]
@@ -196,7 +249,6 @@ services:
       - pangolin.public-resources.tautulli.full-domain=${TAUTULLI_HOSTNAME}
       - pangolin.public-resources.tautulli.protocol=http
       # Auth: protect all but API
-      - pangolin.public-resources.tautulli.auth.sso-enabled=true
       - pangolin.public-resources.tautulli.rules[0].action=allow
       - pangolin.public-resources.tautulli.rules[0].match=path
       - pangolin.public-resources.tautulli.rules[0].value=/api/*
