@@ -9,7 +9,7 @@ services:
     command: "-R 65532:65532 /chown"
 
   controller:
-    image: docker.io/mbentley/omada-controller:5.15.24.19-openj9@sha256:b9bee8d89d8faac5d517340aa12b8a301cfa907921ae0d726e61ccd765ce73f5
+    image: docker.io/mbentley/omada-controller:6.2.10.17-openj9@sha256:5b49522cf83055d1858798a781de2f8c5e5d6e4d3481571ea9be93621de58faf
     container_name: omada_controller_1
     depends_on:
       chown:
