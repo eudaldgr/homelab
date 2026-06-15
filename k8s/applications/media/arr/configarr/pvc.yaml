@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: configarr-etc
+  namespace: arr
+  labels:
+    app: configarr
+spec:
+  accessModes: ["ReadWriteOnce"]
+  storageClassName: proxmox-csi
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: configarr-var
+  namespace: arr
+  labels:
+    app: configarr
+spec:
+  accessModes: ["ReadWriteOnce"]
+  storageClassName: proxmox-csi
+  resources:
+    requests:
+      storage: 1Gi
