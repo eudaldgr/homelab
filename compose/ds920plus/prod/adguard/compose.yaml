@@ -7,8 +7,8 @@ services:
     environment:
       - TZ=${TZ}
     volumes:
-      - ${APP_DATA_DIR}/config:/opt/adguardhome/conf
-      - ${APP_DATA_DIR}/data:/opt/adguardhome/work
+      - ${APP_DATA_DIR}/adguard/etc:/opt/adguardhome/conf
+      - ${APP_DATA_DIR}/adguard/var:/opt/adguardhome/work
     # command: ["--web-addr", "0.0.0.0:${ADGUARD_WEB_PORT}"]
     ports:
       # DNS Ports
