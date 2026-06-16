@@ -20,11 +20,13 @@ entries:
       providers: []
       config:
         log_level: info
-        authentik_host: https://sso.home.eudald.gr
+        authentik_host: https://sso.k8s.eudald.gr
         object_naming_template: ak-outpost-%(name)s
         kubernetes_disabled_components:
           - ingress
         kubernetes_namespace: auth
+        kubernetes_httproute_annotations:
+          external-dns.alpha.kubernetes.io/exclude: "true"
         kubernetes_httproute_parent_refs:
           - name: internal
             namespace: gateway

@@ -24,7 +24,7 @@ spec:
       validate:
         failureAction: Enforce
         message: >-
-          HTTPRoutes with *.home.eudald.gr hostnames must set
+          HTTPRoutes with *.k8s.eudald.gr hostnames must set
           external-dns.alpha.kubernetes.io/exclude=true so ExternalDNS
           cannot publish a wildcard DNS record.
         cel:
@@ -37,7 +37,7 @@ spec:
                 ) ||
                 !(
                   has(object.spec.hostnames) &&
-                  object.spec.hostnames.exists(hostname, hostname == '*.home.eudald.gr')
+                  object.spec.hostnames.exists(hostname, hostname == '*.k8s.eudald.gr')
                 )
     - name: require-exclude-annotation-for-internal-gateway-routes
       match:
@@ -50,7 +50,7 @@ spec:
         message: >-
           HTTPRoutes without hostnames that attach to gateway/internal
           wildcard listeners must set external-dns.alpha.kubernetes.io/exclude=true
-          so ExternalDNS cannot inherit *.home.eudald.gr from the Gateway listener.
+          so ExternalDNS cannot inherit *.k8s.eudald.gr from the Gateway listener.
         cel:
           expressions:
             - expression: >-

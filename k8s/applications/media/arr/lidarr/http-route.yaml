@@ -8,7 +8,7 @@ spec:
     - name: internal
       namespace: gateway
   hostnames:
-    - 'lidarr.home.eudald.gr'
+    - 'lidarr.k8s.eudald.gr'
   rules:
     - matches:
         - path:

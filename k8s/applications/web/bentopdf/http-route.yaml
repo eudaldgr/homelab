@@ -8,7 +8,7 @@ spec:
     - name: internal
       namespace: gateway
   hostnames:
-    - pdf.home.eudald.gr
+    - pdf.k8s.eudald.gr
   rules:
     - matches:
         - path:

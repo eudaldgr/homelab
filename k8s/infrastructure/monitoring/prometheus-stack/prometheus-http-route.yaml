@@ -8,7 +8,7 @@ spec:
     - name: internal
       namespace: gateway
   hostnames:
-    - prometheus.home.eudald.gr
+    - prometheus.k8s.eudald.gr
   rules:
     - matches:
         - path:

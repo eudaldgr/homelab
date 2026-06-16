@@ -12,7 +12,7 @@ spec:
     - protocol: TLS
       port: 443
       name: omada
-      hostname: "omada.home.eudald.gr"
+      hostname: "omada.k8s.eudald.gr"
       tls:
         mode: Passthrough
       allowedRoutes:

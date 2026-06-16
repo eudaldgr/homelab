@@ -8,7 +8,7 @@ spec:
     - name: internal
       namespace: gateway
   hostnames:
-    - grafana.home.eudald.gr
+    - grafana.k8s.eudald.gr
   rules:
     - matches:
         - path:

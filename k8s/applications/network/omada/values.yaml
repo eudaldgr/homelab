@@ -10,7 +10,7 @@ config:
 service:
   type: ClusterIP
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: omada.home.eudald.gr
+    external-dns.alpha.kubernetes.io/hostname: omada.k8s.eudald.gr
     external-dns.alpha.kubernetes.io/target: "10.1.20.113"
     external-dns.alpha.kubernetes.io/ttl: "300"
 

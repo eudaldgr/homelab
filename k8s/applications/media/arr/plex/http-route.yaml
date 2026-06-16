@@ -8,7 +8,7 @@ spec:
     - name: internal
       namespace: gateway
   hostnames:
-    - plex.home.eudald.gr
+    - plex.k8s.eudald.gr
   rules:
     - matches:
         - path:

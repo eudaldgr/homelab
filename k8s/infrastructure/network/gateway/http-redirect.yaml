@@ -10,7 +10,7 @@ spec:
     - name: internal
       sectionName: http-gateway
   hostnames:
-    - "*.home.eudald.gr"
+    - "*.k8s.eudald.gr"
   rules:
     - filters:
         - type: RequestRedirect
