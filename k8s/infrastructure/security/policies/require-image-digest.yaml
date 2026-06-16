@@ -1,0 +1,65 @@
+---
+# Kyverno ClusterPolicy: every workload image must be pinned to a
+# specific tag. Prevents accidental :latest / :main / untagged pulls.
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-image-tag
+  annotations:
+    policies.kyverno.io/title: Require Pinned Image Tag
+    policies.kyverno.io/category: Supply Chain
+    policies.kyverno.io/description: >-
+      Container images must be pinned to a specific tag. The tag may not
+      be a moving reference such as :latest, :main, :stable or :dev.
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+    - name: image-tag-not-moving
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      exclude:
+        any:
+          - resources:
+              namespaces:
+                - kube-system
+                - argocd
+                - kyverno
+                - monitoring
+      validate:
+        message: >-
+          Image tag must be a pinned version, not :latest / :main /
+          :stable / :dev. Use a digest (@sha256:...) for supply-chain
+          integrity.
+        anyPattern:
+          - spec:
+              containers:
+                - image: "!*:latest"
+              =(initContainers):
+                - image: "!*:latest"
+              =(ephemeralContainers):
+                - image: "!*:latest"
+          - spec:
+              containers:
+                - image: "!*:main"
+              =(initContainers):
+                - image: "!*:main"
+              =(ephemeralContainers):
+                - image: "!*:main"
+          - spec:
+              containers:
+                - image: "!*:stable"
+              =(initContainers):
+                - image: "!*:stable"
+              =(ephemeralContainers):
+                - image: "!*:stable"
+          - spec:
+              containers:
+                - image: "!*:dev"
+              =(initContainers):
+                - image: "!*:dev"
+              =(ephemeralContainers):
+                - image: "!*:dev"

@@ -2,4 +2,9 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
+  - nsa-hardening.yaml
   - external-dns-wildcard-block.yaml
+  - require-image-digest.yaml
+  - disallow-privileged.yaml
+  - require-resources.yaml
+  - require-labels.yaml
