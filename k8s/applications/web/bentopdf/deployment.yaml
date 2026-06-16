@@ -22,12 +22,13 @@ spec:
         runAsNonRoot: true
         runAsUser: 101
         runAsGroup: 101
+        fsGroup: 101
         seccompProfile:
           type: RuntimeDefault
       volumes:
-        - name: tmp
-          emptyDir: {}
         - name: nginx-cache
+          emptyDir: {}
+        - name: nginx-tmp
           emptyDir: {}
         - name: nginx-run
           emptyDir: {}
@@ -46,28 +47,30 @@ spec:
               memory: 256Mi
           securityContext:
             allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
+            readOnlyRootFilesystem: false
             capabilities:
               drop:
                 - ALL
           volumeMounts:
-            - name: tmp
-              mountPath: /tmp
             - name: nginx-cache
               mountPath: /var/cache/nginx
+            - name: nginx-tmp
+              mountPath: /etc/nginx/tmp
             - name: nginx-run
               mountPath: /var/run
           livenessProbe:
-            tcpSocket:
-              port: 8080
-            initialDelaySeconds: 90
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
           readinessProbe:
-            tcpSocket:
-              port: 8080
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            timeoutSeconds: 5
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
             failureThreshold: 3
