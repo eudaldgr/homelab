@@ -39,7 +39,7 @@ spec:
                   has(object.spec.hostnames) &&
                   object.spec.hostnames.exists(hostname, hostname == '*.home.eudald.gr')
                 )
-    - name: require-external-dns-exclude-for-hostnameless-internal-gateway-routes
+    - name: require-exclude-annotation-for-internal-gateway-routes
       match:
         any:
           - resources:
