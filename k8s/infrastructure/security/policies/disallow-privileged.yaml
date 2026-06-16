@@ -30,7 +30,11 @@ spec:
                 - kube-system
                 - cilium
                 - proxmox-csi
+                - csi-proxmox
                 - intel-gpu
+                - monitoring
+                - sealed-secrets
+                - velero
       validate:
         message: >-
           Pods must not set securityContext.privileged=true and every

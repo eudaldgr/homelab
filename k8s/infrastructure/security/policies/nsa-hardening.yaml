@@ -44,6 +44,9 @@ spec:
                 - proxmox-csi
                 - intel-gpu
                 - nfd
+                - inteldeviceplugins-system
+                - kubelet-serving-cert-approver
+                - newt
       validate:
         message: >-
           Containers must run as non-root (securityContext.runAsNonRoot=true).
@@ -78,6 +81,9 @@ spec:
                 - proxmox-csi
                 - intel-gpu
                 - nfd
+                - inteldeviceplugins-system
+                - kubelet-serving-cert-approver
+                - newt
       validate:
         message: >-
           All containers (and init/ephemeral containers) must drop ALL
@@ -125,6 +131,9 @@ spec:
                 - proxmox-csi
                 - intel-gpu
                 - nfd
+                - inteldeviceplugins-system
+                - kubelet-serving-cert-approver
+                - newt
       validate:
         message: >-
           All containers (and init/ephemeral containers) must set
@@ -166,6 +175,9 @@ spec:
                 - proxmox-csi
                 - intel-gpu
                 - nfd
+                - inteldeviceplugins-system
+                - kubelet-serving-cert-approver
+                - newt
       validate:
         message: >-
           Pods must not share host PID/IPC/Network namespaces.

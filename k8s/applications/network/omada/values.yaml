@@ -33,6 +33,13 @@ resources:
     cpu: 750m
     memory: 2Gi
 
+containerSecurityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+
 startupProbe:
   httpGet:
     path: /login

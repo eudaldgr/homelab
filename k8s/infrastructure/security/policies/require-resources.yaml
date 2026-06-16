@@ -34,6 +34,10 @@ spec:
                 - argocd
                 - kyverno
                 - monitoring
+                - sealed-secrets
+                - velero
+                - cnpg-system
+                - cloudnative-pg
       validate:
         message: >-
           Every container must declare both resources.requests.{cpu,memory}
