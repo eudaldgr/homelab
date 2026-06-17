@@ -36,8 +36,11 @@ spec:
                 - kube-system
                 - argocd
                 - kyverno
+                - gatekeeper-system
+                - falco
                 - monitoring
                 - cilium
+                - system-upgrade
       validate:
         message: >-
           Workload is missing one of the required app.kubernetes.io

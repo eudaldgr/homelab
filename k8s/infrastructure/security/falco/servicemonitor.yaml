@@ -1,0 +1,25 @@
+---
+# ServiceMonitor for Falcosidekick metrics. The Falco DaemonSet itself
+# does not expose a metrics endpoint; the sidekick translates alerts
+# into Prometheus metrics on :2801.
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: falcosidekick
+  namespace: falco
+  labels:
+    app.kubernetes.io/name: falcosidekick
+    app.kubernetes.io/part-of: falco
+    app.kubernetes.io/managed-by: argocd
+spec:
+  namespaceSelector:
+    matchNames:
+      - falco
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: falcosidekick
+      app.kubernetes.io/instance: falco
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 30s

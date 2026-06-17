@@ -33,6 +33,8 @@ spec:
                 - cert-manager
                 - sealed-secrets
                 - kyverno
+                - gatekeeper-system
+                - falco
                 - monitoring
                 - external-dns
                 - cilium
@@ -70,6 +72,8 @@ spec:
                 - cert-manager
                 - sealed-secrets
                 - kyverno
+                - gatekeeper-system
+                - falco
                 - monitoring
                 - external-dns
                 - cilium
@@ -120,6 +124,8 @@ spec:
                 - cert-manager
                 - sealed-secrets
                 - kyverno
+                - gatekeeper-system
+                - falco
                 - monitoring
                 - external-dns
                 - cilium
@@ -165,6 +171,8 @@ spec:
                 - cert-manager
                 - sealed-secrets
                 - kyverno
+                - gatekeeper-system
+                - falco
                 - monitoring
                 - external-dns
                 - cilium

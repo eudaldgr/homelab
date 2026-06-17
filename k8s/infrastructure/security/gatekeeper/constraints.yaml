@@ -1,0 +1,57 @@
+---
+# Apply the K8sPSPHardening template cluster-wide in dryrun mode.
+# Flip enforcementAction to deny when ready to make it a hard gate.
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sPSPHardening
+metadata:
+  name: nsa-psp-hardening
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    description: "NSA/CISA pod hardening (mirrors Kyverno policies)"
+spec:
+  enforcementAction: dryrun
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]
+    excludedNamespaces:
+      - kube-system
+      - argocd
+      - cert-manager
+      - sealed-secrets
+      - kyverno
+      - falco
+      - monitoring
+      - external-dns
+      - cilium
+      - coredns
+      - gateway
+      - velero
+      - cnpg-system
+      - cloudnative-pg
+      - proxmox-csi
+      - intel-gpu
+      - nfd
+      - node-feature-discovery
+      - gatekeeper-system
+---
+# Outlaw the deprecated/v1 NetworkPolicy kind. The cluster standard
+# is CiliumNetworkPolicy v2. The constraint blocks the older
+# networking.k8s.io/v1 NetworkPolicy kind at admission.
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sNetworkPolicyProhibited
+metadata:
+  name: prohibit-legacy-network-policy
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    description: "Block standard networking.k8s.io/v1 NetworkPolicy (use CiliumNetworkPolicy)"
+spec:
+  enforcementAction: dryrun
+  match:
+    kinds:
+      - apiGroups: ["networking.k8s.io"]
+        kinds: ["NetworkPolicy"]
+    excludedNamespaces:
+      - kube-system

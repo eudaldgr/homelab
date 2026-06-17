@@ -33,6 +33,8 @@ spec:
                 - kube-system
                 - argocd
                 - kyverno
+                - gatekeeper-system
+                - falco
                 - monitoring
                 - sealed-secrets
                 - velero
@@ -40,6 +42,7 @@ spec:
                 - cloudnative-pg
                 - csi-proxmox
                 - node-feature-discovery
+                - system-upgrade
       validate:
         message: >-
           Every container must declare both resources.requests.{cpu,memory}

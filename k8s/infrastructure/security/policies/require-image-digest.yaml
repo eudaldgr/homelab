@@ -12,7 +12,7 @@ metadata:
       Container images must be pinned to a specific tag. The tag may not
       be a moving reference such as :latest, :main, :stable or :dev.
 spec:
-  validationFailureAction: Audit
+  validationFailureAction: Enforce
   background: true
   rules:
     - name: image-tag-not-moving
@@ -28,38 +28,45 @@ spec:
                 - kube-system
                 - argocd
                 - kyverno
+                - gatekeeper-system
+                - falco
                 - monitoring
+                - kubelet-serving-cert-approver
       validate:
         message: >-
           Image tag must be a pinned version, not :latest / :main /
           :stable / :dev. Use a digest (@sha256:...) for supply-chain
           integrity.
-        anyPattern:
-          - spec:
-              containers:
-                - image: "!*:latest"
-              =(initContainers):
-                - image: "!*:latest"
-              =(ephemeralContainers):
-                - image: "!*:latest"
-          - spec:
-              containers:
-                - image: "!*:main"
-              =(initContainers):
-                - image: "!*:main"
-              =(ephemeralContainers):
-                - image: "!*:main"
-          - spec:
-              containers:
-                - image: "!*:stable"
-              =(initContainers):
-                - image: "!*:stable"
-              =(ephemeralContainers):
-                - image: "!*:stable"
-          - spec:
-              containers:
-                - image: "!*:dev"
-              =(initContainers):
-                - image: "!*:dev"
-              =(ephemeralContainers):
-                - image: "!*:dev"
+        cel:
+          expressions:
+            - expression: >-
+                object.spec.containers.all(container,
+                  !(
+                    container.image.endsWith(':latest') ||
+                    container.image.endsWith(':main') ||
+                    container.image.endsWith(':stable') ||
+                    container.image.endsWith(':dev')
+                  )
+                ) &&
+                (
+                  !has(object.spec.initContainers) ||
+                  object.spec.initContainers.all(container,
+                    !(
+                      container.image.endsWith(':latest') ||
+                      container.image.endsWith(':main') ||
+                      container.image.endsWith(':stable') ||
+                      container.image.endsWith(':dev')
+                    )
+                  )
+                ) &&
+                (
+                  !has(object.spec.ephemeralContainers) ||
+                  object.spec.ephemeralContainers.all(container,
+                    !(
+                      container.image.endsWith(':latest') ||
+                      container.image.endsWith(':main') ||
+                      container.image.endsWith(':stable') ||
+                      container.image.endsWith(':dev')
+                    )
+                  )
+                )

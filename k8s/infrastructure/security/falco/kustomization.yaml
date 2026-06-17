@@ -1,0 +1,26 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: falco
+
+# The Falco chart ships its own namespace, ServiceAccount, ClusterRole
+# and ClusterRoleBinding. We only need to bring in pieces the chart
+# does not create natively: the custom rules ConfigMap, the
+# ServiceMonitor for Prometheus, and a non-privileged PSP-style
+# constraint handled by Kyverno at admission time.
+resources:
+  - namespace.yaml
+  - custom-rules-configmap.yaml
+  - servicemonitor.yaml
+
+helmCharts:
+  - name: falco
+    repo: https://falcosecurity.github.io/charts
+    version: 9.1.0
+    releaseName: falco
+    namespace: falco
+    valuesFile: values.yaml
+    includeCRDs: true
+
+generatorOptions:
+  disableNameSuffixHash: true
