@@ -4,6 +4,15 @@ machine:
     - ${san}
 %{ endfor ~}
 
+  features:
+    # Allow the tuppr upgrade controller (system-upgrade namespace) to call the Talos API.
+    kubernetesTalosAPIAccess:
+      enabled: true
+      allowedRoles:
+        - os:admin
+      allowedKubernetesNamespaces:
+        - system-upgrade
+
   kubelet:
     clusterDNS:
       - 10.96.0.10
