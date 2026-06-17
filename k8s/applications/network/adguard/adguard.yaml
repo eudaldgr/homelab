@@ -1,6 +1,10 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
+  labels:
+    app.kubernetes.io/name: adguard-home
+    app.kubernetes.io/part-of: applications
+    app.kubernetes.io/managed-by: argocd
   name: adguard-home
   namespace: adguard
 spec:

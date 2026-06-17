@@ -4,7 +4,9 @@ metadata:
   name: configarr
   namespace: arr
   labels:
-    app: configarr
+    app.kubernetes.io/name: configarr
+    app.kubernetes.io/part-of: applications
+    app.kubernetes.io/managed-by: argocd
 spec:
   schedule: "0 0 * * *"
   timeZone: Europe/Madrid

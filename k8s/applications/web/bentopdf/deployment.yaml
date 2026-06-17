@@ -4,7 +4,9 @@ metadata:
   name: bentopdf
   namespace: bentopdf
   labels:
-    app: bentopdf
+    app.kubernetes.io/name: bentopdf
+    app.kubernetes.io/part-of: applications
+    app.kubernetes.io/managed-by: argocd
 spec:
   replicas: 1
   selector:

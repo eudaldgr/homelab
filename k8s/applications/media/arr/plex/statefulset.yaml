@@ -4,7 +4,9 @@ metadata:
   name: plex
   namespace: arr
   labels:
-    app: plex
+    app.kubernetes.io/name: plex
+    app.kubernetes.io/part-of: applications
+    app.kubernetes.io/managed-by: argocd
 spec:
   serviceName: plex
   replicas: 1

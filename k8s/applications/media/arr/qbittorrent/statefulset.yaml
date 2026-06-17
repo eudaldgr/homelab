@@ -4,7 +4,9 @@ metadata:
   name: qbittorrent
   namespace: arr
   labels:
-    app: qbittorrent
+    app.kubernetes.io/name: qbittorrent
+    app.kubernetes.io/part-of: applications
+    app.kubernetes.io/managed-by: argocd
 spec:
   serviceName: qbittorrent
   replicas: 1

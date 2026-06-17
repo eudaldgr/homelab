@@ -4,7 +4,9 @@ metadata:
   name: tautulli
   namespace: arr
   labels:
-    app: tautulli
+    app.kubernetes.io/name: tautulli
+    app.kubernetes.io/part-of: applications
+    app.kubernetes.io/managed-by: argocd
 spec:
   serviceName: tautulli
   replicas: 1

@@ -4,7 +4,9 @@ metadata:
   name: prowlarr
   namespace: arr
   labels:
-    app: prowlarr
+    app.kubernetes.io/name: prowlarr
+    app.kubernetes.io/part-of: applications
+    app.kubernetes.io/managed-by: argocd
 spec:
   serviceName: prowlarr
   replicas: 1

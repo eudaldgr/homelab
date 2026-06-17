@@ -4,7 +4,9 @@ metadata:
   name: radarr
   namespace: arr
   labels:
-    app: radarr
+    app.kubernetes.io/name: radarr
+    app.kubernetes.io/part-of: applications
+    app.kubernetes.io/managed-by: argocd
 spec:
   serviceName: radarr
   replicas: 1
