@@ -16,7 +16,9 @@ spec:
   template:
     metadata:
       labels:
-        app: adguard-home
+        app.kubernetes.io/name: adguard-home
+        app.kubernetes.io/part-of: applications
+        app.kubernetes.io/managed-by: argocd
     spec:
       securityContext:
         runAsNonRoot: true

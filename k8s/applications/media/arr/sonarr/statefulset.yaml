@@ -19,7 +19,9 @@ spec:
         backup.velero.io/backup-volumes: config
         backup.velero.io/backup-volumes-excludes: media,tmp,run
       labels:
-        app: sonarr
+        app.kubernetes.io/name: sonarr
+        app.kubernetes.io/part-of: applications
+        app.kubernetes.io/managed-by: argocd
     spec:
       hostNetwork: false
       hostPID: false

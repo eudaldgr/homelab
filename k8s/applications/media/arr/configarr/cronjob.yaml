@@ -24,7 +24,9 @@ spec:
             backup.velero.io/backup-volumes: etc
             backup.velero.io/backup-volumes-excludes: tmp,run,var
           labels:
-            app: configarr
+            app.kubernetes.io/name: configarr
+            app.kubernetes.io/part-of: applications
+            app.kubernetes.io/managed-by: argocd
         spec:
           restartPolicy: OnFailure
           hostNetwork: false

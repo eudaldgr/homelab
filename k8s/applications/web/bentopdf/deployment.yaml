@@ -15,7 +15,9 @@ spec:
   template:
     metadata:
       labels:
-        app: bentopdf
+        app.kubernetes.io/name: bentopdf
+        app.kubernetes.io/part-of: applications
+        app.kubernetes.io/managed-by: argocd
     spec:
       hostNetwork: false
       hostPID: false

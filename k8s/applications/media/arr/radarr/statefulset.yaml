@@ -19,7 +19,9 @@ spec:
         backup.velero.io/backup-volumes: config
         backup.velero.io/backup-volumes-excludes: media,tmp,run
       labels:
-        app: radarr
+        app.kubernetes.io/name: radarr
+        app.kubernetes.io/part-of: applications
+        app.kubernetes.io/managed-by: argocd
     spec:
       hostNetwork: false
       hostPID: false

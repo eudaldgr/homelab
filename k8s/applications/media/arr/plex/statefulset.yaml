@@ -19,7 +19,9 @@ spec:
         backup.velero.io/backup-volumes: config
         backup.velero.io/backup-volumes-excludes: media,tmp,run
       labels:
-        app: plex
+        app.kubernetes.io/name: plex
+        app.kubernetes.io/part-of: applications
+        app.kubernetes.io/managed-by: argocd
     spec:
       hostNetwork: false
       hostPID: false

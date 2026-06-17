@@ -18,7 +18,9 @@ spec:
       annotations:
         backup.velero.io/backup-volumes: etc,var
       labels:
-        app: tautulli
+        app.kubernetes.io/name: tautulli
+        app.kubernetes.io/part-of: applications
+        app.kubernetes.io/managed-by: argocd
     spec:
       hostNetwork: false
       hostPID: false

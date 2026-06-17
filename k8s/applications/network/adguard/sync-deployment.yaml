@@ -18,7 +18,9 @@ spec:
       template:
         metadata:
           labels:
-            app: adguard-sync
+            app.kubernetes.io/name: adguard-sync
+            app.kubernetes.io/part-of: applications
+            app.kubernetes.io/managed-by: argocd
         spec:
           containers:
             - name: adguard-sync
