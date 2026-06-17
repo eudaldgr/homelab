@@ -3,14 +3,23 @@
 # headers. Falling back to kmod if modern_ebpf cannot attach.
 # Collectors enabled so Falco can resolve container names; the
 # custom_rules_file points at the ConfigMap we ship alongside.
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+  limits:
+    cpu: 300m
+    memory: 384Mi
+
+driver:
+  kind: modern_ebpf
+
+collectors:
+  enabled: true
+  containerEngine:
+    enabled: true
+
 falco:
-  resources:
-    requests:
-      cpu: 100m
-      memory: 256Mi
-    limits:
-      cpu: 500m
-      memory: 512Mi
   driver:
     kind: modern_ebpf
     loadRaw: false
@@ -21,6 +30,24 @@ falco:
     enabled: true
     container: true
   custom_rules_file: /etc/falco/falco_rules.local.yaml
+
+tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/master
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/control-plane
+
+falcoctl:
+  artifact:
+    install:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 96Mi
+        limits:
+          memory: 192Mi
+    follow:
+      enabled: false
 
 # Sidekick: ships events to Loki / Prometheus / Slack.
 # Disable the bundled UI to keep the surface small.

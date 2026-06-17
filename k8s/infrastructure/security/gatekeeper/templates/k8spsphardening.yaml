@@ -21,13 +21,11 @@ spec:
     spec:
       names:
         kind: K8sPSPHardening
-        listKind: K8sPSPHardeningList
-        plural: k8spsphardening
-        singular: k8spsphardening
       validation:
         # Schema is left open: K8sPSPHardening exposes no parameters
         # for now. Tune at the Constraint level via match.excludedNamespaces.
-        openAPIV3Schema: {}
+        openAPIV3Schema:
+          type: object
   targets:
     - target: admission.k8s.gatekeeper.sh
       rego: |
