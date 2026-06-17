@@ -43,7 +43,7 @@ spec:
                 - cloudnative-pg
                 - proxmox-csi
                 - intel-gpu
-                - nfd
+                - node-feature-discovery
                 - inteldeviceplugins-system
                 - kubelet-serving-cert-approver
                 - newt
@@ -80,7 +80,7 @@ spec:
                 - cloudnative-pg
                 - proxmox-csi
                 - intel-gpu
-                - nfd
+                - node-feature-discovery
                 - inteldeviceplugins-system
                 - kubelet-serving-cert-approver
                 - newt
@@ -131,6 +131,7 @@ spec:
                 - proxmox-csi
                 - intel-gpu
                 - nfd
+                - node-feature-discovery
                 - inteldeviceplugins-system
                 - kubelet-serving-cert-approver
                 - newt
@@ -175,6 +176,7 @@ spec:
                 - proxmox-csi
                 - intel-gpu
                 - nfd
+                - node-feature-discovery
                 - inteldeviceplugins-system
                 - kubelet-serving-cert-approver
                 - newt

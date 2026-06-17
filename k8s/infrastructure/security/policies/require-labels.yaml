@@ -24,11 +24,11 @@ spec:
         any:
           - resources:
               kinds:
-                - apps/Deployment
-                - apps/StatefulSet
-                - apps/DaemonSet
-                - batch/Job
-                - batch/CronJob
+                - Deployment
+                - StatefulSet
+                - DaemonSet
+                - Job
+                - CronJob
       exclude:
         any:
           - resources:

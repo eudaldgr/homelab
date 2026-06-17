@@ -32,6 +32,7 @@ spec:
                 - proxmox-csi
                 - csi-proxmox
                 - intel-gpu
+                - node-feature-discovery
                 - monitoring
                 - sealed-secrets
                 - velero

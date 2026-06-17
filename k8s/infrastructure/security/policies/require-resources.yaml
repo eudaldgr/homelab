@@ -38,6 +38,8 @@ spec:
                 - velero
                 - cnpg-system
                 - cloudnative-pg
+                - csi-proxmox
+                - node-feature-discovery
       validate:
         message: >-
           Every container must declare both resources.requests.{cpu,memory}
