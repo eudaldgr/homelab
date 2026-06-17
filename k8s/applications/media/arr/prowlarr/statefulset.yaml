@@ -19,6 +19,7 @@ spec:
         backup.velero.io/backup-volumes: config
         backup.velero.io/backup-volumes-excludes: media,tmp,run
       labels:
+        app: prowlarr
         app.kubernetes.io/name: prowlarr
         app.kubernetes.io/part-of: applications
         app.kubernetes.io/managed-by: argocd

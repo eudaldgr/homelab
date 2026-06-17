@@ -21,6 +21,9 @@ spec:
           - resources:
               kinds:
                 - Pod
+              operations:
+                - CREATE
+                - UPDATE
       exclude:
         any:
           - resources:
@@ -40,33 +43,36 @@ spec:
         cel:
           expressions:
             - expression: >-
-                object.spec.containers.all(container,
-                  !(
-                    container.image.endsWith(':latest') ||
-                    container.image.endsWith(':main') ||
-                    container.image.endsWith(':stable') ||
-                    container.image.endsWith(':dev')
-                  )
-                ) &&
+                !has(object.spec) ||
                 (
-                  !has(object.spec.initContainers) ||
-                  object.spec.initContainers.all(container,
+                  object.spec.containers.all(container,
                     !(
                       container.image.endsWith(':latest') ||
                       container.image.endsWith(':main') ||
                       container.image.endsWith(':stable') ||
                       container.image.endsWith(':dev')
                     )
-                  )
-                ) &&
-                (
-                  !has(object.spec.ephemeralContainers) ||
-                  object.spec.ephemeralContainers.all(container,
-                    !(
-                      container.image.endsWith(':latest') ||
-                      container.image.endsWith(':main') ||
-                      container.image.endsWith(':stable') ||
-                      container.image.endsWith(':dev')
+                  ) &&
+                  (
+                    !has(object.spec.initContainers) ||
+                    object.spec.initContainers.all(container,
+                      !(
+                        container.image.endsWith(':latest') ||
+                        container.image.endsWith(':main') ||
+                        container.image.endsWith(':stable') ||
+                        container.image.endsWith(':dev')
+                      )
+                    )
+                  ) &&
+                  (
+                    !has(object.spec.ephemeralContainers) ||
+                    object.spec.ephemeralContainers.all(container,
+                      !(
+                        container.image.endsWith(':latest') ||
+                        container.image.endsWith(':main') ||
+                        container.image.endsWith(':stable') ||
+                        container.image.endsWith(':dev')
+                      )
                     )
                   )
                 )
