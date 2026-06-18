@@ -50,7 +50,7 @@ spec:
             sizeLimit: 100Mi
       containers:
         - name: plex
-          image: ghcr.io/vegops/plex:1.43.2.10687-r1@sha256:db75b0441afaf9f6ca1bf4fc2123b8d4bcdf7825e825a86e3499c4f662268a37
+          image: ghcr.io/vegops/plex:1.43.2.10687-r2@sha256:3ad6411efa9d6781699b30d814c1b1b60fddb0a7906c141da3ed6699395a0ebe
           ports:
             - name: http
               containerPort: 32400
