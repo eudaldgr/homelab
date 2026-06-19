@@ -32,6 +32,3 @@ spec:
       port: 80
       name: http-gateway
       hostname: "*.k8s.eudald.gr"
-      allowedRoutes:
-        namespaces:
-          from: All
