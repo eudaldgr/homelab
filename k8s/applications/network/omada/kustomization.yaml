@@ -5,6 +5,7 @@ namespace: omada
 
 resources:
 - namespace.yaml
+- certificate.yaml
 - tls-route.yaml
 - tcp-routes.yaml
 - udp-routes.yaml

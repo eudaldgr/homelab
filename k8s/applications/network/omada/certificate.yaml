@@ -1,0 +1,15 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: omada
+  namespace: omada
+spec:
+  secretName: omada-tls
+  issuerRef:
+    name: cloudflare-issuer-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - omada.k8s.eudald.gr
+  privateKey:
+    algorithm: RSA
+    rotationPolicy: Always
