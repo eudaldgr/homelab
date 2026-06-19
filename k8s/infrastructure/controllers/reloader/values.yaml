@@ -1,0 +1,28 @@
+image:
+  digest: sha256:6346ad857388731950498be1c34caab931cbb8ae05330081c66f38ff551c5f21
+
+reloader:
+  ignoreJobs: true
+  ignoreCronJobs: true
+  deployment:
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 65534
+      runAsGroup: 65534
+      fsGroup: 65534
+      fsGroupChangePolicy: OnRootMismatch
+      seccompProfile:
+        type: RuntimeDefault
+    containerSecurityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+    resources:
+      requests:
+        cpu: 10m
+        memory: 32Mi
+      limits:
+        cpu: 100m
+        memory: 128Mi
