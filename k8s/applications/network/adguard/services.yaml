@@ -40,10 +40,18 @@ spec:
       targetPort: 53
       protocol: TCP
       name: dns-tcp
+    - port: 443
+      targetPort: 443
+      protocol: TCP
+      name: dns-over-https
     - port: 853
       targetPort: 853
       protocol: TCP
       name: dns-over-tls
+    - port: 853
+      targetPort: 853
+      protocol: UDP
+      name: dns-over-quic
 ---
 apiVersion: v1
 kind: Service

@@ -67,9 +67,15 @@ spec:
         - containerPort: 53
           name: dns-udp
           protocol: UDP
+        - containerPort: 443
+          name: dns-over-https
+          protocol: TCP
         - containerPort: 853
           name: dns-over-tls
           protocol: TCP
+        - containerPort: 853
+          name: dns-over-quic
+          protocol: UDP
         - containerPort: 3000
           name: http-initial
         securityContext:
