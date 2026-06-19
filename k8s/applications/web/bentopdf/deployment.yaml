@@ -25,21 +25,19 @@ spec:
       hostIPC: false
       securityContext:
         runAsNonRoot: true
-        runAsUser: 101
-        runAsGroup: 101
-        fsGroup: 101
+        fsGroup: 65532
         seccompProfile:
           type: RuntimeDefault
       volumes:
-        - name: nginx-cache
+        - name: bentopdf-cache
           emptyDir: {}
-        - name: nginx-tmp
+        - name: bentopdf-run
           emptyDir: {}
-        - name: nginx-run
+        - name: tmp
           emptyDir: {}
       containers:
         - name: bentopdf
-          image: ghcr.io/alam00000/bentopdf-simple:2.8.5@sha256:268f3e4a1aeed5d7035b58ab1d679da85b7c559ac3d3c08eb2177520c3647e1f
+          image: ghcr.io/vegops/bentopdf:2.8.5-r0@sha256:addd5f8ba12dd234a141b44d038c63bc9d521f5cae413eb75fc7710ec19c7c30
           ports:
             - name: http
               containerPort: 8080
@@ -52,17 +50,17 @@ spec:
               memory: 256Mi
           securityContext:
             allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: false
+            readOnlyRootFilesystem: true
             capabilities:
               drop:
                 - ALL
           volumeMounts:
-            - name: nginx-cache
-              mountPath: /var/cache/nginx
-            - name: nginx-tmp
-              mountPath: /etc/nginx/tmp
-            - name: nginx-run
-              mountPath: /var/run
+            - name: bentopdf-cache
+              mountPath: /bentopdf/cache
+            - name: bentopdf-run
+              mountPath: /bentopdf/run
+            - name: tmp
+              mountPath: /tmp
           livenessProbe:
             httpGet:
               path: /
