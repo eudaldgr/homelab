@@ -1,6 +1,8 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
+  annotations:
+    secret.reloader.stakater.com/auto: "true"
   labels:
     app.kubernetes.io/name: adguard-home
     app.kubernetes.io/part-of: applications
@@ -65,6 +67,9 @@ spec:
         - containerPort: 53
           name: dns-udp
           protocol: UDP
+        - containerPort: 853
+          name: dns-over-tls
+          protocol: TCP
         - containerPort: 3000
           name: http-initial
         securityContext:
@@ -85,6 +90,14 @@ spec:
           mountPath: /adguard/var
         - name: adguard-config
           mountPath: /adguard/etc
+        - name: adguard-tls
+          mountPath: /adguard/cert
+          readOnly: true
+      volumes:
+      - name: adguard-tls
+        secret:
+          secretName: adguard-tls
+          defaultMode: 0440
   volumeClaimTemplates:
   - metadata:
       name: adguard-data

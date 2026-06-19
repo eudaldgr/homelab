@@ -1,0 +1,17 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: adguard
+  namespace: adguard
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+spec:
+  secretName: adguard-tls
+  issuerRef:
+    name: cloudflare-issuer-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - dns.k8s.eudald.gr
+  privateKey:
+    algorithm: RSA
+    rotationPolicy: Always
