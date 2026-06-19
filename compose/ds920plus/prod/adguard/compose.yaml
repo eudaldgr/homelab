@@ -35,12 +35,13 @@ services:
       # Optional: DNSCrypt Port
       # - "5443:5443/tcp"
       # - "5443:5443/udp"
-    restart: unless-stopped
+    hostname: dns00
     # To see real client IPs in rootless podman, use host networking.
     # WARNING: This requires port 53 to be free on the host (disable systemd-resolved stub).
     networks:
       vlan99:
         ipv4_address: 10.1.99.2
+    restart: unless-stopped
 
 networks:
   vlan99:
