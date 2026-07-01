@@ -9,7 +9,7 @@ metadata:
     app.kubernetes.io/managed-by: argocd
 spec:
   serviceName: sonarr
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: sonarr

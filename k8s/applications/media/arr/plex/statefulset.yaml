@@ -9,7 +9,7 @@ metadata:
     app.kubernetes.io/managed-by: argocd
 spec:
   serviceName: plex
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: plex

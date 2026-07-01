@@ -9,6 +9,7 @@ metadata:
     app.kubernetes.io/managed-by: argocd
 spec:
   schedule: "0 0 * * *"
+  suspend: true
   timeZone: Europe/Madrid
   concurrencyPolicy: Forbid
   startingDeadlineSeconds: 1800
