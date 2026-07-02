@@ -152,3 +152,19 @@ public-resources:
           scheme: http
           path: /identity
           method: GET
+
+  bentopdf:
+    name: bentopdf
+    protocol: http
+    full-domain: pdf.eudald.gr
+    targets:
+      - hostname: bentopdf.bentopdf.svc.cluster.local
+        port: 80
+        method: http
+        healthcheck:
+          hostname: bentopdf.bentopdf.svc.cluster.local
+          port: 80
+          mode: http
+          scheme: http
+          path: /
+          method: GET
