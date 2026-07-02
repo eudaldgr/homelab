@@ -53,7 +53,7 @@ spec:
             topologyKey: "kubernetes.io/hostname"
       containers:
       - name: adguard-home
-        image: ghcr.io/vegops/adguard:0.107.77-r1@sha256:fa019ccf454a367003bda741698142a0b59629063ec84fab9450eebc80d7bdaf
+        image: ghcr.io/vegops/adguard:0.107.77-r1@sha256:7bdbd4a3f297f1032daa235c4cab4b61ce69169cf5d4e714d7753dd5d446eddf
         env:
         - name: ADGUARD_PASSWORD
           valueFrom:
