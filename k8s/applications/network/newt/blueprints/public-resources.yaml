@@ -184,3 +184,19 @@ public-resources:
           scheme: http
           path: /
           method: GET
+
+  minecraft-java:
+    name: minecraft java
+    mode: tcp
+    proxy-port: 25565
+    targets:
+      - hostname: minecraft.minecraft.svc.cluster.local
+        port: 25565
+
+  minecraft-bedrock:
+    name: minecraft bedrock
+    mode: udp
+    proxy-port: 19132
+    targets:
+      - hostname: minecraft.minecraft.svc.cluster.local
+        port: 19132
