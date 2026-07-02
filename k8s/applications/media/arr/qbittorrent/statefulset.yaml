@@ -65,6 +65,9 @@ spec:
             - name: media
               mountPath: /data/torrents
               subPath: torrents
+            - name: media
+              mountPath: /qbittorrent/media
+              subPath: torrents
             - name: tmp
               mountPath: /tmp
           resources:
