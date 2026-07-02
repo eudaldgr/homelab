@@ -49,7 +49,7 @@ services:
     restart: unless-stopped
 
   backup:
-    image: docker.io/alpine/sqlite:3.53.2@sha256:87f51d4f904638a894c3162abc2ef2374ed9666a12899e6a167f4a3cb35895e4
+    image: docker.io/alpine/sqlite:3.53.2@sha256:c48e908c6f2cb86e1c90c4d385f1ba4609aada9e48abd3168d9148a2c73a9665
     container_name: vaultwarden_backup_1
     mem_limit: 512m
     depends_on:
