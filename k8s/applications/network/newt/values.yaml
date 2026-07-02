@@ -23,6 +23,8 @@ global:
       enabled: true
     serviceMonitor:
       enabled: true
+  deploymentAnnotations:
+    configmap.reloader.stakater.com/reload: newt-blueprint
 
 newtInstances:
   - name: main-tunnel
