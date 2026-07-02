@@ -9,7 +9,7 @@ metadata:
     app.kubernetes.io/managed-by: argocd
 spec:
   serviceName: radarr
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
       app: radarr
