@@ -47,7 +47,7 @@ spec:
             sizeLimit: 100Mi
       containers:
         - name: sonarr
-          image: ghcr.io/vegops/sonarr:4.0.17.2952-r2@sha256:c1a84eace1d9aace79447e0e53a46d05d697fc261591541bfb9e3c8513c8ae5e
+          image: ghcr.io/vegops/sonarr:4.0.17.2952-r2@sha256:33ab5784d9115108e4f0b851a697af3bdcf77f87d7dc06443c8a6f042bc086a9
           ports:
             - name: http
               containerPort: 8989
