@@ -1,9 +1,15 @@
 ---
+# renovate: datasource=docker depName=ghcr.io/fosrl/pangolin versioning=docker extractVersion=^ee-(?<version>.*)$
 pangolin_app_version: "ee-1.19.1@sha256:74cf46885492c314c1a770f4b3d0ad3f9b48cd99c53db8898b0ac2ac6ede1b6e"
+# renovate: datasource=docker depName=ghcr.io/fosrl/gerbil versioning=docker
 pangolin_gerbil_version: "1.4.1@sha256:1d462197478cef9eb7c6e7f8b9aa1b6bef82073ec5e4e81f1ad87069f330731b"
+# renovate: datasource=docker depName=docker.io/library/traefik versioning=docker
 pangolin_traefik_version: "v3.6.16@sha256:f79c88ed5252ae1e31c757a9796d751461ddb502437b8d8526db9e12605a82eb"
+# renovate: datasource=github-tags depName=fosrl/badger
 pangolin_badger_version: "v1.4.1"
+# renovate: datasource=docker depName=docker.io/crowdsecurity/crowdsec versioning=docker
 pangolin_crowdsec_version: "v1.7.8@sha256:2f527c9bb8b367120eb08b82890aa912ce96bfa1ada93dda0721700e4b4e0dde"
+# renovate: datasource=github-tags depName=maxlerebourg/crowdsec-bouncer-traefik-plugin
 pangolin_crowdsec_bouncer_version: "v1.6.0"
 pangolin_crowdsec_fail_open: true
 pangolin_crowdsec: false
