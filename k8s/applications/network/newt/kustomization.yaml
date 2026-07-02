@@ -7,10 +7,10 @@ resources:
 - namespace.yaml
 - sealed-secrets.yaml
 
-# configMapGenerator:
-# - name: newt-blueprint
-#   files:
-#   - blueprint.yaml=blueprints/public-resources.yaml
+configMapGenerator:
+- name: newt-blueprint
+  files:
+  - blueprint.yaml=blueprints/public-resources.yaml
 
 helmCharts:
 - name: newt

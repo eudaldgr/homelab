@@ -31,8 +31,8 @@ newtInstances:
       existingSecretName: newt-credentials
       createSecret: false
     acceptClients: true
-    # extraEnv:
-    #   BLUEPRINT_FILE: /etc/newt/blueprint.yaml
+    extraEnv:
+      BLUEPRINT_FILE: /etc/newt/blueprint.yaml
     # In Kubernetes, Newt fronts Services declared in the blueprint; Docker socket integration stays disabled.
     dockerSocket:
       enabled: false
@@ -41,11 +41,11 @@ newtInstances:
       type: LoadBalancer
       annotations:
         io.cilium/lb-ipam-ips: "10.1.20.121"
-    # extraVolumes:
-    #   - name: newt-blueprint
-    #     configMap:
-    #       name: newt-blueprint
-    # extraVolumeMounts:
-    #   - name: newt-blueprint
-    #     mountPath: /etc/newt
-    #     readOnly: true
+    extraVolumes:
+      - name: newt-blueprint
+        configMap:
+          name: newt-blueprint
+    extraVolumeMounts:
+      - name: newt-blueprint
+        mountPath: /etc/newt
+        readOnly: true

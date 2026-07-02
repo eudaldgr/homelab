@@ -1,0 +1,154 @@
+public-resources:
+  radarr:
+    name: radarr
+    protocol: http
+    full-domain: radarr.eudald.gr
+    auth:
+      sso-enabled: true
+    rules:
+      - action: allow
+        match: path
+        value: /api/*
+    targets:
+      - hostname: radarr.arr.svc.cluster.local
+        port: 80
+        method: http
+        healthcheck:
+          hostname: radarr.arr.svc.cluster.local
+          port: 80
+          mode: http
+          scheme: http
+          path: /
+          method: GET
+
+  sonarr:
+    name: sonarr
+    protocol: http
+    full-domain: sonarr.eudald.gr
+    auth:
+      sso-enabled: true
+    rules:
+      - action: allow
+        match: path
+        value: /api/*
+    targets:
+      - hostname: sonarr.arr.svc.cluster.local
+        port: 80
+        method: http
+        healthcheck:
+          hostname: sonarr.arr.svc.cluster.local
+          port: 80
+          mode: http
+          scheme: http
+          path: /
+          method: GET
+
+  lidarr:
+    name: lidarr
+    protocol: http
+    full-domain: lidarr.eudald.gr
+    auth:
+      sso-enabled: true
+    rules:
+      - action: allow
+        match: path
+        value: /api/*
+    targets:
+      - hostname: lidarr.arr.svc.cluster.local
+        port: 80
+        method: http
+        healthcheck:
+          hostname: lidarr.arr.svc.cluster.local
+          port: 80
+          mode: http
+          scheme: http
+          path: /
+          method: GET
+
+  prowlarr:
+    name: prowlarr
+    protocol: http
+    full-domain: prowlarr.eudald.gr
+    auth:
+      sso-enabled: true
+    targets:
+      - hostname: prowlarr.arr.svc.cluster.local
+        port: 80
+        method: http
+        healthcheck:
+          hostname: prowlarr.arr.svc.cluster.local
+          port: 80
+          mode: http
+          scheme: http
+          path: /
+          method: GET
+
+  qbittorrent:
+    name: qbittorrent
+    protocol: http
+    full-domain: torrent.eudald.gr
+    auth:
+      sso-enabled: true
+    targets:
+      - hostname: qbittorrent.arr.svc.cluster.local
+        port: 8090
+        method: http
+        healthcheck:
+          hostname: qbittorrent.arr.svc.cluster.local
+          port: 8090
+          mode: http
+          scheme: http
+          path: /
+          method: GET
+
+  seerr:
+    name: seerr
+    protocol: http
+    full-domain: seerr.eudald.gr
+    targets:
+      - hostname: seerr.arr.svc.cluster.local
+        port: 5055
+        method: http
+        healthcheck:
+          hostname: seerr.arr.svc.cluster.local
+          port: 5055
+          mode: http
+          scheme: http
+          path: /
+          method: GET
+
+  tautulli:
+    name: tautulli
+    protocol: http
+    full-domain: tautulli.eudald.gr
+    rules:
+      - action: allow
+        match: path
+        value: /api/*
+    targets:
+      - hostname: tautulli.arr.svc.cluster.local
+        port: 8181
+        method: http
+        healthcheck:
+          hostname: tautulli.arr.svc.cluster.local
+          port: 8181
+          mode: http
+          scheme: http
+          path: /
+          method: GET
+
+  plex:
+    name: plex
+    protocol: http
+    full-domain: plex.eudald.gr
+    targets:
+      - hostname: plex.arr.svc.cluster.local
+        port: 32400
+        method: http
+        healthcheck:
+          hostname: plex.arr.svc.cluster.local
+          port: 32400
+          mode: http
+          scheme: http
+          path: /identity
+          method: GET
