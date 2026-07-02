@@ -11,12 +11,58 @@ webhook_enabled = false
 reload_deno_deps = false
 file_contents = """
 const SYNC = "main";
+const DESTROY_TIMEOUT_MS = 120_000;
+const POLL_MS = 1_000;
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 function stackTargetId(target) {
   if (!target || target.type !== "Stack" || !target.id) {
     return null;
   }
   return target.id;
+}
+
+function updateId(update) {
+  return update?.id ?? update?._id?.$oid ?? update?._id ?? null;
+}
+
+async function waitForDestroyUpdate(stack, update) {
+  const id = updateId(update);
+  const start = Date.now();
+
+  if (!id) {
+    throw new Error(`DestroyStack for '${stack}' did not return an update id`);
+  }
+
+  while (Date.now() - start < DESTROY_TIMEOUT_MS) {
+    const current = await komodo.read("GetUpdate", { id });
+    if (current?.status === "Complete") {
+      if (current.success === false) {
+        throw new Error(`DestroyStack failed for '${stack}'`);
+      }
+      return;
+    }
+    await sleep(POLL_MS);
+  }
+
+  throw new Error(`Timed out waiting for DestroyStack update to complete for '${stack}'`);
+}
+
+async function waitForStackIdle(stack) {
+  const start = Date.now();
+
+  while (Date.now() - start < DESTROY_TIMEOUT_MS) {
+    const state = await komodo.read("GetStackActionState", { stack });
+    if (!Object.values(state ?? {}).some((value) => value === true)) {
+      return;
+    }
+    await sleep(POLL_MS);
+  }
+
+  throw new Error(`Timed out waiting for stack '${stack}' to become idle after destroy`);
 }
 
 const sync = await komodo.write("RefreshResourceSyncPending", { sync: SYNC });
@@ -31,12 +77,14 @@ for (const update of deletes) {
   }
 
   console.log(`Destroying removed GitOps stack: ${stack}`);
-  await komodo.execute("DestroyStack", {
+  const destroy = await komodo.execute("DestroyStack", {
     stack,
     services: [],
     remove_orphans: true,
     stop_time: null,
   });
+  await waitForDestroyUpdate(stack, destroy);
+  await waitForStackIdle(stack);
   destroyed += 1;
 }
 
