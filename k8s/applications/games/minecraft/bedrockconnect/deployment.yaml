@@ -52,6 +52,8 @@ spec:
             - name: config
               mountPath: /data/custom_servers.json
               subPath: custom_servers.json
+            - name: players
+              mountPath: /docker/brc/players
           resources:
             requests:
               cpu: 50m
@@ -69,3 +71,6 @@ spec:
         - name: config
           configMap:
             name: bedrockconnect-config
+        - name: players
+          emptyDir:
+            sizeLimit: 64Mi
