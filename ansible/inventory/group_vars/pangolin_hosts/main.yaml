@@ -18,3 +18,7 @@ pangolin_crowdsec_lapi_key: "{{ secret_pangolin_crowdsec_lapi_key }}"
 
 pangolin_raw_tcp_ports:
   - 6690
+  - 25565
+
+pangolin_raw_udp_ports:
+  - 19132

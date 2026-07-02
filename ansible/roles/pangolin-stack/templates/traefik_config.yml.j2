@@ -101,6 +101,10 @@ entryPoints:
   tcp-{{ raw_tcp_port }}:
     address: ":{{ raw_tcp_port }}/tcp"
 {% endfor %}
+{% for raw_udp_port in pangolin_raw_udp_ports %}
+  udp-{{ raw_udp_port }}:
+    address: ":{{ raw_udp_port }}/udp"
+{% endfor %}
 
 serversTransport:
   insecureSkipVerify: true

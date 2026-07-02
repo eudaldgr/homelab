@@ -101,6 +101,20 @@
     - ansible_selinux.status == 'enabled'
   tags: [pangolin, selinux]
 
+- name: Register Pangolin raw UDP ports with SELinux as http_port_t
+  ansible.builtin.command:
+    cmd: "semanage port -a -t http_port_t -p udp {{ item }}"
+  loop: "{{ pangolin_raw_udp_ports }}"
+  register: pangolin_semanage_udp_register
+  failed_when: false
+  changed_when: pangolin_semanage_udp_register.rc == 0
+  when:
+    - pangolin_raw_udp_ports is defined
+    - pangolin_raw_udp_ports | length > 0
+    - ansible_selinux is defined
+    - ansible_selinux.status == 'enabled'
+  tags: [pangolin, selinux]
+
 - name: Install Pangolin Traefik SELinux policy # noqa: command-instead-of-shell
   ansible.builtin.shell: |
     semodule -i /etc/pangolin/pangolin_traefik_1.cil /usr/share/udica/templates/base_container.cil
@@ -203,10 +217,9 @@
 - name: Capture Pangolin initial setup token from container logs
   ansible.builtin.shell:
     cmd: |
-      set -o pipefail
       # Pangolin emits the token between two markers; grab the line right after.
       podman logs pangolin_app_1 2>&1 | \
-        awk '/=== SETUP TOKEN (GENERATED|EXISTS) ===/{flag=1; next} flag && /Token: /{sub(/.*Token: /,""); print; exit}'
+        awk '/=== SETUP TOKEN (GENERATED|EXISTS) ===/{flag=1; next} flag && /Token: /{sub(/.*Token: /,""); print; found=1; exit} END {exit found ? 0 : 1}'
   register: pangolin_token_capture
   changed_when: false
   retries: 30

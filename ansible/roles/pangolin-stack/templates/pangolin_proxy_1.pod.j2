@@ -8,3 +8,6 @@ PublishPort=80:80
 {% for raw_tcp_port in pangolin_raw_tcp_ports %}
 PublishPort={{ raw_tcp_port }}:{{ raw_tcp_port }}/tcp
 {% endfor %}
+{% for raw_udp_port in pangolin_raw_udp_ports %}
+PublishPort={{ raw_udp_port }}:{{ raw_udp_port }}/udp
+{% endfor %}
