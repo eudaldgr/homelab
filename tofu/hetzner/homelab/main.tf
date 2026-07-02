@@ -92,6 +92,28 @@ resource "hcloud_firewall" "homelab" {
       "::/0"
     ]
   }
+
+  # Minecraft Java via Pangolin raw TCP resource
+  rule {
+    direction = "in"
+    port      = "25565"
+    protocol  = "tcp"
+    source_ips = [
+      "0.0.0.0/0",
+      "::/0"
+    ]
+  }
+
+  # Minecraft Bedrock via Pangolin raw UDP resource
+  rule {
+    direction = "in"
+    port      = "19132"
+    protocol  = "udp"
+    source_ips = [
+      "0.0.0.0/0",
+      "::/0"
+    ]
+  }
 }
 
 # Homelab pangolin server
