@@ -1,0 +1,118 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: jellyfin
+  namespace: arr
+  labels:
+    app.kubernetes.io/name: jellyfin
+    app.kubernetes.io/part-of: applications
+    app.kubernetes.io/managed-by: argocd
+spec:
+  serviceName: jellyfin
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jellyfin
+  template:
+    metadata:
+      annotations:
+        backup.velero.io/backup-volumes: config
+        backup.velero.io/backup-volumes-excludes: media,cache,tmp,run
+      labels:
+        app: jellyfin
+        app.kubernetes.io/name: jellyfin
+        app.kubernetes.io/part-of: applications
+        app.kubernetes.io/managed-by: argocd
+    spec:
+      serviceAccountName: jellyfin
+      hostNetwork: false
+      hostPID: false
+      hostIPC: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+        fsGroupChangePolicy: OnRootMismatch
+        supplementalGroups:
+          - 44
+          - 104
+        seccompProfile:
+          type: RuntimeDefault
+      volumes:
+        - name: media
+          persistentVolumeClaim:
+            claimName: media-share
+        - name: cache
+          emptyDir:
+            sizeLimit: 20Gi
+        - name: tmp
+          emptyDir:
+            sizeLimit: 4Gi
+        - name: run
+          emptyDir:
+            sizeLimit: 100Mi
+      containers:
+        - name: jellyfin
+          image: ghcr.io/jellyfin/jellyfin:10.11.10@sha256:6497f0245de93fac642926c065b427362ca5e626e659f690516599c8c3817a38
+          ports:
+            - name: http
+              containerPort: 8096
+          env:
+            - name: TZ
+              value: Europe/Madrid
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: media
+              mountPath: /data/media
+              subPath: media
+            - name: cache
+              mountPath: /cache
+            - name: tmp
+              mountPath: /tmp
+            - name: run
+              mountPath: /run
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+              gpu.intel.com/i915: "1"
+            limits:
+              cpu: 4000m
+              memory: 5Gi
+              gpu.intel.com/i915: "1"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8096
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8096
+            initialDelaySeconds: 20
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 3
+      nodeSelector:
+        intel.feature.node.kubernetes.io/gpu: "true"
+        kubernetes.io/arch: amd64
+  volumeClaimTemplates:
+    - metadata:
+        name: config
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: proxmox-csi
+        resources:
+          requests:
+            storage: 10Gi
