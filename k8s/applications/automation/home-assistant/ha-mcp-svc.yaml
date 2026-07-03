@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ha-mcp
+  namespace: home-assistant
+  labels:
+    app.kubernetes.io/name: ha-mcp
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: ha-mcp
+  ports:
+    - name: http
+      port: 8086
+      targetPort: http
