@@ -206,6 +206,39 @@ public-resources:
     name: memos
     protocol: http
     full-domain: memos.eudald.gr
+    auth:
+      sso-enabled: true
+    rules:
+      - action: allow
+        match: path
+        value: /api/*
+      - action: allow
+        match: path
+        value: /assets/*
+      - action: allow
+        match: path
+        value: /explore*
+      - action: allow
+        match: path
+        value: /memos.api.v1.*
+      - action: allow
+        match: path
+        value: /auth/callback*
+      - action: allow
+        match: path
+        value: /auth
+      - action: allow
+        match: path
+        value: /site.webmanifest
+      - action: allow
+        match: path
+        value: /logo.webp
+      - action: allow
+        match: path
+        value: /full-logo.webp
+      - action: allow
+        match: path
+        value: /android-chrome-192x192.png
     targets:
       - hostname: memos.memos.svc.cluster.local
         port: 5230
