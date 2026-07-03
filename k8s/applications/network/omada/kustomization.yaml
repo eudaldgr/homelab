@@ -20,3 +20,6 @@ helmCharts:
 
 generatorOptions:
   disableNameSuffixHash: true
+
+patches:
+- path: patch-scale-zero.yaml
