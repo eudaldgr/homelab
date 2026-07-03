@@ -3,8 +3,7 @@ global:
   image:
     registry: docker.io
     repository: fosrl/newt
-    tag: 1.13.0
-    digest: sha256:63d956c8fdee889255e441ec405193b47b1fd2d975b505492ec848a8007f4fc3
+    tag: 1.13.0@sha256:63d956c8fdee889255e441ec405193b47b1fd2d975b505492ec848a8007f4fc3
     imagePullPolicy: IfNotPresent
   securityContext:
     runAsUser: 65534
