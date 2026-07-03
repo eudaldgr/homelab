@@ -6,9 +6,6 @@ namespace: omada
 resources:
 - namespace.yaml
 - certificate.yaml
-- tls-route.yaml
-- tcp-routes.yaml
-- udp-routes.yaml
 
 helmCharts:
 - name: omada-controller-helm
@@ -20,3 +17,6 @@ helmCharts:
 
 generatorOptions:
   disableNameSuffixHash: true
+
+patches:
+- path: patch-service-https.yaml
