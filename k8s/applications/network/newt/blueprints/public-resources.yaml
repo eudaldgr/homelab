@@ -202,6 +202,24 @@ public-resources:
             - name: X-Real-IP
               value: 127.0.0.1
 
+  it-tools:
+    name: it tools
+    protocol: http
+    full-domain: tools.eudald.gr
+    auth:
+      sso-enabled: true
+    targets:
+      - hostname: it-tools.it-tools.svc.cluster.local
+        port: 80
+        method: http
+        healthcheck:
+          hostname: it-tools.it-tools.svc.cluster.local
+          port: 80
+          mode: http
+          scheme: http
+          path: /
+          method: GET
+
   minecraft-java:
     name: minecraft java
     mode: tcp
