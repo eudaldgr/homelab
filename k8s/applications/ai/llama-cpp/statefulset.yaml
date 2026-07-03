@@ -1,0 +1,108 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: llama-cpp
+  namespace: llama-cpp
+  labels:
+    app: llama-cpp
+    app.kubernetes.io/name: llama-cpp
+    app.kubernetes.io/part-of: applications
+    app.kubernetes.io/managed-by: argocd
+spec:
+  serviceName: llama-cpp
+  replicas: 1
+  selector:
+    matchLabels:
+      app: llama-cpp
+  template:
+    metadata:
+      annotations:
+        backup.velero.io/backup-volumes-excludes: cache,tmp
+      labels:
+        app: llama-cpp
+        app.kubernetes.io/name: llama-cpp
+        app.kubernetes.io/part-of: applications
+        app.kubernetes.io/managed-by: argocd
+    spec:
+      serviceAccountName: llama-cpp
+      automountServiceAccountToken: false
+      hostNetwork: false
+      hostPID: false
+      hostIPC: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: llama-cpp
+          image: ghcr.io/ggml-org/llama.cpp:server@sha256:f415de2e2c3e61b3dfab40d7fd26136c13d342c1ae4b3ffa8657fcc6a2f43d60
+          imagePullPolicy: IfNotPresent
+          args:
+            - --hf-repo
+            - bartowski/Qwen2.5-3B-Instruct-GGUF:Q4_K_M
+            - --alias
+            - local-home-qwen
+            - --host
+            - 0.0.0.0
+            - --port
+            - "8080"
+            - -c
+            - "4096"
+            - --threads
+            - "4"
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: LLAMA_CACHE
+              value: /models
+          volumeMounts:
+            - name: cache
+              mountPath: /models
+            - name: tmp
+              mountPath: /tmp
+          resources:
+            requests:
+              cpu: "2000m"
+              memory: 3Gi
+            limits:
+              cpu: "4000m"
+              memory: 6Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 120
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+      volumes:
+        - name: cache
+          persistentVolumeClaim:
+            claimName: llama-cpp-cache
+        - name: tmp
+          emptyDir:
+            sizeLimit: 1Gi
