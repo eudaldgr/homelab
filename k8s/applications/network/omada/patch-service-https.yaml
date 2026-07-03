@@ -3,6 +3,7 @@ kind: Service
 metadata:
   name: omada-controller
 spec:
+  externalTrafficPolicy: Local
   ports:
     - name: https
       port: 443
