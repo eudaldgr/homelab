@@ -139,6 +139,12 @@ spec:
             capabilities:
               drop:
                 - ALL
+              # s6 starts as root, fixes /opt/data, then drops to the hermes user.
+              add:
+                - CHOWN
+                - DAC_OVERRIDE
+                - SETGID
+                - SETUID
           startupProbe:
             httpGet:
               path: /health
