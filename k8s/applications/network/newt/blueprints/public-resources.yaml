@@ -185,6 +185,23 @@ public-resources:
           path: /
           method: GET
 
+  searxng:
+    name: searxng
+    protocol: http
+    full-domain: searx.eudald.gr
+    targets:
+      - method: http
+        hostname: searxng.searxng.svc.cluster.local
+        port: 8080
+        healthcheck:
+          enabled: true
+          hostname: searxng.searxng.svc.cluster.local
+          port: 8080
+          path: /healthz
+          headers:
+            - name: X-Real-IP
+              value: 127.0.0.1
+
   minecraft-java:
     name: minecraft java
     mode: tcp
