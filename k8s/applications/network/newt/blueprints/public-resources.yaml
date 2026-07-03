@@ -202,12 +202,26 @@ public-resources:
             - name: X-Real-IP
               value: 127.0.0.1
 
+  memos:
+    name: memos
+    protocol: http
+    full-domain: memos.eudald.gr
+    targets:
+      - hostname: memos.memos.svc.cluster.local
+        port: 5230
+        method: http
+        healthcheck:
+          hostname: memos.memos.svc.cluster.local
+          port: 5230
+          mode: http
+          scheme: http
+          path: /
+          method: GET
+
   it-tools:
     name: it tools
     protocol: http
     full-domain: tools.eudald.gr
-    auth:
-      sso-enabled: true
     targets:
       - hostname: it-tools.it-tools.svc.cluster.local
         port: 80
