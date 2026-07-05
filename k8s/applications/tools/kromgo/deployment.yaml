@@ -3,6 +3,8 @@ kind: Deployment
 metadata:
   name: kromgo
   namespace: kromgo
+  annotations:
+    configmap.reloader.stakater.com/reload: kromgo-config
   labels:
     app: kromgo
     app.kubernetes.io/name: kromgo
