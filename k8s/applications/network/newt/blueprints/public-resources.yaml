@@ -267,6 +267,22 @@ public-resources:
           path: /
           method: GET
 
+  kromgo:
+    name: kromgo
+    protocol: http
+    full-domain: badges.eudald.gr
+    targets:
+      - hostname: kromgo.kromgo.svc.cluster.local
+        port: 80
+        method: http
+        healthcheck:
+          hostname: kromgo.kromgo.svc.cluster.local
+          port: 80
+          mode: http
+          scheme: http
+          path: /readyz
+          method: GET
+
   minecraft-java:
     name: minecraft java
     mode: tcp
