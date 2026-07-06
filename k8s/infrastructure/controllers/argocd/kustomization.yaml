@@ -8,6 +8,7 @@ resources:
 - http-route-api.yaml
 - http-route.yaml
 - namespace.yaml
+- oauth-sealed-secret.yaml
 
 helmCharts:
 - name: argo-cd

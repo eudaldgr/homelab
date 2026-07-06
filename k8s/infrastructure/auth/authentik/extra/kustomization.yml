@@ -3,6 +3,7 @@ kind: Kustomization
 
 resources:
   - sealed-secrets.yaml
+  - oauth-sealed-secret.yaml
 
 generatorOptions:
   disableNameSuffixHash: true
@@ -19,3 +20,5 @@ configMapGenerator:
       - ./blueprints/flows-webauthn-setup.yaml
       - ./blueprints/oauth-scopes.yaml
       - ./blueprints/outposts.yaml
+      - ./blueprints/apps-argocd.yaml
+      - ./blueprints/apps-pangolin.yaml

@@ -5,6 +5,8 @@ global:
         name: authentik-core-secrets
     - secretRef:
         name: authentik-blueprint-secrets
+    - secretRef:
+        name: authentik-oauth-app-secrets
     # - secretRef:
     #     name: authentik-smtp-credentials
 
