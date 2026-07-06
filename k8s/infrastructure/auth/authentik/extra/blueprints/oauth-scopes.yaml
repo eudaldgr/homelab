@@ -72,5 +72,5 @@ entries:
       description: User groups
       expression: |
         return {
-          "groups": [group.name for group in request.user.ak_groups.all()],
+          "groups": [group.name for group in request.user.groups.all()],
         }
