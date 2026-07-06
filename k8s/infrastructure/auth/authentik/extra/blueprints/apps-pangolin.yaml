@@ -28,9 +28,13 @@ entries:
           [slug, "default-provider-invalidation-flow"],
         ]
       client_type: confidential
+      grant_types:
+        - authorization_code
+        - refresh_token
       redirect_uris:
         - url: https://pangolin.eudald.gr/auth/idp/1/oidc/callback
           matching_mode: strict
+          redirect_uri_type: authorization
       client_id: !Env PANGOLIN_CLIENT_ID
       client_secret: !Env PANGOLIN_CLIENT_SECRET
       access_code_validity: minutes=1

@@ -42,9 +42,13 @@ entries:
         ]
 
       client_type: confidential
+      grant_types:
+        - authorization_code
+        - refresh_token
       redirect_uris:
         - url: https://argocd.eudald.gr/auth/callback
           matching_mode: strict
+          redirect_uri_type: authorization
       client_id: !Env ARGOCD_CLIENT_ID
       client_secret: !Env ARGOCD_CLIENT_SECRET
       access_code_validity: minutes=1
