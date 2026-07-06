@@ -29,7 +29,7 @@ entries:
         ]
       client_type: confidential
       redirect_uris:
-        - url: https://temp.temp
+        - url: https://pangolin.eudald.gr/auth/idp/1/oidc/callback
           matching_mode: strict
       client_id: !Env PANGOLIN_CLIENT_ID
       client_secret: !Env PANGOLIN_CLIENT_SECRET
