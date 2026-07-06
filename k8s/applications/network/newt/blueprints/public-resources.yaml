@@ -1,4 +1,40 @@
 public-resources:
+  sso:
+    name: sso
+    protocol: http
+    full-domain: sso.eudald.gr
+    auth:
+      sso-enabled: false
+    targets:
+      - hostname: authentik-server.auth.svc.cluster.local
+        port: 80
+        method: http
+        healthcheck:
+          hostname: authentik-server.auth.svc.cluster.local
+          port: 80
+          mode: http
+          scheme: http
+          path: /-/health/ready/
+          method: GET
+
+  argocd:
+    name: argocd
+    protocol: http
+    full-domain: argocd.eudald.gr
+    auth:
+      sso-enabled: true
+    targets:
+      - hostname: argocd-server.argocd.svc.cluster.local
+        port: 80
+        method: http
+        healthcheck:
+          hostname: argocd-server.argocd.svc.cluster.local
+          port: 80
+          mode: http
+          scheme: http
+          path: /healthz
+          method: GET
+
   radarr:
     name: radarr
     protocol: http
