@@ -25,5 +25,14 @@
   ],
   "reviewers": [
     "eudaldgr"
+  ],
+  "packageRules": [
+    {
+      "matchDepPatterns": [
+        "^rustfs$"
+      ],
+      "allowPreReleases": true,
+      "ignoreUnstable": false
+    }
   ]
 }
