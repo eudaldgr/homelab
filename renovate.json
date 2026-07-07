@@ -28,10 +28,12 @@
   ],
   "packageRules": [
     {
-      "matchDepPatterns": [
-        "^rustfs$"
+      "matchDatasources": [
+        "docker"
       ],
-      "allowPreReleases": true,
+      "matchPackageNames": [
+        "rustfs/rustfs"
+      ],
       "ignoreUnstable": false
     }
   ]
