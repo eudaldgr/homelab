@@ -10,7 +10,7 @@ metadata:
     app.kubernetes.io/managed-by: argocd
 spec:
   serviceName: vaultwarden
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: vaultwarden
