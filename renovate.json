@@ -4,6 +4,9 @@
     "config:recommended",
     "helpers:pinGitHubActionDigests"
   ],
+  "ignorePaths": [
+    "compose/**/archive/**"
+  ],
   "assignAutomerge": true,
   "ignoreUnstable": true,
   "kubernetes": {
