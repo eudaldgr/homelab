@@ -37,3 +37,15 @@ entries:
       name: Kubectl Users
     attrs:
       name: Kubectl Users
+  - id: gramps-owners
+    model: authentik_core.group
+    identifiers:
+      name: Gramps Owners
+    attrs:
+      name: Gramps Owners
+  - id: gramps-members
+    model: authentik_core.group
+    identifiers:
+      name: Gramps Members
+    attrs:
+      name: Gramps Members

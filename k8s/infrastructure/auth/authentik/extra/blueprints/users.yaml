@@ -23,6 +23,8 @@ entries:
         - !Find [authentik_core.group, [name, "ArgoCD Viewers"]]
         - !Find [authentik_core.group, [name, "Grafana Users"]]
         - !Find [authentik_core.group, [name, "Kubectl Users"]]
+        - !Find [authentik_core.group, [name, "Gramps Owners"]]
+        - !Find [authentik_core.group, [name, "Gramps Members"]]
 
   - id: user
     model: authentik_core.user
@@ -35,3 +37,4 @@ entries:
       groups:
         - !Find [authentik_core.group, [name, "ArgoCD Viewers"]]
         - !Find [authentik_core.group, [name, "Grafana Users"]]
+        - !Find [authentik_core.group, [name, "Gramps Members"]]

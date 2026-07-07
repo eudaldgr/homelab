@@ -22,3 +22,4 @@ configMapGenerator:
       - ./blueprints/outposts.yaml
       - ./blueprints/apps-argocd.yaml
       - ./blueprints/apps-pangolin.yaml
+      - ./blueprints/apps-gramps-web.yaml

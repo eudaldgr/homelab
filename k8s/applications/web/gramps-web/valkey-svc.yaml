@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gramps-web-valkey
+  namespace: gramps-web
+spec:
+  selector:
+    app: gramps-web-valkey
+  ports:
+    - name: valkey
+      port: 6379
+      targetPort: valkey
