@@ -1,5 +1,10 @@
 ---
 global:
+  deploymentAnnotations:
+    secret.reloader.stakater.com/reload: authentik-oauth-app-secrets
+  podAnnotations:
+    secret.reloader.stakater.com/reload: authentik-oauth-app-secrets
+
   envFrom:
     - secretRef:
         name: authentik-core-secrets
