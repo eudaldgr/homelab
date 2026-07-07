@@ -17,7 +17,7 @@ labels:
 
 helmCharts:
 - name: tuppr
-  # OCI Helm chart published by home-operations. 0.2.6 is the latest as of 2026-06-13.
+  # OCI Helm chart published by home-operations.
   # renovate: datasource=oci depName=ghcr.io/home-operations/charts/tuppr versioning=semver
   repo: oci://ghcr.io/home-operations/charts
   version: 0.2.9

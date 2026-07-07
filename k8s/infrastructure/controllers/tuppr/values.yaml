@@ -42,20 +42,6 @@ resources:
     cpu: 25m
     memory: 64Mi
 
-livenessProbe:
-  httpGet:
-    path: /healthz
-    port: 8080
-  initialDelaySeconds: 15
-  periodSeconds: 20
-
-readinessProbe:
-  httpGet:
-    path: /readyz
-    port: 8080
-  initialDelaySeconds: 5
-  periodSeconds: 10
-
 # The chart already ships sane tolerations so the controller can run on
 # control-plane and cordoned nodes (so it can uncordon after a reboot).
 # We only add the priority class to match other infra components.
@@ -70,10 +56,6 @@ controller:
   leaderElection:
     enabled: true
   metrics:
-    enabled: true
-    port: 8080
-    secure: false
-  health:
     port: 8080
 
 webhook:
