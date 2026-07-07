@@ -77,6 +77,18 @@ spec:
                     secretKeyRef:
                       name: adguard-admin-secret
                       key: password
+                - name: REPLICA2_URL
+                  value: "http://10.1.99.2:80"
+                - name: REPLICA2_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: adguard-admin-secret
+                      key: username
+                - name: REPLICA2_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: adguard-admin-secret
+                      key: password
                 - name: PRINT_CONFIG_ONLY
                   value: "false"
                 - name: LOG_LEVEL
