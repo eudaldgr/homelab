@@ -40,7 +40,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: minicpm-vllm
-          image: docker.io/vllm/vllm-openai:v0.24.0@sha256:251eba5cc7c12fed0b75da22a9240e582b1c9e39f6fbc064f86781b963bd814f
+          image: docker.io/vllm/vllm-openai-cpu:v0.24.0-x86_64@sha256:00eeb8bfad017e2fd9ca9f18999e8417bebfa146a0eb4276b4c26c8272dc2377
           imagePullPolicy: IfNotPresent
           command:
             - vllm
@@ -54,7 +54,7 @@ spec:
             - --port
             - "8000"
             - --dtype
-            - auto
+            - bfloat16
             - --device
             - cpu
             - --max-model-len
@@ -70,6 +70,10 @@ spec:
               value: /models/huggingface
             - name: VLLM_CACHE_ROOT
               value: /models/vllm
+            - name: VLLM_CPU_KVCACHE_SPACE
+              value: "2"
+            - name: VLLM_CPU_NUM_OF_RESERVED_CPU
+              value: "1"
           volumeMounts:
             - name: cache
               mountPath: /models
