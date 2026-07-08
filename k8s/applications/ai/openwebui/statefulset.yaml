@@ -50,7 +50,7 @@ spec:
                   name: open-webui-secret
                   key: WEBUI_SECRET_KEY
             - name: OPENAI_API_BASE_URL
-              value: http://llama-cpp.llama-cpp.svc.cluster.local/v1
+              value: http://minicpm-vllm.minicpm-vllm.svc.cluster.local/v1
             - name: OPENAI_API_KEY
               value: local
             - name: ENABLE_SIGNUP
