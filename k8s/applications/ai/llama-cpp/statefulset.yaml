@@ -39,7 +39,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: llama-cpp
-          image: ghcr.io/ggml-org/llama.cpp:server@sha256:f415de2e2c3e61b3dfab40d7fd26136c13d342c1ae4b3ffa8657fcc6a2f43d60
+          image: ghcr.io/ggml-org/llama.cpp:server@sha256:dc104655dd025529a3cf99e7d1481396b8b8acc500dc60dc2a9bf73988e4831a
           imagePullPolicy: IfNotPresent
           args:
             - --hf-repo
