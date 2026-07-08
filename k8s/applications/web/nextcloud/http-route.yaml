@@ -1,0 +1,15 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: nextcloud
+  namespace: nextcloud
+spec:
+  parentRefs:
+    - name: internal
+      namespace: gateway
+  hostnames:
+    - cloud.k8s.eudald.gr
+  rules:
+    - backendRefs:
+        - name: nextcloud
+          port: 80

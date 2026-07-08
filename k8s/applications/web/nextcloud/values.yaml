@@ -1,0 +1,138 @@
+image:
+  registry: docker.io
+  repository: library/nextcloud
+  flavor: fpm-alpine
+  tag: 34.0.1-fpm-alpine@sha256:2db5dc860fe7c880d02a998d3492be640e3942aa8330f4f3f28aa539d1cf5c4d
+
+replicaCount: 1
+
+podAnnotations:
+  backup.velero.io/backup-volumes: nextcloud-main
+
+phpClientHttpsFix:
+  enabled: true
+  protocol: https
+
+nextcloud:
+  host: cloud.k8s.eudald.gr
+  username: admin
+  existingSecret:
+    enabled: true
+    secretName: nextcloud-secret
+    usernameKey: NEXTCLOUD_ADMIN_USER
+    passwordKey: NEXTCLOUD_ADMIN_PASSWORD
+  containerPort: 8080
+  trustedDomains:
+    - cloud.k8s.eudald.gr
+    - cloud.eudald.gr
+  extraEnv:
+    - name: TZ
+      value: Europe/Madrid
+  strategy:
+    type: Recreate
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop: ["ALL"]
+    readOnlyRootFilesystem: false
+  podSecurityContext:
+    fsGroup: 82
+    fsGroupChangePolicy: OnRootMismatch
+    seccompProfile:
+      type: RuntimeDefault
+
+nginx:
+  enabled: true
+  image:
+    repository: nginxinc/nginx-unprivileged
+    tag: 1.29-alpine@sha256:0c79d56aee561a1d81c63f00eee5fb5fe29279560cdc55e91425133104c7fbe6
+  containerPort: 8080
+  securityContext:
+    allowPrivilegeEscalation: false
+    runAsNonRoot: true
+    capabilities:
+      drop: ["ALL"]
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+
+internalDatabase:
+  enabled: false
+
+externalDatabase:
+  enabled: true
+  type: postgresql
+  host: nextcloud-postgresql-rw
+  existingSecret:
+    enabled: true
+    secretName: nextcloud-postgresql-app
+    usernameKey: username
+    passwordKey: password
+    databaseKey: dbname
+
+mariadb:
+  enabled: false
+
+postgresql:
+  enabled: false
+
+redis:
+  enabled: true
+  architecture: standalone
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/redis
+    tag: 8.0.1-debian-12-r1
+    digest: sha256:ad7fdfaedb25b37b8015c39f019961c3e5a865d8ff5859a491acb4d9d9b85697
+  auth:
+    enabled: true
+    existingSecret: nextcloud-secret
+    existingSecretPasswordKey: REDIS_PASSWORD
+  global:
+    defaultStorageClass: proxmox-csi
+  master:
+    persistence:
+      enabled: true
+      size: 2Gi
+      storageClass: proxmox-csi
+  replica:
+    replicaCount: 0
+    persistence:
+      enabled: false
+
+service:
+  type: ClusterIP
+  port: 80
+
+persistence:
+  enabled: true
+  storageClass: proxmox-csi
+  size: 10Gi
+
+resources:
+  requests:
+    cpu: 200m
+    memory: 512Mi
+  limits:
+    cpu: "2"
+    memory: 2Gi
+
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 60
+  periodSeconds: 30
+  timeoutSeconds: 5
+  failureThreshold: 3
+  successThreshold: 1
+
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 30
+  periodSeconds: 15
+  timeoutSeconds: 5
+  failureThreshold: 3
+  successThreshold: 1
