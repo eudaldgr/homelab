@@ -33,7 +33,7 @@ nextcloud:
   securityContext:
     allowPrivilegeEscalation: false
     capabilities:
-      add: ["CHOWN", "DAC_OVERRIDE"]
+      add: ["CHOWN", "DAC_OVERRIDE", "SETGID", "SETUID"]
       drop: ["ALL"]
     readOnlyRootFilesystem: false
   podSecurityContext:
