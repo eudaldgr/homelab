@@ -1,8 +1,8 @@
 image:
   registry: docker.io
   repository: library/nextcloud
-  flavor: fpm-alpine
-  tag: 34.0.1-fpm-alpine@sha256:2db5dc860fe7c880d02a998d3492be640e3942aa8330f4f3f28aa539d1cf5c4d
+  flavor: apache
+  tag: 34.0.1-apache@sha256:6444fc5450302534e850b4d23c05b5f06c7b0d25bd5ece716452061454699c58
 
 replicaCount: 1
 
@@ -21,7 +21,7 @@ nextcloud:
     secretName: nextcloud-secret
     usernameKey: NEXTCLOUD_ADMIN_USER
     passwordKey: NEXTCLOUD_ADMIN_PASSWORD
-  containerPort: 8080
+  containerPort: 80
   trustedDomains:
     - cloud.k8s.eudald.gr
     - cloud.eudald.gr
@@ -30,38 +30,15 @@ nextcloud:
       value: Europe/Madrid
   strategy:
     type: Recreate
-  securityContext:
-    allowPrivilegeEscalation: false
-    capabilities:
-      add: ["CHOWN", "DAC_OVERRIDE", "SETGID", "SETUID"]
-      drop: ["ALL"]
-    readOnlyRootFilesystem: false
+  securityContext: {}
   podSecurityContext:
-    fsGroup: 82
+    fsGroup: 33
     fsGroupChangePolicy: OnRootMismatch
     seccompProfile:
       type: RuntimeDefault
 
 nginx:
-  enabled: true
-  image:
-    repository: nginxinc/nginx-unprivileged
-    tag: 1.29-alpine@sha256:0c79d56aee561a1d81c63f00eee5fb5fe29279560cdc55e91425133104c7fbe6
-  containerPort: 8080
-  securityContext:
-    allowPrivilegeEscalation: false
-    runAsNonRoot: true
-    runAsUser: 82
-    runAsGroup: 82
-    capabilities:
-      drop: ["ALL"]
-  resources:
-    requests:
-      cpu: 50m
-      memory: 64Mi
-    limits:
-      cpu: 500m
-      memory: 256Mi
+  enabled: false
 
 internalDatabase:
   enabled: false
