@@ -6,9 +6,9 @@ metadata:
 data:
   config.yaml: |
     model:
-      default: "local-home-qwen"
+      default: "local-home-minicpm"
       provider: "custom"
-      base_url: "http://llama-cpp.llama-cpp.svc.cluster.local/v1"
+      base_url: "http://minicpm-vllm.minicpm-vllm.svc.cluster.local/v1"
 
     mcp_servers:
       home-assistant:
