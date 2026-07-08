@@ -16,6 +16,9 @@ spec:
     limits:
       cpu: "1"
       memory: 1Gi
+  postgresql:
+    shared_preload_libraries:
+      - vchord.so
   bootstrap:
     initdb:
       database: immich
