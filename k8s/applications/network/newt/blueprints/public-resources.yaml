@@ -238,6 +238,31 @@ public-resources:
             - name: X-Real-IP
               value: 127.0.0.1
 
+  vaultwarden:
+    name: vaultwarden
+    protocol: http
+    full-domain: bitwarden.eudald.gr
+    auth:
+      sso-enabled: false
+    rules:
+      - action: deny
+        match: path
+        value: /admin
+      - action: deny
+        match: path
+        value: /admin/*
+    targets:
+      - hostname: vaultwarden-0.vaultwarden.vaultwarden.svc.cluster.local
+        port: 80
+        method: http
+        healthcheck:
+          hostname: vaultwarden-0.vaultwarden.vaultwarden.svc.cluster.local
+          port: 80
+          mode: http
+          scheme: http
+          path: /alive
+          method: GET
+
   memos:
     name: memos
     protocol: http
