@@ -13,3 +13,6 @@ spec:
     path: /volume1/k8s/immich
   mountOptions:
     - nfsvers=4.1
+    - nconnect=4
+    - hard
+    - noatime
