@@ -78,15 +78,3 @@ spec:
       allowedRoutes:
         namespaces:
           from: All
-    - protocol: TCP
-      port: 65211
-      name: qbittorrent-peer-tcp
-      allowedRoutes:
-        namespaces:
-          from: All
-    - protocol: UDP
-      port: 65211
-      name: qbittorrent-peer-udp
-      allowedRoutes:
-        namespaces:
-          from: All

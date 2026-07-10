@@ -3,7 +3,6 @@ kind: Kustomization
 
 resources:
 - svc.yaml
+- peer-lb-svc.yaml
 - http-route.yaml
-- tcp-route.yaml
-- udp-route.yaml
 - statefulset.yaml

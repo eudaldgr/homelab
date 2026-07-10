@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: qbittorrent-peer
+  namespace: arr
+  annotations:
+    io.cilium/lb-ipam-ips: "10.1.20.156"
+    external-dns.alpha.kubernetes.io/exclude: "true"
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  selector:
+    app: qbittorrent
+  ports:
+    - name: bittorrent-tcp
+      port: 65211
+      targetPort: bittorrent-tcp
+      protocol: TCP
+    - name: bittorrent-udp
+      port: 65211
+      targetPort: bittorrent-udp
+      protocol: UDP
