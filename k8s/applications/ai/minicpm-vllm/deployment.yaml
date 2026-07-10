@@ -55,8 +55,6 @@ spec:
             - "8000"
             - --dtype
             - bfloat16
-            - --device
-            - cpu
             - --max-model-len
             - "8192"
             - --enable-auto-tool-choice
@@ -74,6 +72,16 @@ spec:
               value: "2"
             - name: VLLM_CPU_NUM_OF_RESERVED_CPU
               value: "1"
+            - name: USER
+              value: vllm
+            - name: LOGNAME
+              value: vllm
+            - name: HOME
+              value: /tmp
+            - name: XDG_CACHE_HOME
+              value: /tmp/.cache
+            - name: TORCHINDUCTOR_CACHE_DIR
+              value: /tmp/torchinductor
           volumeMounts:
             - name: cache
               mountPath: /models
@@ -90,7 +98,7 @@ spec:
               memory: 8Gi
           securityContext:
             allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: false
+            readOnlyRootFilesystem: true
             capabilities:
               drop:
                 - ALL
