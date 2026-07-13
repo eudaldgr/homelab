@@ -51,6 +51,8 @@ data "talos_machine_configuration" "worker" {
       node_name            = each.value.node
       hostname             = each.key
       mac                  = each.value.mac
+      storage_ip           = each.value.storage_ip
+      storage_mac          = each.value.storage_mac
     }),
     yamlencode({
       machine = {

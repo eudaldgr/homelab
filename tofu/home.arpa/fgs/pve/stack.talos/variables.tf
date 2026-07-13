@@ -47,13 +47,15 @@ variable "talos_controlplanes" {
 variable "talos_workers" {
   description = "Talos worker nodes"
   type = map(object({
-    node   = string
-    vmid   = number
-    cores  = number
-    memory = number
-    disk   = number
-    ip     = string
-    mac    = string
-    igpu   = optional(bool, false)
+    node        = string
+    vmid        = number
+    cores       = number
+    memory      = number
+    disk        = number
+    ip          = string
+    mac         = string
+    storage_ip  = string
+    storage_mac = string
+    igpu        = optional(bool, false)
   }))
 }

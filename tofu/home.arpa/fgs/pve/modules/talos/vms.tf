@@ -66,6 +66,17 @@ resource "proxmox_virtual_environment_vm" "talos" {
     mac_address = each.value.mac
   }
 
+  dynamic "network_device" {
+    for_each = each.value.role == "worker" ? [each.value] : []
+
+    content {
+      model       = "virtio"
+      bridge      = "vmbr1"
+      vlan_id     = 30
+      mac_address = network_device.value.storage_mac
+    }
+  }
+
   agent {
     enabled = true
 
