@@ -6,15 +6,15 @@ public-resources:
     auth:
       sso-enabled: false
     targets:
-      - hostname: authentik-server.auth.svc.cluster.local
-        port: 80
+      - hostname: pocket-id.pocket-id.svc.cluster.local
+        port: 1411
         method: http
         healthcheck:
-          hostname: authentik-server.auth.svc.cluster.local
-          port: 80
+          hostname: pocket-id.pocket-id.svc.cluster.local
+          port: 1411
           mode: http
           scheme: http
-          path: /-/health/ready/
+          path: /healthz
           method: GET
 
   argocd:
