@@ -3,14 +3,14 @@
 apiVersion: barmancloud.cnpg.io/v1
 kind: ObjectStore
 metadata:
-  name: authentik-rustfs-store
-  namespace: auth
+  name: pocket-id-rustfs-store
+  namespace: pocket-id
   annotations:
     argocd.argoproj.io/sync-wave: "-1"
 spec:
-  retentionPolicy: "14d"
+  retentionPolicy: 14d
   configuration:
-    destinationPath: s3://postgres/auth/authentik-postgresql
+    destinationPath: s3://postgres/auth/pocket-id-postgresql
     endpointURL: http://ds920plus.home.eudald.gr:9000
     s3Credentials:
       accessKeyId:
@@ -24,14 +24,14 @@ spec:
 apiVersion: barmancloud.cnpg.io/v1
 kind: ObjectStore
 metadata:
-  name: authentik-b2-store
-  namespace: auth
+  name: pocket-id-b2-store
+  namespace: pocket-id
   annotations:
     argocd.argoproj.io/sync-wave: "-1"
 spec:
-  retentionPolicy: "30d"
+  retentionPolicy: 30d
   configuration:
-    destinationPath: s3://e17n-homelab-cnpg-b2/auth/authentik-postgresql
+    destinationPath: s3://e17n-homelab-cnpg-b2/auth/pocket-id-postgresql
     endpointURL: https://s3.eu-central-003.backblazeb2.com
     s3Credentials:
       accessKeyId:
@@ -44,70 +44,52 @@ spec:
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: authentik-postgresql
-  namespace: auth
+  name: pocket-id-postgresql
+  namespace: pocket-id
   annotations:
     argocd.argoproj.io/sync-wave: "0"
 spec:
   instances: 2
   imageName: ghcr.io/cloudnative-pg/postgresql:17
   storage:
-    size: 40Gi
+    size: 5Gi
     storageClass: proxmox-csi
-
   walStorage:
-    size: 20Gi
+    size: 5Gi
     storageClass: proxmox-csi
-
   resources:
     requests:
-      memory: 512Mi
-      cpu: 200m
+      cpu: 100m
+      memory: 256Mi
     limits:
-      memory: 1Gi
-      cpu: 1000m
-
+      cpu: 500m
+      memory: 512Mi
   postgresql:
     parameters:
-      max_connections: "100"
-      shared_buffers: "256MB"
-      effective_cache_size: "768MB"
-      maintenance_work_mem: "64MB"
-      checkpoint_completion_target: "0.9"
-      wal_buffers: "16MB"
-      default_statistics_target: "100"
-      random_page_cost: "1.1"
-      effective_io_concurrency: "200"
-      work_mem: "2621kB"
+      max_connections: "50"
+      shared_buffers: 128MB
       huge_pages: "off"
-      min_wal_size: "1GB"
-      max_wal_size: "3GB"
-
   plugins:
-  - name: barman-cloud.cloudnative-pg.io
-    enabled: true
-    isWALArchiver: true
-    parameters:
-      barmanObjectName: authentik-rustfs-store
-
+    - name: barman-cloud.cloudnative-pg.io
+      enabled: true
+      isWALArchiver: true
+      parameters:
+        barmanObjectName: pocket-id-rustfs-store
   externalClusters:
-    - name: authentik-postgresql-b2-backup
+    - name: pocket-id-postgresql-b2-backup
       plugin:
         name: barman-cloud.cloudnative-pg.io
         parameters:
-          barmanObjectName: authentik-b2-store
-    - name: authentik-postgresql-rustfs-backup
+          barmanObjectName: pocket-id-b2-store
+    - name: pocket-id-postgresql-rustfs-backup
       plugin:
         name: barman-cloud.cloudnative-pg.io
         parameters:
-          barmanObjectName: authentik-rustfs-store
-
+          barmanObjectName: pocket-id-rustfs-store
   monitoring:
     enablePodMonitor: false
-
   minSyncReplicas: 1
   maxSyncReplicas: 1
-
   affinity:
     enablePodAntiAffinity: true
     topologyKey: kubernetes.io/hostname
