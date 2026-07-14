@@ -47,7 +47,7 @@ spec:
             sizeLimit: 100Mi
       containers:
         - name: radarr
-          image: ghcr.io/vegops/radarr:6.2.1.10461-r0@sha256:18bf1fbe0b203ae2523dd937d9a38a237541ef3d3172357b0d5dc6775d20cf9b
+          image: ghcr.io/vegops/radarr:6.2.1.10461-r0@sha256:dc149d4d157811ed80eddf81ad8b17d29d7a6efec61c1b7a1c9a0e14f0fd13b9
           ports:
             - name: http
               containerPort: 7878
