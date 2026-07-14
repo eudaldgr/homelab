@@ -20,7 +20,7 @@ helmCharts:
   # OCI Helm chart published by home-operations.
   # renovate: datasource=oci depName=ghcr.io/home-operations/charts/tuppr versioning=semver
   repo: oci://ghcr.io/home-operations/charts
-  version: 0.3.0
+  version: 0.3.1
   releaseName: tuppr
   namespace: system-upgrade
   includeCRDs: true
