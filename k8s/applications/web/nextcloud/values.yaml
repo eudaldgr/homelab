@@ -66,7 +66,7 @@ redis:
   image:
     registry: docker.io
     repository: bitnamilegacy/redis
-    tag: 8.0.1-debian-12-r1
+    tag: 8.0.3-debian-12-r1
     digest: sha256:ad7fdfaedb25b37b8015c39f019961c3e5a865d8ff5859a491acb4d9d9b85697
   auth:
     enabled: true
