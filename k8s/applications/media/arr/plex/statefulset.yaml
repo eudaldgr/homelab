@@ -44,7 +44,7 @@ spec:
             claimName: media-share
         - name: tmp
           emptyDir:
-            sizeLimit: 1Gi
+            sizeLimit: 2Gi
         - name: run
           emptyDir:
             sizeLimit: 100Mi
@@ -70,10 +70,12 @@ spec:
           resources:
             requests:
               cpu: 500m
+              ephemeral-storage: 512Mi
               memory: 1Gi
               gpu.intel.com/i915: "1"
             limits:
               cpu: 4000m
+              ephemeral-storage: 3Gi
               memory: 4Gi
               gpu.intel.com/i915: "1"
           securityContext:
