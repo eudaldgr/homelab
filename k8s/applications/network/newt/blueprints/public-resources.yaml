@@ -267,22 +267,6 @@ public-resources:
           port: 9200
           mode: tcp
 
-  nextcloud-office:
-    name: nextcloud office
-    protocol: http
-    full-domain: office.eudald.gr
-    targets:
-      - hostname: nextcloud-collabora.nextcloud.svc.cluster.local
-        port: 9980
-        method: http
-        healthcheck:
-          hostname: nextcloud-collabora.nextcloud.svc.cluster.local
-          port: 9980
-          mode: http
-          scheme: http
-          path: /hosting/discovery
-          method: GET
-
   vaultwarden:
     name: vaultwarden
     protocol: http
