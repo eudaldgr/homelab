@@ -84,6 +84,8 @@ spec:
               value: "true"
             - name: EMAIL_VERIFICATION_ENABLED
               value: "true"
+            - name: ACCENT_COLOR
+              value: "teal"
             - name: ANALYTICS_DISABLED
               value: "true"
             - name: VERSION_CHECK_DISABLED
