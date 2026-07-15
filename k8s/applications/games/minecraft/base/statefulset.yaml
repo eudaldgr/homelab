@@ -111,11 +111,11 @@ spec:
             failureThreshold: 3
           resources:
             requests:
-              memory: '4Gi'
-              cpu: '2000m'
+              memory: '7Gi'
+              cpu: '500m'
             limits:
               memory: '8Gi'
-              cpu: '6000m'
+              cpu: '4000m'
       volumes:
         - name: plugin-configs
           projected:

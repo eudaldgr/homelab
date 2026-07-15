@@ -43,11 +43,11 @@ prometheus:
             prometheus: k8s
     resources:
       requests:
-        cpu: 500m
-        memory: 512Mi
+        cpu: 200m
+        memory: 1Gi
       limits:
         cpu: 1000m
-        memory: 1Gi
+        memory: 1536Mi
   podDisruptionBudget:
     enabled: false
     minAvailable: 1

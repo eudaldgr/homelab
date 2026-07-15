@@ -30,10 +30,10 @@ persistence:
 resources:
   requests:
     cpu: 100m
-    memory: 512Mi
+    memory: 2Gi
   limits:
     cpu: 750m
-    memory: 2Gi
+    memory: 3Gi
 
 containerSecurityContext:
   allowPrivilegeEscalation: false
