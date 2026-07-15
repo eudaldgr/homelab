@@ -48,7 +48,7 @@ spec:
           args:
             - |
               if [ ! -s /etc/opencloud/opencloud.yaml ]; then
-                exec /usr/bin/opencloud init
+                exec /usr/bin/opencloud init --insecure=false
               fi
           env:
             - name: IDM_ADMIN_PASSWORD
