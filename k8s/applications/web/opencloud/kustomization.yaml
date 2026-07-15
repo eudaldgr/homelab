@@ -11,6 +11,8 @@ resources:
 - pvc.yaml
 - deployment.yaml
 - service.yaml
+- collabora.yaml
+- tika.yaml
 - http-route.yaml
 - network-policy.yaml
 - sealed-secret.yaml
