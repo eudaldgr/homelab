@@ -7,7 +7,8 @@ image:
 replicaCount: 1
 
 podAnnotations:
-  backup.velero.io/backup-volumes: nextcloud-main
+  backup.velero.io/backup-volumes: nextcloud-main,nextcloud-data
+  secret.reloader.stakater.com/reload: nextcloud-secret
 
 phpClientHttpsFix:
   enabled: true
@@ -15,6 +16,7 @@ phpClientHttpsFix:
 
 nextcloud:
   host: cloud.k8s.eudald.gr
+  datadir: /mnt/data
   username: admin
   existingSecret:
     enabled: true
@@ -28,6 +30,19 @@ nextcloud:
   extraEnv:
     - name: TZ
       value: Europe/Madrid
+    - name: OVERWRITECLIURL
+      value: https://cloud.k8s.eudald.gr
+    - name: TRUSTED_PROXIES
+      value: 10.244.0.0/16 10.1.20.0/24
+    - name: FORWARDED_FOR_HEADERS
+      value: HTTP_X_FORWARDED_FOR
+  configs:
+    homelab.config.php: |-
+      <?php
+      $CONFIG = array (
+        'default_phone_region' => 'ES',
+        'maintenance_window_start' => 1,
+      );
   strategy:
     type: Recreate
   securityContext: {}
@@ -79,10 +94,83 @@ redis:
       enabled: true
       size: 2Gi
       storageClass: proxmox-csi
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 250m
+        memory: 256Mi
   replica:
     replicaCount: 0
     persistence:
       enabled: false
+
+cronjob:
+  enabled: true
+  type: cronjob
+  cronjob:
+    schedule: "*/5 * * * *"
+    affinity:
+      podAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                    - nextcloud
+                - key: app.kubernetes.io/component
+                  operator: In
+                  values:
+                    - app
+            topologyKey: kubernetes.io/hostname
+    securityContext:
+      allowPrivilegeEscalation: false
+      runAsNonRoot: true
+      runAsUser: 33
+      runAsGroup: 33
+      capabilities:
+        drop: ["ALL"]
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+
+collabora:
+  enabled: true
+  replicaCount: 1
+  podAnnotations:
+    secret.reloader.stakater.com/reload: nextcloud-secret
+  autoscaling:
+    enabled: false
+  collabora:
+    aliasgroups:
+      - host: https://cloud.eudald.gr:443
+        aliases:
+          - https://cloud.k8s.eudald.gr:443
+    extra_params: >-
+      --o:ssl.enable=false
+      --o:ssl.termination=true
+      --o:num_prespawn_children=2
+    server_name: office.eudald.gr
+    existingSecret:
+      enabled: true
+      secretName: nextcloud-secret
+      usernameKey: COLLABORA_USERNAME
+      passwordKey: COLLABORA_PASSWORD
+  ingress:
+    enabled: false
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: "4"
+      memory: 4Gi
 
 service:
   type: ClusterIP
@@ -91,7 +179,13 @@ service:
 persistence:
   enabled: true
   storageClass: proxmox-csi
-  size: 10Gi
+  size: 20Gi
+  nextcloudData:
+    enabled: true
+    existingClaim: nextcloud-data
+    accessMode: ReadWriteMany
+    size: 2Ti
+    subPath: data
 
 resources:
   requests:
@@ -115,4 +209,12 @@ readinessProbe:
   periodSeconds: 15
   timeoutSeconds: 5
   failureThreshold: 3
+  successThreshold: 1
+
+startupProbe:
+  enabled: true
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 60
   successThreshold: 1

@@ -6,8 +6,15 @@ namespace: nextcloud
 resources:
 - namespace.yaml
 - sealed-secret.yaml
+- rustfs-sealed-secret.yaml
+- b2-sealed-secret.yaml
+- service-account.yaml
+- nfs-pv.yaml
+- nfs-pvc.yaml
 - database.yaml
+- database-scheduled-backups.yaml
 - http-route.yaml
+- collabora-http-route.yaml
 
 helmCharts:
 - name: nextcloud
@@ -22,6 +29,29 @@ patches:
     kind: Deployment
     name: nextcloud
   patch: |-
+    - op: add
+      path: /spec/template/spec/automountServiceAccountToken
+      value: false
+    - op: add
+      path: /spec/template/spec/serviceAccountName
+      value: nextcloud-app
+- target:
+    kind: CronJob
+    name: nextcloud-cron
+  patch: |-
+    - op: add
+      path: /spec/jobTemplate/spec/template/spec/automountServiceAccountToken
+      value: false
+    - op: add
+      path: /spec/jobTemplate/spec/template/spec/serviceAccountName
+      value: nextcloud-app
+- target:
+    kind: Deployment
+    name: nextcloud-collabora
+  patch: |-
+    - op: add
+      path: /spec/template/spec/serviceAccountName
+      value: nextcloud-collabora
     - op: add
       path: /spec/template/spec/automountServiceAccountToken
       value: false
