@@ -102,6 +102,11 @@ spec:
               value: "false"
             - name: IDM_CREATE_DEMO_USERS
               value: "false"
+            - name: IDM_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: opencloud-admin
+                  key: IDM_ADMIN_PASSWORD
             - name: STORAGE_USERS_DRIVER
               value: decomposed
             - name: STORAGE_USERS_DECOMPOSED_ROOT
