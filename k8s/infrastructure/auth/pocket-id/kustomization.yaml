@@ -6,6 +6,7 @@ namespace: pocket-id
 resources:
 - namespace.yaml
 - runtime-sealed-secret.yaml
+- smtp-sealed-secret.yaml
 - b2-sealed-secret.yaml
 - rustfs-sealed-secret.yaml
 - database.yaml

@@ -19,7 +19,7 @@ spec:
         app.kubernetes.io/name: pocket-id
         app.kubernetes.io/part-of: identity
       annotations:
-        secret.reloader.stakater.com/reload: pocket-id-runtime
+        secret.reloader.stakater.com/reload: pocket-id-runtime,pocket-id-smtp
     spec:
       automountServiceAccountToken: false
       securityContext:
@@ -32,7 +32,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: pocket-id
-          image: ghcr.io/pocket-id/pocket-id:v2.11.0-distroless
+          image: ghcr.io/pocket-id/pocket-id:v2.11.0-distroless@sha256:446624a84743c29f93db2ffbbe19f9059fd9741e0cb2516d31efcc764e131835
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -60,6 +60,8 @@ spec:
               value: database
             - name: TRUST_PROXY
               value: "true"
+            - name: ALLOW_INSECURE_CALLBACK_URLS
+              value: "false"
             - name: UI_CONFIG_DISABLED
               value: "true"
             - name: APP_NAME
@@ -69,6 +71,18 @@ spec:
             - name: REQUIRE_USER_EMAIL
               value: "true"
             - name: EMAILS_VERIFIED
+              value: "true"
+            - name: SMTP_SKIP_CERT_VERIFY
+              value: "false"
+            - name: EMAIL_LOGIN_NOTIFICATION_ENABLED
+              value: "true"
+            - name: EMAIL_ONE_TIME_ACCESS_AS_ADMIN_ENABLED
+              value: "true"
+            - name: EMAIL_ONE_TIME_ACCESS_AS_UNAUTHENTICATED_ENABLED
+              value: "false"
+            - name: EMAIL_API_KEY_EXPIRATION_ENABLED
+              value: "true"
+            - name: EMAIL_VERIFICATION_ENABLED
               value: "true"
             - name: ANALYTICS_DISABLED
               value: "true"
@@ -80,6 +94,9 @@ spec:
               value: info
             - name: AUDIT_LOG_RETENTION_DAYS
               value: "90"
+          envFrom:
+            - secretRef:
+                name: pocket-id-smtp
           volumeMounts:
             - name: data
               mountPath: /app/data
