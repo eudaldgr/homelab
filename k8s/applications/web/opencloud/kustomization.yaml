@@ -9,6 +9,7 @@ resources:
 - nfs-pv.yaml
 - nfs-pvc.yaml
 - pvc.yaml
+- csp-configmap.yaml
 - deployment.yaml
 - service.yaml
 - collabora.yaml
