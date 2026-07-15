@@ -8,7 +8,6 @@ resources:
 - nfs-pv.yaml
 - media-share-pvc.yaml
 - configarr
-- jellyfin
 - lidarr
 - plex
 - prowlarr
