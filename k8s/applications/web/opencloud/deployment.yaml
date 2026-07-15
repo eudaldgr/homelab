@@ -1,0 +1,172 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opencloud
+  namespace: opencloud
+  labels:
+    app.kubernetes.io/name: opencloud
+    app.kubernetes.io/part-of: opencloud
+    app.kubernetes.io/managed-by: argocd
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: opencloud
+  template:
+    metadata:
+      annotations:
+        backup.velero.io/backup-volumes: config,data
+        backup.velero.io/backup-volumes-excludes: user-files
+      labels:
+        app.kubernetes.io/name: opencloud
+        app.kubernetes.io/part-of: opencloud
+    spec:
+      serviceAccountName: opencloud
+      automountServiceAccountToken: false
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      terminationGracePeriodSeconds: 60
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        - name: initialize
+          image: opencloudeu/opencloud:7.2.1@sha256:85a4d3ceb61626bdca9fc52c3c290692d0b07b7ba2e8315b1cd67ddedfc371a6
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -ec
+          args:
+            - |
+              if [ ! -s /etc/opencloud/opencloud.yaml ]; then
+                exec /usr/bin/opencloud init
+              fi
+          env:
+            - name: IDM_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: opencloud-admin
+                  key: IDM_ADMIN_PASSWORD
+            - name: IDM_CREATE_DEMO_USERS
+              value: "false"
+          volumeMounts:
+            - name: config
+              mountPath: /etc/opencloud
+            - name: data
+              mountPath: /var/lib/opencloud
+            - name: user-files
+              mountPath: /var/lib/opencloud/storage/users
+              subPath: opencloud
+            - name: tmp
+              mountPath: /tmp
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+      containers:
+        - name: opencloud
+          image: opencloudeu/opencloud:7.2.1@sha256:85a4d3ceb61626bdca9fc52c3c290692d0b07b7ba2e8315b1cd67ddedfc371a6
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 9200
+              protocol: TCP
+          env:
+            - name: OC_URL
+              value: https://cloud.eudald.gr
+            - name: PROXY_HTTP_ADDR
+              value: 0.0.0.0:9200
+            - name: PROXY_TLS
+              value: "false"
+            - name: OC_INSECURE
+              value: "false"
+            - name: PROXY_ENABLE_BASIC_AUTH
+              value: "false"
+            - name: IDM_CREATE_DEMO_USERS
+              value: "false"
+            - name: STORAGE_USERS_DRIVER
+              value: decomposed
+            - name: STORAGE_USERS_DECOMPOSED_ROOT
+              value: /var/lib/opencloud/storage/users
+            - name: STORAGE_USERS_DECOMPOSED_PROPAGATOR
+              value: sync
+            - name: OC_LOG_LEVEL
+              value: info
+            - name: OC_LOG_COLOR
+              value: "false"
+            - name: OC_LOG_PRETTY
+              value: "false"
+            - name: TZ
+              value: Europe/Madrid
+          volumeMounts:
+            - name: config
+              mountPath: /etc/opencloud
+            - name: data
+              mountPath: /var/lib/opencloud
+            - name: user-files
+              mountPath: /var/lib/opencloud/storage/users
+              subPath: opencloud
+            - name: tmp
+              mountPath: /tmp
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: "2"
+              memory: 2Gi
+          startupProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 30
+          readinessProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 30
+            timeoutSeconds: 3
+            failureThreshold: 3
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: opencloud-config
+        - name: data
+          persistentVolumeClaim:
+            claimName: opencloud-data
+        - name: user-files
+          persistentVolumeClaim:
+            claimName: opencloud-user-files
+        - name: tmp
+          emptyDir:
+            sizeLimit: 256Mi

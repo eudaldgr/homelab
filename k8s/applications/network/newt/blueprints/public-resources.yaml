@@ -254,21 +254,18 @@ public-resources:
           path: /api/server/ping
           method: GET
 
-  nextcloud:
-    name: nextcloud
+  opencloud:
+    name: opencloud
     protocol: http
     full-domain: cloud.eudald.gr
     targets:
-      - hostname: nextcloud.nextcloud.svc.cluster.local
-        port: 80
+      - hostname: opencloud.opencloud.svc.cluster.local
+        port: 9200
         method: http
         healthcheck:
-          hostname: nextcloud.nextcloud.svc.cluster.local
-          port: 80
-          mode: http
-          scheme: http
-          path: /status.php
-          method: GET
+          hostname: opencloud.opencloud.svc.cluster.local
+          port: 9200
+          mode: tcp
 
   nextcloud-office:
     name: nextcloud office
