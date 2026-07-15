@@ -238,6 +238,54 @@ public-resources:
             - name: X-Real-IP
               value: 127.0.0.1
 
+  immich:
+    name: immich
+    protocol: http
+    full-domain: immich.eudald.gr
+    targets:
+      - hostname: immich-server.immich.svc.cluster.local
+        port: 2283
+        method: http
+        healthcheck:
+          hostname: immich-server.immich.svc.cluster.local
+          port: 2283
+          mode: http
+          scheme: http
+          path: /api/server/ping
+          method: GET
+
+  nextcloud:
+    name: nextcloud
+    protocol: http
+    full-domain: cloud.eudald.gr
+    targets:
+      - hostname: nextcloud.nextcloud.svc.cluster.local
+        port: 80
+        method: http
+        healthcheck:
+          hostname: nextcloud.nextcloud.svc.cluster.local
+          port: 80
+          mode: http
+          scheme: http
+          path: /status.php
+          method: GET
+
+  nextcloud-office:
+    name: nextcloud office
+    protocol: http
+    full-domain: office.eudald.gr
+    targets:
+      - hostname: nextcloud-collabora.nextcloud.svc.cluster.local
+        port: 9980
+        method: http
+        healthcheck:
+          hostname: nextcloud-collabora.nextcloud.svc.cluster.local
+          port: 9980
+          mode: http
+          scheme: http
+          path: /hosting/discovery
+          method: GET
+
   vaultwarden:
     name: vaultwarden
     protocol: http
