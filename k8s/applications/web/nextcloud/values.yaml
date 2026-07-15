@@ -185,7 +185,7 @@ persistence:
     existingClaim: nextcloud-data
     accessMode: ReadWriteMany
     size: 2Ti
-    subPath: data
+    subPath: nextcloud
 
 resources:
   requests:

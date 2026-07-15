@@ -14,7 +14,7 @@ spec:
   storageClassName: ""
   nfs:
     server: ds920plus.home.eudald.gr
-    path: /volume1/k8s/nextcloud
+    path: /volume1/k8s
   mountOptions:
     - nfsvers=4.1
     - nconnect=4
