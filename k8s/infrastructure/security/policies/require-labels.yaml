@@ -41,6 +41,7 @@ spec:
                 - monitoring
                 - cilium
                 - system-upgrade
+                - velero
       validate:
         message: >-
           Workload is missing one of the required app.kubernetes.io

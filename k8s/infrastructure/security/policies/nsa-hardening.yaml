@@ -188,6 +188,7 @@ spec:
                 - inteldeviceplugins-system
                 - kubelet-serving-cert-approver
                 - newt
+                - home-assistant
       validate:
         message: >-
           Pods must not share host PID/IPC/Network namespaces.

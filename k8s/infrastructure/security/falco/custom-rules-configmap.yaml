@@ -67,19 +67,20 @@ data:
       priority: WARNING
       tags: [media, qbittorrent, network]
 
-    # --- Auth / secrets: Authentik + Vaultwarden ----------------------------
+    # --- Auth / secrets: Pocket ID + Vaultwarden ----------------------------
     - rule: Auth Service Unexpected Outbound
-      desc: Authentik or Vaultwarden reaching the public internet
+      desc: Pocket ID or Vaultwarden reaching the public internet
       condition: >
         outbound and
         container.image.repository in (
-          "ghcr.io/goauthentik/server", "vaultwarden/server", "vaultwarden"
+          "ghcr.io/pocket-id/pocket-id", "vaultwarden/server", "vaultwarden"
         ) and
-        not fd.sip.name in ("authentik-postgresql.auth.svc.cluster.local",
-                            "redis.auth.svc.cluster.local",
+        not fd.sip.name in ("pocket-id-postgresql-rw.pocket-id.svc.cluster.local",
+                            "pocket-id.pocket-id.svc.cluster.local",
                             "vaultwarden-postgresql.vaultwarden.svc.cluster.local",
-                            "auth.auth.svc.cluster.local",
                             "vaultwarden.vaultwarden.svc.cluster.local") and
+        not (container.image.repository = "ghcr.io/pocket-id/pocket-id" and
+             fd.sport in (465, 587, 2525)) and
         fd.sport != 53
       output: >
         Unexpected outbound connection from auth workload
@@ -88,18 +89,18 @@ data:
       priority: CRITICAL
       tags: [auth, exfiltration, network]
 
-    - rule: Authentik Outbound DNS Anomaly
-      desc: Authentik resolving domains that are not Authentik-controlled
+    - rule: Pocket ID Outbound DNS Anomaly
+      desc: Pocket ID resolving domains outside cluster DNS
       condition: >
         outbound and
-        container.image.repository = "ghcr.io/goauthentik/server" and
+        container.image.repository = "ghcr.io/pocket-id/pocket-id" and
         fd.sport = 53 and
         not fd.sip.name in (
           "kube-dns.kube-system.svc.cluster.local",
           "coredns.coredns.svc.cluster.local"
         )
       output: >
-        Authentik resolving via unknown DNS server
+        Pocket ID resolving via unknown DNS server
         (user=%user.name dns=%fd.sip.name container=%container.name)
       priority: WARNING
       tags: [auth, dns, anomaly]
