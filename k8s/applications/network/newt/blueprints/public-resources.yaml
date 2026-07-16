@@ -302,6 +302,24 @@ public-resources:
           path: /alive
           method: GET
 
+  ersatztv:
+    name: ersatztv
+    protocol: http
+    full-domain: tv.eudald.gr
+    auth:
+      sso-enabled: true
+    targets:
+      - hostname: ersatztv.ersatztv.svc.cluster.local
+        port: 8409
+        method: http
+        healthcheck:
+          hostname: ersatztv.ersatztv.svc.cluster.local
+          port: 8409
+          mode: http
+          scheme: http
+          path: /
+          method: GET
+
   memos:
     name: memos
     protocol: http
