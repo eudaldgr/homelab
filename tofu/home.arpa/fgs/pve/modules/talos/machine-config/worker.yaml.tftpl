@@ -30,7 +30,7 @@ machine:
 
 %{ if igpu ~}
   sysctls:
-    vm.nr_hugepages: "1024"
+    vm.nr_hugepages: "0"
 %{ endif ~}
 
   kernel:
