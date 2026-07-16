@@ -238,34 +238,44 @@ public-resources:
           path: /api/server/ping
           method: GET
 
-  opencloud:
-    name: opencloud
+  nextcloud:
+    name: nextcloud
     protocol: http
     full-domain: cloud.eudald.gr
     targets:
-      - hostname: opencloud.opencloud.svc.cluster.local
-        port: 9200
+      - hostname: nextcloud.nextcloud.svc.cluster.local
+        port: 80
         method: http
         healthcheck:
-          hostname: opencloud.opencloud.svc.cluster.local
-          port: 9200
+          hostname: nextcloud.nextcloud.svc.cluster.local
+          port: 80
           mode: tcp
 
-  collabora:
-    name: collabora
+  eurooffice:
+    name: eurooffice
     protocol: http
     full-domain: office.eudald.gr
     targets:
-      - hostname: collabora.opencloud.svc.cluster.local
-        port: 9980
+      - hostname: nextcloud-eurooffice.nextcloud.svc.cluster.local
+        port: 80
         method: http
         healthcheck:
-          hostname: collabora.opencloud.svc.cluster.local
-          port: 9980
-          mode: http
-          scheme: http
-          path: /hosting/discovery
-          method: GET
+          hostname: nextcloud-eurooffice.nextcloud.svc.cluster.local
+          port: 80
+          mode: tcp
+
+  nextcloud-push:
+    name: nextcloud push
+    protocol: http
+    full-domain: push.eudald.gr
+    targets:
+      - hostname: nextcloud-notify-push.nextcloud.svc.cluster.local
+        port: 7867
+        method: http
+        healthcheck:
+          hostname: nextcloud-notify-push.nextcloud.svc.cluster.local
+          port: 7867
+          mode: tcp
 
   vaultwarden:
     name: vaultwarden

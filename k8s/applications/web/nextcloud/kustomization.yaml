@@ -1,0 +1,52 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: nextcloud
+
+resources:
+- namespace.yaml
+- service-account.yaml
+- nfs-pv.yaml
+- nfs-pvc.yaml
+- pvc.yaml
+- database.yaml
+- components.yaml
+- http-route.yaml
+- network-policy.yaml
+- sealed-secret.yaml
+
+helmCharts:
+- name: nextcloud
+  repo: https://nextcloud.github.io/helm/
+  version: 9.2.0 # renovate: datasource=helm depName=nextcloud/nextcloud
+  releaseName: nextcloud
+  namespace: nextcloud
+  valuesFile: values.yaml
+
+patches:
+- target:
+    labelSelector: app.kubernetes.io/instance=nextcloud
+  patch: |-
+    - op: add
+      path: /metadata/namespace
+      value: nextcloud
+- target:
+    kind: Deployment
+    name: nextcloud
+  patch: |-
+    - op: add
+      path: /spec/template/spec/automountServiceAccountToken
+      value: false
+    - op: add
+      path: /spec/template/spec/serviceAccountName
+      value: nextcloud-app
+- target:
+    kind: CronJob
+    name: nextcloud-cron
+  patch: |-
+    - op: add
+      path: /spec/jobTemplate/spec/template/spec/automountServiceAccountToken
+      value: false
+    - op: add
+      path: /spec/jobTemplate/spec/template/spec/serviceAccountName
+      value: nextcloud-app

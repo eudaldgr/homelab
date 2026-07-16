@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nextcloud-app
+  namespace: nextcloud
+  labels:
+    app.kubernetes.io/name: nextcloud
+    app.kubernetes.io/component: app
+    app.kubernetes.io/part-of: nextcloud
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: proxmox-csi
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nextcloud-redis
+  namespace: nextcloud
+  labels:
+    app.kubernetes.io/name: nextcloud-redis
+    app.kubernetes.io/component: cache
+    app.kubernetes.io/part-of: nextcloud
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: proxmox-csi
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nextcloud-eurooffice
+  namespace: nextcloud
+  labels:
+    app.kubernetes.io/name: nextcloud-eurooffice
+    app.kubernetes.io/component: office
+    app.kubernetes.io/part-of: nextcloud
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: proxmox-csi
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nextcloud-fulltextsearch
+  namespace: nextcloud
+  labels:
+    app.kubernetes.io/name: nextcloud-fulltextsearch
+    app.kubernetes.io/component: search
+    app.kubernetes.io/part-of: nextcloud
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: proxmox-csi
+  resources:
+    requests:
+      storage: 10Gi

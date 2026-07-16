@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: opencloud-user-files
+  name: nextcloud-data
   labels:
-    app.kubernetes.io/name: opencloud
-    app.kubernetes.io/component: user-files
-    app.kubernetes.io/part-of: opencloud
+    app.kubernetes.io/name: nextcloud
+    app.kubernetes.io/component: data
+    app.kubernetes.io/part-of: nextcloud
 spec:
   capacity:
     storage: 2Ti
@@ -20,5 +20,4 @@ spec:
     - nfsvers=4.1
     - nconnect=4
     - hard
-    - noac
     - noatime
