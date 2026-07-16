@@ -70,4 +70,4 @@ spec:
   useOwnerReferencesInBackup: false
 
   # Pause the schedule (set to true to temporarily disable)
-  paused: false
+  paused: true

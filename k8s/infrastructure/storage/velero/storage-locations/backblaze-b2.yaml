@@ -11,6 +11,7 @@ spec:
     prefix: velero-backups # Organize backups in subdirectory
   config:
     region: eu-central-003
+    checksumAlgorithm: ""
     s3ForcePathStyle: "false" # B2 uses virtual-hosted style
     s3Url: https://s3.eu-central-003.backblazeb2.com
   credential:
