@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nextcloud-aio-imaginary
+  namespace: nextcloud
+spec:
+  template:
+    metadata:
+      annotations:
+        secret.reloader.stakater.com/reload: nextcloud-secret
+    spec:
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: nextcloud-aio-imaginary
+          env:
+            - name: IMAGINARY_SECRET
+              value: null
+              valueFrom:
+                secretKeyRef:
+                  name: nextcloud-secret
+                  key: IMAGINARY_SECRET
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: "1"
+              memory: 512Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]

@@ -243,38 +243,12 @@ public-resources:
     protocol: http
     full-domain: cloud.eudald.gr
     targets:
-      - hostname: nextcloud.nextcloud.svc.cluster.local
+      - hostname: nextcloud-aio-apache.nextcloud.svc.cluster.local
         port: 80
         method: http
         healthcheck:
-          hostname: nextcloud.nextcloud.svc.cluster.local
+          hostname: nextcloud-aio-apache.nextcloud.svc.cluster.local
           port: 80
-          mode: tcp
-
-  eurooffice:
-    name: eurooffice
-    protocol: http
-    full-domain: office.eudald.gr
-    targets:
-      - hostname: nextcloud-eurooffice.nextcloud.svc.cluster.local
-        port: 80
-        method: http
-        healthcheck:
-          hostname: nextcloud-eurooffice.nextcloud.svc.cluster.local
-          port: 80
-          mode: tcp
-
-  nextcloud-push:
-    name: nextcloud push
-    protocol: http
-    full-domain: push.eudald.gr
-    targets:
-      - hostname: nextcloud-notify-push.nextcloud.svc.cluster.local
-        port: 7867
-        method: http
-        healthcheck:
-          hostname: nextcloud-notify-push.nextcloud.svc.cluster.local
-          port: 7867
           mode: tcp
 
   vaultwarden:

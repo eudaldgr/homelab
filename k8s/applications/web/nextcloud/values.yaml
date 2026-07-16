@@ -1,290 +1,83 @@
-image:
-  registry: docker.io
-  repository: library/nextcloud
-  flavor: apache
-  tag: 33.0.6-apache@sha256:73280a6f559e9a6c96e012324086ff63af7ccfbed260f71f17738e5494375052
-  pullPolicy: IfNotPresent
+DATABASE_PASSWORD: ""
+EUROOFFICE_SECRET: ""
+FULLTEXTSEARCH_PASSWORD: ""
+IMAGINARY_SECRET: ""
+NEXTCLOUD_PASSWORD: ""
+ONLYOFFICE_SECRET: ""
+RECORDING_SECRET: ""
+REDIS_PASSWORD: ""
+SIGNALING_SECRET: ""
+TALK_INTERNAL_SECRET: ""
+TURN_SECRET: ""
+WHITEBOARD_SECRET: ""
 
-replicaCount: 1
+NC_DOMAIN: cloud.eudald.gr
+TIMEZONE: Europe/Madrid
 
-podAnnotations:
-  backup.velero.io/backup-volumes: nextcloud-main,nextcloud-data
-  secret.reloader.stakater.com/reload: nextcloud-secret
+CLAMAV_ENABLED: "no"
+COLLABORA_ENABLED: "no"
+EUROOFFICE_ENABLED: "yes"
+FULLTEXTSEARCH_ENABLED: "yes"
+IMAGINARY_ENABLED: "yes"
+ONLYOFFICE_ENABLED: "no"
+TALK_ENABLED: "no"
+TALK_RECORDING_ENABLED: "no"
+WHITEBOARD_ENABLED: "no"
 
-phpClientHttpsFix:
-  enabled: true
-  protocol: https
+AIO_LOG_LEVEL: warn
+APACHE_MAX_SIZE: "17179869184"
+APACHE_PORT: 80
+ADDITIONAL_COLLABORA_OPTIONS:
+  - --o:security.seccomp=true
+COLLABORA_DICTIONARIES: de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru
+FULLTEXTSEARCH_JAVA_OPTIONS: -Xms512M -Xmx512M
+INSTALL_LATEST_MAJOR: "no"
+NEXTCLOUD_ADDITIONAL_APKS: imagemagick
+NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS: imagick
+NEXTCLOUD_MAX_TIME: 3600
+NEXTCLOUD_MEMORY_LIMIT: 512M
+NEXTCLOUD_STARTUP_APPS: "deck twofactor_totp tasks calendar contacts notes -spreed"
+NEXTCLOUD_TRUSTED_CACERTS_DIR: ""
+NEXTCLOUD_UPLOAD_LIMIT: 16G
+REMOVE_DISABLED_APPS: "yes"
+TALK_PORT: 3478
+UPDATE_NEXTCLOUD_APPS: "no"
 
-nextcloud:
-  host: cloud.eudald.gr
-  datadir: /mnt/data
-  existingSecret:
-    enabled: true
-    secretName: nextcloud-secret
-    usernameKey: NEXTCLOUD_ADMIN_USER
-    passwordKey: NEXTCLOUD_ADMIN_PASSWORD
-  containerPort: 80
-  trustedDomains:
-    - cloud.eudald.gr
-    - cloud.k8s.eudald.gr
-  defaultConfigs:
-    redis.config.php: false
-  extraEnv:
-    - name: TZ
-      value: Europe/Madrid
-    - name: OVERWRITEHOST
-      value: cloud.eudald.gr
-    - name: OVERWRITECLIURL
-      value: https://cloud.eudald.gr
-    - name: TRUSTED_PROXIES
-      value: 10.244.0.0/16 10.1.20.0/24
-    - name: FORWARDED_FOR_HEADERS
-      value: HTTP_X_FORWARDED_FOR
-    - name: NEXTCLOUD_INIT_HTACCESS
-      value: "true"
-    - name: EUROOFFICE_SECRET
-      valueFrom:
-        secretKeyRef:
-          name: nextcloud-secret
-          key: EUROOFFICE_SECRET
-    - name: FULLTEXTSEARCH_PASSWORD
-      valueFrom:
-        secretKeyRef:
-          name: nextcloud-secret
-          key: FULLTEXTSEARCH_PASSWORD
-    - name: IMAGINARY_SECRET
-      valueFrom:
-        secretKeyRef:
-          name: nextcloud-secret
-          key: IMAGINARY_SECRET
-  phpConfigs:
-    uploads.ini: |-
-      memory_limit=512M
-      upload_max_filesize=16G
-      post_max_size=16G
-      max_execution_time=3600
-      max_input_time=3600
-      output_buffering=0
-  configs:
-    homelab.config.php: |-
-      <?php
-      $CONFIG = array (
-        'default_phone_region' => 'ES',
-        'maintenance_window_start' => 1,
-        'default_language' => 'ca',
-        'default_locale' => 'ca_ES',
-        'loglevel' => 2,
-      );
-  hooks:
-    before-starting: |-
-      #!/bin/sh
-      set -eu
+STORAGE_CLASS: proxmox-csi
+STORAGE_CLASS_DATA: proxmox-csi
+APACHE_STORAGE_SIZE: 1Gi
+CLAMAV_STORAGE_SIZE: 1Gi
+DATABASE_STORAGE_SIZE: 20Gi
+DATABASE_DUMP_STORAGE_SIZE: 20Gi
+ELASTICSEARCH_STORAGE_SIZE: 10Gi
+EUROOFFICE_STORAGE_SIZE: 5Gi
+NEXTCLOUD_STORAGE_SIZE: 20Gi
+NEXTCLOUD_DATA_STORAGE_SIZE: 2Ti
+NEXTCLOUD_TRUSTED_CACERTS_STORAGE_SIZE: 1Gi
+ONLYOFFICE_STORAGE_SIZE: 1Gi
+REDIS_STORAGE_SIZE: 2Gi
+TALK_RECORDING_STORAGE_SIZE: 1Gi
 
-      occ() {
-        php /var/www/html/occ "$@"
-      }
+NAMESPACE: nextcloud
+NAMESPACE_DISABLED: "yes"
+NETWORK_POLICY_ENABLED: "no"
 
-      ensure_app() {
-        app="$1"
-        if [ ! -d "/var/www/html/custom_apps/${app}" ] && [ ! -d "/var/www/html/apps/${app}" ]; then
-          attempt=1
-          until occ app:install "${app}"; do
-            if [ "${attempt}" -ge 5 ]; then
-              echo "Could not install ${app} after ${attempt} attempts" >&2
-              return 1
-            fi
-            attempt=$((attempt + 1))
-            sleep 10
-          done
-        else
-          occ app:enable "${app}"
-        fi
-      }
+ADDITIONAL_TRUSTED_PROXY: 10.244.0.0/16
+ADDITIONAL_TRUSTED_DOMAIN: cloud.k8s.eudald.gr
+NEXTCLOUD_DEFAULT_QUOTA: unlimited
+NEXTCLOUD_MAINTENANCE_WINDOW: "1"
 
-      # Persist Redis configuration so the separate notify_push pod can read it
-      # from the shared Nextcloud volume without receiving the Redis secret.
-      # shellcheck disable=SC2016
-      php -r '
-        $config = [
-          "memcache.local" => "\\OC\\Memcache\\APCu",
-          "memcache.distributed" => "\\OC\\Memcache\\Redis",
-          "memcache.locking" => "\\OC\\Memcache\\Redis",
-          "redis" => [
-            "host" => "nextcloud-redis",
-            "port" => 6379,
-            "password" => getenv("REDIS_HOST_PASSWORD"),
-            "timeout" => 1.5,
-          ],
-        ];
-        $contents = "<?php\n" . chr(36) . "CONFIG = " . var_export($config, true) . ";\n";
-        file_put_contents("/var/www/html/config/zz-homelab-runtime.config.php", $contents);
-      '
-      chmod 0640 /var/www/html/config/zz-homelab-runtime.config.php
-
-      # This deployment intentionally has no Talk backend or Talk app.
-      occ app:disable spreed || true
-
-      ensure_app notify_push
-      chmod 0775 -R /var/www/html/custom_apps/notify_push/bin
-      occ config:app:set notify_push base_endpoint --value="https://push.eudald.gr"
-
-      ensure_app eurooffice
-      occ config:system:set eurooffice editors_check_interval --value="0" --type=integer
-      occ config:system:set eurooffice jwt_secret --value="${EUROOFFICE_SECRET}" >/dev/null
-      occ config:app:set eurooffice jwt_secret --value="${EUROOFFICE_SECRET}" >/dev/null
-      occ config:system:set eurooffice jwt_header --value="AuthorizationJwt"
-      occ config:app:set eurooffice DocumentServerUrl --value="https://office.eudald.gr/"
-      occ config:system:set enabledPreviewProviders 24 --value="OCA\\Eurooffice\\Preview"
-
-      occ config:system:set enabledPreviewProviders 0 --value="OC\\Preview\\Imaginary"
-      occ config:system:set enabledPreviewProviders 23 --value="OC\\Preview\\ImaginaryPDF"
-      occ config:system:set preview_imaginary_url --value="http://nextcloud-imaginary:9000"
-      occ config:system:set preview_imaginary_key --value="${IMAGINARY_SECRET}" >/dev/null
-
-      ensure_app fulltextsearch
-      ensure_app fulltextsearch_elasticsearch
-      ensure_app files_fulltextsearch
-      encoded_password="$(php -r 'echo rawurlencode(getenv("FULLTEXTSEARCH_PASSWORD"));')"
-      occ fulltextsearch:configure '{"search_platform":"OCA\\FullTextSearch_Elasticsearch\\Platform\\ElasticSearchPlatform"}'
-      occ fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"http://elastic:${encoded_password}@nextcloud-fulltextsearch:9200\",\"elastic_index\":\"nextcloud\"}" >/dev/null
-      occ files_fulltextsearch:configure '{"files_pdf":true,"files_office":true}'
-
-      if [ ! -f /mnt/data/fts-index.done ]; then
-        attempt=1
-        until occ fulltextsearch:test; do
-          if [ "${attempt}" -ge 18 ]; then
-            echo "Fulltextsearch did not become ready in time" >&2
-            exit 1
-          fi
-          attempt=$((attempt + 1))
-          sleep 10
-        done
-        occ fulltextsearch:index '{"errors":"reset"}' --no-readline
-        touch /mnt/data/fts-index.done
-      fi
-  strategy:
-    type: Recreate
-  securityContext: {}
-  podSecurityContext:
-    fsGroup: 33
-    fsGroupChangePolicy: OnRootMismatch
-    seccompProfile:
-      type: RuntimeDefault
-
-nginx:
-  enabled: false
-
-internalDatabase:
-  enabled: false
-
-externalDatabase:
-  enabled: true
-  type: postgresql
-  host: nextcloud-postgresql-rw
-  existingSecret:
-    enabled: true
-    secretName: nextcloud-postgresql-app
-    usernameKey: username
-    passwordKey: password
-    databaseKey: dbname
-
-mariadb:
-  enabled: false
-
-postgresql:
-  enabled: false
-
-externalRedis:
-  enabled: true
-  host: nextcloud-redis
-  port: "6379"
-  existingSecret:
-    enabled: true
-    secretName: nextcloud-secret
-    passwordKey: REDIS_PASSWORD
-
-redis:
-  enabled: false
-
-cronjob:
-  enabled: true
-  type: cronjob
-  cronjob:
-    schedule: "*/5 * * * *"
-    affinity:
-      podAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-              matchExpressions:
-                - key: app.kubernetes.io/name
-                  operator: In
-                  values: [nextcloud]
-                - key: app.kubernetes.io/component
-                  operator: In
-                  values: [app]
-            topologyKey: kubernetes.io/hostname
-    securityContext:
-      allowPrivilegeEscalation: false
-      runAsNonRoot: true
-      runAsUser: 33
-      runAsGroup: 33
-      capabilities:
-        drop: [ALL]
-    resources:
-      requests:
-        cpu: 50m
-        memory: 128Mi
-      limits:
-        cpu: 500m
-        memory: 512Mi
-
-collabora:
-  enabled: false
-
-service:
-  type: ClusterIP
-  port: 80
-
-persistence:
-  enabled: true
-  existingClaim: nextcloud-app
-  accessMode: ReadWriteOnce
-  size: 20Gi
-  nextcloudData:
-    enabled: true
-    existingClaim: nextcloud-data
-    accessMode: ReadWriteMany
-    size: 2Ti
-    subPath: nextcloud
-
-resources:
-  requests:
-    cpu: 200m
-    memory: 512Mi
-  limits:
-    cpu: "2"
-    memory: 2Gi
-
-livenessProbe:
-  enabled: true
-  initialDelaySeconds: 60
-  periodSeconds: 30
-  timeoutSeconds: 5
-  failureThreshold: 3
-  successThreshold: 1
-
-readinessProbe:
-  enabled: true
-  initialDelaySeconds: 30
-  periodSeconds: 15
-  timeoutSeconds: 5
-  failureThreshold: 3
-  successThreshold: 1
-
-startupProbe:
-  enabled: true
-  initialDelaySeconds: 10
-  periodSeconds: 10
-  timeoutSeconds: 5
-  failureThreshold: 90
-  successThreshold: 1
+SUBSCRIPTION_KEY: ""
+SERVERINFO_TOKEN: ""
+APPS_ALLOWLIST: ""
+NEXTCLOUD_SKELETON_DIRECTORY: ""
+SMTP_HOST: ""
+SMTP_SECURE: ""
+SMTP_PORT: ""
+SMTP_AUTHTYPE: ""
+SMTP_NAME: ""
+SMTP_PASSWORD: ""
+MAIL_FROM_ADDRESS: ""
+MAIL_DOMAIN: ""
+TALK_MAX_STREAM_BITRATE: "1048576"
+TALK_MAX_SCREEN_BITRATE: "2097152"
