@@ -18,7 +18,7 @@ resources:
 helmCharts:
 - name: nextcloud
   repo: https://nextcloud.github.io/helm/
-  version: 9.1.4 # renovate: datasource=helm depName=nextcloud/nextcloud
+  version: 9.2.2 # renovate: datasource=helm depName=nextcloud/nextcloud
   releaseName: nextcloud
   namespace: nextcloud
   valuesFile: values.yaml
