@@ -81,7 +81,7 @@ nextcloud:
       set -eu
 
       occ() {
-        runuser -u www-data -- php /var/www/html/occ "$@"
+        php /var/www/html/occ "$@"
       }
 
       ensure_app() {
@@ -119,7 +119,6 @@ nextcloud:
         $contents = "<?php\n" . chr(36) . "CONFIG = " . var_export($config, true) . ";\n";
         file_put_contents("/var/www/html/config/zz-homelab-runtime.config.php", $contents);
       '
-      chown root:www-data /var/www/html/config/zz-homelab-runtime.config.php
       chmod 0640 /var/www/html/config/zz-homelab-runtime.config.php
 
       # This deployment intentionally has no Talk backend or Talk app.
@@ -162,7 +161,6 @@ nextcloud:
         done
         occ fulltextsearch:index '{"errors":"reset"}' --no-readline
         touch /mnt/data/fts-index.done
-        chown www-data:www-data /mnt/data/fts-index.done
       fi
   strategy:
     type: Recreate
