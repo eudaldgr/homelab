@@ -1,11 +1,11 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: nextcloud-aio-nfs-bootstrap
+  name: nextcloud-aio-storage-bootstrap
   namespace: nextcloud
   annotations:
-    argocd.argoproj.io/sync-wave: "-1"
-    homelab.eudald.gr/security-justification: Root is used only to initialize ownership on two retained NFS subdirectories.
+    argocd.argoproj.io/sync-wave: "-2"
+    homelab.eudald.gr/security-justification: Root is used once to reset and initialize the empty CSI application volume and NFS data directory.
 spec:
   backoffLimit: 6
   template:
@@ -28,9 +28,11 @@ spec:
             - -c
           args:
             - |
-              mkdir -p /aio-app/nextcloud/app /aio-data/nextcloud/data
-              chown 33:33 /aio-app/nextcloud/app /aio-data/nextcloud/data
-              chmod 0770 /aio-app/nextcloud/app /aio-data/nextcloud/data
+              rm -rf /aio-app/* /aio-app/.[!.]* /aio-app/..?*
+              rm -rf /aio-data/nextcloud/data
+              mkdir -p /aio-data/nextcloud/data
+              chown 33:33 /aio-app /aio-data/nextcloud/data
+              chmod 0770 /aio-app /aio-data/nextcloud/data
           resources:
             requests:
               cpu: 10m

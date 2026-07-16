@@ -6,6 +6,13 @@ metadata:
 spec:
   template:
     spec:
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  io.kompose.service: nextcloud-aio-nextcloud
+              topologyKey: kubernetes.io/hostname
       securityContext:
         seccompProfile:
           type: RuntimeDefault
@@ -26,5 +33,4 @@ spec:
           volumeMounts:
             - name: nextcloud-aio-nextcloud
               mountPath: /var/www/html
-              subPath: nextcloud/app
               readOnly: true

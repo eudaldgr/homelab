@@ -32,7 +32,6 @@ spec:
           volumeMounts:
             - name: nextcloud-aio-nextcloud
               mountPath: /nextcloud-aio-nextcloud
-              subPath: nextcloud/app
       containers:
         - name: nextcloud-aio-nextcloud
           env:
@@ -79,10 +78,16 @@ spec:
             limits:
               cpu: "2"
               memory: 2Gi
+          startupProbe:
+            exec:
+              command:
+                - /healthcheck.sh
+            failureThreshold: 120
+            periodSeconds: 30
+            timeoutSeconds: 30
           volumeMounts:
             - name: nextcloud-aio-nextcloud
               mountPath: /var/www/html
-              subPath: nextcloud/app
             - name: nextcloud-aio-nextcloud-data
               mountPath: /mnt/ncdata
               subPath: nextcloud/data

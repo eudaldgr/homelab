@@ -61,11 +61,12 @@ patches:
     name: nextcloud-aio-nextcloud
   patch: |-
     - op: replace
+      path: /spec/accessModes
+      value:
+        - ReadWriteOnce
+    - op: replace
       path: /spec/storageClassName
-      value: ""
-    - op: add
-      path: /spec/volumeName
-      value: nextcloud-aio-app
+      value: proxmox-csi
     - op: add
       path: /metadata/annotations
       value:
