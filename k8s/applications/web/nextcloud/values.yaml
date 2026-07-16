@@ -2,7 +2,7 @@ image:
   registry: docker.io
   repository: library/nextcloud
   flavor: apache
-  tag: 34.0.1-apache@sha256:6444fc5450302534e850b4d23c05b5f06c7b0d25bd5ece716452061454699c58
+  tag: 33.0.6-apache@sha256:73280a6f559e9a6c96e012324086ff63af7ccfbed260f71f17738e5494375052
   pullPolicy: IfNotPresent
 
 replicaCount: 1
@@ -130,8 +130,8 @@ nextcloud:
 
       ensure_app eurooffice
       occ config:system:set eurooffice editors_check_interval --value="0" --type=integer
-      occ config:system:set eurooffice jwt_secret --value="${EUROOFFICE_SECRET}"
-      occ config:app:set eurooffice jwt_secret --value="${EUROOFFICE_SECRET}"
+      occ config:system:set eurooffice jwt_secret --value="${EUROOFFICE_SECRET}" >/dev/null
+      occ config:app:set eurooffice jwt_secret --value="${EUROOFFICE_SECRET}" >/dev/null
       occ config:system:set eurooffice jwt_header --value="AuthorizationJwt"
       occ config:app:set eurooffice DocumentServerUrl --value="https://office.eudald.gr/"
       occ config:system:set enabledPreviewProviders 24 --value="OCA\\Eurooffice\\Preview"
@@ -139,14 +139,14 @@ nextcloud:
       occ config:system:set enabledPreviewProviders 0 --value="OC\\Preview\\Imaginary"
       occ config:system:set enabledPreviewProviders 23 --value="OC\\Preview\\ImaginaryPDF"
       occ config:system:set preview_imaginary_url --value="http://nextcloud-imaginary:9000"
-      occ config:system:set preview_imaginary_key --value="${IMAGINARY_SECRET}"
+      occ config:system:set preview_imaginary_key --value="${IMAGINARY_SECRET}" >/dev/null
 
       ensure_app fulltextsearch
       ensure_app fulltextsearch_elasticsearch
       ensure_app files_fulltextsearch
       encoded_password="$(php -r 'echo rawurlencode(getenv("FULLTEXTSEARCH_PASSWORD"));')"
       occ fulltextsearch:configure '{"search_platform":"OCA\\FullTextSearch_Elasticsearch\\Platform\\ElasticSearchPlatform"}'
-      occ fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"http://elastic:${encoded_password}@nextcloud-fulltextsearch:9200\",\"elastic_index\":\"nextcloud\"}"
+      occ fulltextsearch_elasticsearch:configure "{\"elastic_host\":\"http://elastic:${encoded_password}@nextcloud-fulltextsearch:9200\",\"elastic_index\":\"nextcloud\"}" >/dev/null
       occ files_fulltextsearch:configure '{"files_pdf":true,"files_office":true}'
 
       if [ ! -f /mnt/data/fts-index.done ]; then
