@@ -9,6 +9,9 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: '0'
 spec:
+  preservedFields:
+    annotations:
+      - argocd.argoproj.io/skip-reconcile
   generators:
     - git:
         repoURL: &repoURL https://github.com/eudaldgr/homelab
