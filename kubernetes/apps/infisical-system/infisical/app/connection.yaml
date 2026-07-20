@@ -1,0 +1,11 @@
+---
+apiVersion: secrets.infisical.com/v1beta1
+kind: InfisicalConnection
+metadata:
+  name: infisical-cloud
+  labels:
+    app.kubernetes.io/name: infisical
+    app.kubernetes.io/component: connection
+    app.kubernetes.io/part-of: infisical
+spec:
+  address: https://eu.infisical.com

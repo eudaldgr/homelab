@@ -1,0 +1,10 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: infisical-system
+  labels:
+    app.kubernetes.io/managed-by: flux
+    app.kubernetes.io/part-of: infisical
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled

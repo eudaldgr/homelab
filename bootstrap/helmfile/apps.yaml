@@ -1,0 +1,43 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/helmfile
+
+# One-time bootstrap releases. Flux takes ownership of these releases after the
+# FluxInstance starts reconciling the matching HelmRelease resources in Git.
+
+helmDefaults:
+  cleanupOnFail: true
+  createNamespace: true
+  forceConflicts: true
+  timeout: 600
+  wait: true
+  waitForJobs: true
+
+repositories:
+  - name: infisical
+    url: https://dl.cloudsmith.io/public/infisical/helm-charts/helm/charts/
+
+releases:
+  - name: infisical-operator
+    namespace: infisical-system
+    chart: 'infisical/{{ (fromYaml (readFile "../../kubernetes/apps/infisical-system/infisical-operator/app/helmrelease.yaml")).spec.chart.spec.chart }}'
+    version: '{{ (fromYaml (readFile "../../kubernetes/apps/infisical-system/infisical-operator/app/helmrelease.yaml")).spec.chart.spec.version }}'
+    values:
+      - ./templates/values.yaml.gotmpl
+
+  - name: flux-operator
+    namespace: flux-system
+    chart: '{{ (fromYaml (readFile "../../kubernetes/apps/flux-system/flux-operator/app/ocirepository.yaml")).spec.url }}'
+    version: '{{ (fromYaml (readFile "../../kubernetes/apps/flux-system/flux-operator/app/ocirepository.yaml")).spec.ref.tag }}'
+    needs:
+      - infisical-system/infisical-operator
+    values:
+      - ./templates/values.yaml.gotmpl
+
+  - name: flux-instance
+    namespace: flux-system
+    chart: '{{ (fromYaml (readFile "../../kubernetes/apps/flux-system/flux-instance/app/ocirepository.yaml")).spec.url }}'
+    version: '{{ (fromYaml (readFile "../../kubernetes/apps/flux-system/flux-instance/app/ocirepository.yaml")).spec.ref.tag }}'
+    needs:
+      - flux-system/flux-operator
+    values:
+      - ./templates/values.yaml.gotmpl

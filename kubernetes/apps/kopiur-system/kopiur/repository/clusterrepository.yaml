@@ -1,0 +1,34 @@
+---
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: ClusterRepository
+metadata:
+  name: homelab-rustfs
+  labels:
+    app.kubernetes.io/part-of: kopiur
+  annotations:
+    homelab.eudald.gr/description: Shared Kopia repository backed by the local RustFS bucket
+spec:
+  allowedNamespaces:
+    selector:
+      matchLabels:
+        backup.eudald.gr/kopiur: enabled
+  backend:
+    s3:
+      auth:
+        secretRef:
+          name: kopiur-repository-secret
+          namespace: kopiur-system
+      bucket: kopiur
+      endpoint: ds920plus.home.eudald.gr:9000
+      region: cat-emp-01
+      tls:
+        disableTls: true
+  create:
+    enabled: true
+  encryption:
+    passwordSecretRef:
+      name: kopiur-repository-secret
+      namespace: kopiur-system
+      key: KOPIA_PASSWORD
+  scheduleDefaults:
+    timezone: Europe/Madrid

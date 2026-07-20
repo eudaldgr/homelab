@@ -1,0 +1,53 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: flux-instance
+  labels:
+    app.kubernetes.io/part-of: flux
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: flux-instance
+  dependsOn:
+    - name: flux-operator
+  install:
+    remediation:
+      retries: 3
+  interval: 1h
+  rollback:
+    cleanupOnFail: true
+  timeout: 10m
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      remediateLastFailure: true
+      retries: 3
+  values:
+    instance:
+      cluster:
+        networkPolicy: true
+        size: small
+      components:
+        - source-controller
+        - kustomize-controller
+        - helm-controller
+        - notification-controller
+      kustomize:
+        patches:
+          - patch: |-
+              - op: add
+                path: /spec/template/spec/containers/0/args/-
+                value: --override-manager=argocd-controller
+            target:
+              group: apps
+              version: v1
+              kind: Deployment
+              name: kustomize-controller
+              namespace: flux-system
+      sync:
+        interval: 1h
+        kind: GitRepository
+        path: kubernetes/flux/cluster
+        ref: refs/heads/main
+        url: https://github.com/eudaldgr/homelab
