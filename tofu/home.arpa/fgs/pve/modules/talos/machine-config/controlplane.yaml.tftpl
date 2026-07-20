@@ -22,14 +22,31 @@ machine:
       imageMinimumGCAge: 1h
       evictionHard:
         memory.available: 500Mi
+        nodefs.available: 5%
         imagefs.available: 1Gi
       evictionSoft:
         memory.available: 1Gi
+        nodefs.available: 10%
         imagefs.available: 2Gi
       evictionSoftGracePeriod:
         memory.available: 1m
+        nodefs.available: 2m
         imagefs.available: 5m
-  
+      kubeReserved:
+        memory: 512Mi
+      systemReserved:
+        memory: 256Mi
+
+%{ if igpu ~}
+  sysctls:
+    vm.nr_hugepages: "0"
+
+  kernel:
+    modules:
+      - name: vfio_pci
+      - name: i915
+%{ endif ~}
+
   network:
     interfaces:
       - interface: net0
@@ -51,8 +68,8 @@ machine:
 
 cluster:
   clusterName: ${cluster_name}
-  allowSchedulingOnControlPlanes: false
-  
+  allowSchedulingOnControlPlanes: ${schedule_workloads}
+
   coreDNS:
     disabled: true
 
@@ -73,15 +90,15 @@ cluster:
       snapshot-count: "50000"
       heartbeat-interval: "500"
       election-timeout: "5000"
-  
+
   network:
     dnsDomain: cluster.local
     cni:
       name: none
-  
+
   proxy:
     disabled: true
-  
+
   extraManifests:
     - https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.4.1/standard-install.yaml # renovate: github-releases=kubernetes-sigs/gateway-api
     - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.4.1/config/crd/experimental/gateway.networking.k8s.io_tlsroutes.yaml # renovate: github-releases=kubernetes-sigs/gateway-api
@@ -102,3 +119,21 @@ kind: LinkAliasConfig
 name: net0
 selector:
   match: mac(link.permanent_addr) == "${mac}"
+
+%{ if storage_enabled ~}
+---
+apiVersion: v1alpha1
+kind: LinkAliasConfig
+name: storage0
+selector:
+  match: mac(link.permanent_addr) == "${storage_mac}"
+
+---
+apiVersion: v1alpha1
+kind: LinkConfig
+name: storage0
+up: true
+mtu: 1500
+addresses:
+  - address: ${storage_ip}/24
+%{ endif ~}

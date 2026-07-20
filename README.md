@@ -58,7 +58,7 @@ is a monitoring signal, not a count of pods or public services.
 | --- | --- |
 | GitOps | Argo CD, ApplicationSet, Kustomize, Helm charts rendered by Kustomize |
 | Networking | Cilium, Gateway API, LB IPAM, BGP, L2 announcement, ExternalDNS with AdGuard webhook |
-| Ingress and tunnels | HTTPRoute, TLS passthrough, Authentik, Newt/Pangolin |
+| Ingress and tunnels | HTTPRoute, TLS passthrough, Pocket ID, Newt/Pangolin |
 | Secrets | Bitnami Sealed Secrets, SOPS for local encrypted files |
 | Storage | Proxmox CSI on Ceph SSD and local ZFS, NFS for selected shared data |
 | Databases | CloudNativePG with barman-cloud ObjectStore backups |

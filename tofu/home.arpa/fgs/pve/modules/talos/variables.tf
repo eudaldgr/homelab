@@ -42,15 +42,26 @@ variable "subnet" {
 variable "controlplanes" {
   description = "Map of control plane nodes"
   type = map(object({
-    node   = string
-    vmid   = number
-    cores  = number
-    memory = number
-    disk   = number
-    ip     = string
-    mac    = string
-    igpu   = optional(bool, false)
+    node               = string
+    vmid               = number
+    cores              = number
+    memory             = number
+    disk               = number
+    ip                 = string
+    mac                = string
+    storage_ip         = optional(string)
+    storage_mac        = optional(string)
+    igpu               = optional(bool, false)
+    schedule_workloads = optional(bool, false)
   }))
+
+  validation {
+    condition = alltrue([
+      for controlplane in values(var.controlplanes) :
+      (controlplane.storage_ip == null) == (controlplane.storage_mac == null)
+    ])
+    error_message = "Each control plane must define both storage_ip and storage_mac, or neither of them."
+  }
 }
 
 variable "workers" {
@@ -63,10 +74,12 @@ variable "workers" {
     disk        = number
     ip          = string
     mac         = string
-    storage_ip  = string
-    storage_mac = string
+    storage_ip  = optional(string)
+    storage_mac = optional(string)
     igpu        = optional(bool, false)
   }))
+  default  = null
+  nullable = true
 }
 
 variable "nodes" {

@@ -13,17 +13,22 @@ data "talos_machine_configuration" "controlplane" {
   config_patches = [
     templatefile("${path.module}/machine-config/controlplane.yaml.tftpl", {
       cert_sans            = local.cert_sans
+      igpu                 = each.value.igpu
       vip                  = var.vip
       proxmox_cluster_name = var.proxmox_cluster_name
       cluster_name         = var.cluster_name
       node_name            = each.value.node
       hostname             = each.key
       mac                  = each.value.mac
+      schedule_workloads   = each.value.schedule_workloads
+      storage_enabled      = each.value.storage_ip != null && each.value.storage_mac != null
+      storage_ip           = each.value.storage_ip
+      storage_mac          = each.value.storage_mac
     }),
     yamlencode({
       machine = {
         install = {
-          image = data.talos_image_factory_urls.std.urls.installer
+          image = each.value.igpu ? data.talos_image_factory_urls.gpu.urls.installer : data.talos_image_factory_urls.std.urls.installer
         }
       }
     }),
@@ -33,7 +38,7 @@ data "talos_machine_configuration" "controlplane" {
 }
 
 data "talos_machine_configuration" "worker" {
-  for_each = var.workers
+  for_each = coalesce(var.workers, {})
 
   cluster_name       = var.cluster_name
   cluster_endpoint   = "https://${var.vip}:6443"
@@ -75,7 +80,7 @@ resource "talos_machine_configuration_apply" "controlplane" {
 }
 
 resource "talos_machine_configuration_apply" "worker" {
-  for_each = var.workers
+  for_each = coalesce(var.workers, {})
 
   node                        = each.value.ip
   client_configuration        = talos_machine_secrets.this.client_configuration

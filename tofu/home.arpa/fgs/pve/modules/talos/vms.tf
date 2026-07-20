@@ -67,7 +67,7 @@ resource "proxmox_virtual_environment_vm" "talos" {
   }
 
   dynamic "network_device" {
-    for_each = each.value.role == "worker" ? [each.value] : []
+    for_each = try(each.value.storage_mac, null) != null ? [each.value] : []
 
     content {
       model       = "virtio"

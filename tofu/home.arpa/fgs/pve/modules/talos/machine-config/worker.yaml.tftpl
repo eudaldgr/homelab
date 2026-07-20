@@ -31,12 +31,10 @@ machine:
 %{ if igpu ~}
   sysctls:
     vm.nr_hugepages: "0"
-%{ endif ~}
 
   kernel:
     modules:
       - name: vfio_pci
-%{ if igpu ~}
       - name: i915
 %{ endif ~}
 
