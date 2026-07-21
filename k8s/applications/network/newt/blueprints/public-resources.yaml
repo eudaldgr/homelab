@@ -238,19 +238,6 @@ public-resources:
           path: /api/server/ping
           method: GET
 
-  nextcloud:
-    name: nextcloud
-    protocol: http
-    full-domain: cloud.eudald.gr
-    targets:
-      - hostname: nextcloud-aio-apache.nextcloud.svc.cluster.local
-        port: 80
-        method: http
-        healthcheck:
-          hostname: nextcloud-aio-apache.nextcloud.svc.cluster.local
-          port: 80
-          mode: tcp
-
   vaultwarden:
     name: vaultwarden
     protocol: http
