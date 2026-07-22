@@ -43,8 +43,7 @@ spec:
           persistentVolumeClaim:
             claimName: media-share
         - name: tmp
-          emptyDir:
-            sizeLimit: 2Gi
+          emptyDir: {}
         - name: run
           emptyDir:
             sizeLimit: 100Mi
@@ -75,7 +74,6 @@ spec:
               gpu.intel.com/i915: "1"
             limits:
               cpu: 4000m
-              ephemeral-storage: 3Gi
               memory: 4Gi
               gpu.intel.com/i915: "1"
           securityContext:
