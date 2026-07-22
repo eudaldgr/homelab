@@ -6,7 +6,7 @@ metadata:
 spec:
   secretName: cert-eudald
   issuerRef:
-    name: cloudflare-issuer-prod
+    name: letsencrypt-production
     kind: ClusterIssuer
   dnsNames:
     - "k8s.eudald.gr"

@@ -6,7 +6,7 @@ metadata:
 spec:
   secretName: omada-tls
   issuerRef:
-    name: cloudflare-issuer-prod
+    name: letsencrypt-production
     kind: ClusterIssuer
   dnsNames:
     - omada.k8s.eudald.gr
