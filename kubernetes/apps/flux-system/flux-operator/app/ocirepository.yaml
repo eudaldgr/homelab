@@ -1,10 +1,9 @@
 ---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/source.toolkit.fluxcd.io/ocirepository_v1.json
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
   name: flux-operator
-  labels:
-    app.kubernetes.io/part-of: flux
 spec:
   interval: 15m
   layerSelector:

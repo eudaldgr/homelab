@@ -4,11 +4,6 @@ kind: Kustomization
 metadata:
   name: cluster-apps
   namespace: flux-system
-  labels:
-    app.kubernetes.io/managed-by: flux
-    app.kubernetes.io/part-of: flux
-  annotations:
-    homelab.eudald.gr/description: Reconcile only the isolated kubernetes/apps tree
 spec:
   deletionPolicy: Orphan
   interval: 1h

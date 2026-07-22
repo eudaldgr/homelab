@@ -1,12 +1,9 @@
 ---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: kopiur
-  labels:
-    app.kubernetes.io/part-of: kopiur
-  annotations:
-    homelab.eudald.gr/description: Install the Kopiur controller before repository resources
 spec:
   healthChecks:
     - apiVersion: helm.toolkit.fluxcd.io/v2
@@ -23,50 +20,14 @@ spec:
   targetNamespace: kopiur-system
   wait: false
 ---
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
-  name: kopiur-repository-secret
-  labels:
-    app.kubernetes.io/part-of: kopiur
-  annotations:
-    homelab.eudald.gr/description: Sync the Kopiur repository credentials after Infisical is ready
-spec:
-  dependsOn:
-    - name: infisical
-      namespace: infisical-system
-  healthChecks:
-    - apiVersion: secrets.infisical.com/v1beta1
-      kind: InfisicalStaticSecret
-      name: kopiur-repository
-      namespace: kopiur-system
-  healthCheckExprs:
-    - apiVersion: secrets.infisical.com/v1beta1
-      kind: InfisicalStaticSecret
-      failed: status.conditions.exists(e, e.type == 'secrets.infisical.com/LastReconcileStatus' && e.status == 'False')
-      current: status.conditions.exists(e, e.type == 'secrets.infisical.com/LastReconcileStatus' && e.status == 'True')
-  interval: 1h
-  path: ./kubernetes/apps/kopiur-system/kopiur/secret
-  prune: true
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-    namespace: flux-system
-  targetNamespace: kopiur-system
-  wait: false
----
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: kopiur-repository
-  labels:
-    app.kubernetes.io/part-of: kopiur
-  annotations:
-    homelab.eudald.gr/description: Create the Kopiur repository after its controller and credentials are ready
 spec:
   dependsOn:
     - name: kopiur
-    - name: kopiur-repository-secret
   interval: 1h
   path: ./kubernetes/apps/kopiur-system/kopiur/repository
   prune: true
