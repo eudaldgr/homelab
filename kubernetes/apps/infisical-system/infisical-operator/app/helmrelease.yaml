@@ -28,11 +28,6 @@ spec:
   values:
     hostAPI: https://eu.infisical.com/api
     installCRDs: true
-    scopedNamespaces:
-      - infisical-system
-      - kopiur-system
-      - cert-manager
-    scopedRBAC: true
     controllerManager:
       replicas: 1
       manager:

@@ -4,6 +4,5 @@ kind: Kustomization
 namespace: infisical-system
 resources:
   - ./namespace.yaml
-  - ./network-policy.yaml
-  - ./infisical-operator/ks.yaml
   - ./infisical/ks.yaml
+  - ./infisical-operator/ks.yaml

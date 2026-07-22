@@ -7,8 +7,6 @@ metadata:
     app.kubernetes.io/name: infisical
     app.kubernetes.io/component: authentication
     app.kubernetes.io/part-of: infisical
-  annotations:
-    homelab.eudald.gr/description: Universal Auth credentials are injected only during bootstrap
 spec:
   infisicalConnectionRef:
     name: infisical-cloud
