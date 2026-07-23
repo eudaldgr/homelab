@@ -4,14 +4,12 @@ kind: Kustomization
 namespace: kube-system
 
 resources:
-- announce.yaml
-- bgp.yaml
-- ip-pool.yaml
+- networking.yaml
 
 helmCharts:
 - name: cilium
   repo: https://helm.cilium.io
-  version: 1.19.5
+  version: 1.19.6
   namespace: kube-system
   releaseName: cilium
   includeCRDs: true
