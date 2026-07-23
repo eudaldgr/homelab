@@ -15,7 +15,7 @@ machine:
 
   kubelet:
     clusterDNS:
-      - 10.96.0.10
+      - 10.43.0.10
     extraArgs:
       rotate-server-certificates: true
     extraConfig:
@@ -92,9 +92,13 @@ cluster:
       election-timeout: "5000"
 
   network:
-    dnsDomain: cluster.local
     cni:
       name: none
+    dnsDomain: cluster.local
+    podSubnets:
+      - 10.42.0.0/16
+    serviceSubnets:
+      - 10.43.0.0/16
 
   proxy:
     disabled: true
