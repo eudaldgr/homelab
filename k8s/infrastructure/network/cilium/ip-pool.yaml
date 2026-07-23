@@ -1,7 +1,7 @@
 apiVersion: cilium.io/v2
 kind: CiliumLoadBalancerIPPool
 metadata:
-  name: default
+  name: pool
 spec:
   blocks:
     - start: 10.1.20.100

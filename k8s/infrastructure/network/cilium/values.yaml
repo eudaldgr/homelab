@@ -1,8 +1,4 @@
 # https://github.com/cilium/cilium/blob/main/install/kubernetes/cilium/values.yaml
-cluster:
-  name: talos
-  id: 1
-
 kubeProxyReplacement: true
 
 # Talos specific
@@ -11,8 +7,23 @@ k8sServicePort: 7445
 securityContext:
   capabilities:
     ciliumAgent:
-      [CHOWN, KILL, NET_ADMIN, NET_RAW, IPC_LOCK, SYS_ADMIN, SYS_RESOURCE, DAC_OVERRIDE, FOWNER, SETGID, SETUID]
-    cleanCiliumState: [NET_ADMIN, SYS_ADMIN, SYS_RESOURCE]
+      - CHOWN
+      - KILL
+      - NET_ADMIN
+      - NET_RAW
+      - IPC_LOCK
+      - SYS_ADMIN
+      - SYS_RESOURCE
+      - PERFMON
+      - BPF
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+    cleanCiliumState:
+      - NET_ADMIN
+      - SYS_ADMIN
+      - SYS_RESOURCE
 
 cgroup:
   autoMount:
@@ -31,7 +42,8 @@ bgpControlPlane:
 # https://docs.cilium.io/en/stable/network/concepts/ipam/
 ipam:
   mode: kubernetes
-  multiPoolPreAllocation: ''
+
+ipv4NativeRoutingCIDR: 10.42.0.0/16
 
 enableMulticast: false
 multicast:
@@ -90,29 +102,7 @@ envoy:
   maxConnectionDurationSeconds: 0
 
 hubble:
-  peerService:
-    clusterDomain: cluster.local
-  enabled: true
-  relay:
-    enabled: true
-    rollOutPods: true
-    resources:
-      requests:
-        cpu: 100m
-        memory: 128Mi
-      limits:
-        cpu: 200m
-        memory: 256Mi
-  ui:
-    enabled: true
-    rollOutPods: true
-    resources:
-      requests:
-        cpu: 100m
-        memory: 128Mi
-      limits:
-        cpu: 200m
-        memory: 256Mi
+  enabled: false
 
 ingressController:
   enabled: false
@@ -123,15 +113,4 @@ ingressController:
       io.cilium/lb-ipam-ips: 10.1.20.105
 
 # Network Policy Audit Mode - Log violations without blocking
-policyAuditMode: true
-
-# mTLS
-authentication:
-  enabled: false
-  mutual:
-    spire:
-      enabled: false
-      install:
-        server:
-          dataStorage:
-            storageClass: cilium-spire-sc
+policyAuditMode: false
