@@ -8,6 +8,8 @@ spec:
   - name: internal
     namespace: gateway
     sectionName: https-gateway
+  - name: envoy-internal
+    namespace: network
   hostnames:
   - "dns01.k8s.eudald.gr"
   rules:
@@ -25,6 +27,8 @@ spec:
   - name: internal
     namespace: gateway
     sectionName: https-gateway
+  - name: envoy-internal
+    namespace: network
   hostnames:
   - "dns02.k8s.eudald.gr"
   rules:

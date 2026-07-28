@@ -5,6 +5,7 @@ namespace: monitoring
 
 resources:
 - alertmanager-http-route.yaml
+- grafana-http-route.yaml
 - prometheus-http-route.yaml
 - namespace.yaml
 
