@@ -1,96 +1,54 @@
+---
+version: v1alpha1
 machine:
-  certSANs:
-%{ for san in cert_sans ~}
-    - ${san}
-%{ endfor ~}
-
   features:
-    # Allow the tuppr upgrade controller (system-upgrade namespace) to call the Talos API.
+    apidCheckExtKeyUsage: true
+    diskQuotaSupport: true
+    kubePrism:
+      enabled: true
+      port: 7445
     kubernetesTalosAPIAccess:
       enabled: true
-      allowedRoles:
-        - os:admin
       allowedKubernetesNamespaces:
         - system-upgrade
-
-  kubelet:
-    clusterDNS:
-      - 10.43.0.10
-    extraArgs:
-      rotate-server-certificates: true
-    extraConfig:
-      imageMinimumGCAge: 1h
-      evictionHard:
-        memory.available: 500Mi
-        nodefs.available: 5%
-        imagefs.available: 1Gi
-      evictionSoft:
-        memory.available: 1Gi
-        nodefs.available: 10%
-        imagefs.available: 2Gi
-      evictionSoftGracePeriod:
-        memory.available: 1m
-        nodefs.available: 2m
-        imagefs.available: 5m
-      kubeReserved:
-        memory: 512Mi
-      systemReserved:
-        memory: 256Mi
-
-%{ if igpu ~}
-  sysctls:
-    vm.nr_hugepages: "0"
-
+      allowedRoles:
+        - os:admin
+    rbac: true
+  files:
+    - op: create
+      path: /etc/cri/conf.d/20-customization.part
+      content: |
+        [plugins."io.containerd.cri.v1.images"]
+          discard_unpacked_layers = false
+        [plugins."io.containerd.cri.v1.runtime"]
+          device_ownership_from_security_context = true
   kernel:
     modules:
       - name: vfio_pci
       - name: i915
-%{ endif ~}
-
-  network:
-    interfaces:
-      - interface: net0
-        dhcp: true
-        vip:
-          ip: ${vip}
-
+  kubelet:
+    defaultRuntimeSeccompProfileEnabled: true
+    disableManifestsDirectory: true
+    extraConfig:
+      serializeImagePulls: false
+      shutdownGracePeriod: 90s
+      shutdownGracePeriodCriticalPods: 60s
+    clusterDNS:
+      - 10.43.0.10
+    extraArgs:
+      rotate-server-certificates: true
   nodeLabels:
+    node.kubernetes.io/gpu: "true"
     topology.kubernetes.io/region: ${proxmox_cluster_name}
     topology.kubernetes.io/zone: ${node_name}
-    kubearmor.io/enforcer: bpf
-    kubearmor.io/runtime: containerd
-    kubearmor.io/socket: run_containerd_containerd.sock
-    kubearmor.io/btf: "yes"
-    kubearmor.io/seccomp: "yes"
-    kubearmor.io/apparmorfs: "no"
-    kubearmor.io/securityfs: "yes"
-    kubearmor.io/rand: talos-static
-
+  sysctls:
+    vm.nr_hugepages: "0"
+  certSANs:
+%{ for san in cert_sans ~}
+    - ${san}
+%{ endfor ~}
 cluster:
   clusterName: ${cluster_name}
-  allowSchedulingOnControlPlanes: ${schedule_workloads}
-
-  coreDNS:
-    disabled: true
-
-  apiServer:
-    extraArgs:
-      default-watch-cache-size: "100"
-
-  controllerManager:
-    extraArgs:
-      concurrent-service-syncs: "1"
-      concurrent-deployment-syncs: "1"
-
-  etcd:
-    extraArgs:
-      quota-backend-bytes: "1073741824"
-      auto-compaction-retention: "1"
-      auto-compaction-mode: "periodic"
-      snapshot-count: "50000"
-      heartbeat-interval: "500"
-      election-timeout: "5000"
-
   network:
     cni:
       name: none
@@ -99,39 +57,48 @@ cluster:
       - 10.42.0.0/16
     serviceSubnets:
       - 10.43.0.0/16
-
+  allowSchedulingOnControlPlanes: ${schedule_workloads}
+  apiServer:
+    extraArgs:
+      default-watch-cache-size: "100"
+  controllerManager:
+    extraArgs:
+      concurrent-service-syncs: "1"
+      concurrent-deployment-syncs: "1"
+  coreDNS:
+    disabled: true
+  etcd:
+    extraArgs:
+      quota-backend-bytes: "1073741824"
+      auto-compaction-retention: "1"
+      auto-compaction-mode: "periodic"
+      snapshot-count: "50000"
+      heartbeat-interval: "500"
+      election-timeout: "5000"
   proxy:
     disabled: true
-
-  extraManifests:
-    - https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.5.1/standard-install.yaml # renovate: github-releases=kubernetes-sigs/gateway-api
-    - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.5.1/config/crd/experimental/gateway.networking.k8s.io_tlsroutes.yaml # renovate: github-releases=kubernetes-sigs/gateway-api
-    - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.5.1/config/crd/experimental/gateway.networking.k8s.io_udproutes.yaml # renovate: github-releases=kubernetes-sigs/gateway-api
-    - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.5.1/config/crd/experimental/gateway.networking.k8s.io_tcproutes.yaml # renovate: github-releases=kubernetes-sigs/gateway-api
-    - https://raw.githubusercontent.com/alex1989hu/kubelet-serving-cert-approver/main/deploy/standalone-install.yaml
-    - https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
-
 ---
 apiVersion: v1alpha1
 kind: HostnameConfig
 auto: off
 hostname: ${hostname}
-
 ---
 apiVersion: v1alpha1
 kind: LinkAliasConfig
 name: net0
 selector:
   match: mac(link.permanent_addr) == "${mac}"
-
-%{ if storage_enabled ~}
+---
+apiVersion: v1alpha1
+kind: DHCPv4Config
+name: net0
+clientIdentifier: mac
 ---
 apiVersion: v1alpha1
 kind: LinkAliasConfig
 name: storage0
 selector:
   match: mac(link.permanent_addr) == "${storage_mac}"
-
 ---
 apiVersion: v1alpha1
 kind: LinkConfig
@@ -140,4 +107,3 @@ up: true
 mtu: 1500
 addresses:
   - address: ${storage_ip}/24
-%{ endif ~}
