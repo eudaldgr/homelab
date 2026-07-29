@@ -12,7 +12,7 @@ service:
   type: LoadBalancer
   annotations:
     io.cilium/lb-ipam-ips: "10.1.20.155"
-    external-dns.alpha.kubernetes.io/hostname: omada.k8s.eudald.gr
+    external-dns.alpha.kubernetes.io/hostname: omada.eudald.gr
     external-dns.alpha.kubernetes.io/target: "10.1.20.155"
     external-dns.alpha.kubernetes.io/ttl: "300"
 
@@ -67,7 +67,7 @@ livenessProbe:
       - -ec
       - |
         mounted="$(openssl x509 -in /cert/tls.crt -noout -fingerprint -sha256)"
-        served="$(openssl s_client -connect 127.0.0.1:8043 -servername omada.k8s.eudald.gr </dev/null 2>/dev/null | openssl x509 -noout -fingerprint -sha256)"
+        served="$(openssl s_client -connect 127.0.0.1:8043 -servername omada.eudald.gr </dev/null 2>/dev/null | openssl x509 -noout -fingerprint -sha256)"
         test "$mounted" = "$served"
   initialDelaySeconds: 120
   periodSeconds: 15

@@ -1,3 +1,4 @@
+---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
@@ -5,13 +6,11 @@ metadata:
   namespace: ersatztv
 spec:
   parentRefs:
-    - name: internal
-      namespace: gateway
-    - name: envoy-internal
-      namespace: network
+  - name: envoy-internal
+    namespace: network
   hostnames:
-    - tv.k8s.eudald.gr
+  - tv.eudald.gr
   rules:
-    - backendRefs:
-        - name: ersatztv
-          port: 8409
+  - backendRefs:
+    - name: ersatztv
+      port: 8409

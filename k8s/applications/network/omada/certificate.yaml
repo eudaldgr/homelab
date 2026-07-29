@@ -9,7 +9,7 @@ spec:
     name: letsencrypt-production
     kind: ClusterIssuer
   dnsNames:
-    - omada.k8s.eudald.gr
+    - omada.eudald.gr
   privateKey:
     algorithm: RSA
     rotationPolicy: Always

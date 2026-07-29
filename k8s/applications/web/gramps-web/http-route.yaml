@@ -1,3 +1,4 @@
+---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
@@ -5,13 +6,11 @@ metadata:
   namespace: gramps-web
 spec:
   parentRefs:
-    - name: internal
-      namespace: gateway
-    - name: envoy-internal
-      namespace: network
+  - name: envoy-internal
+    namespace: network
   hostnames:
-    - gramps.k8s.eudald.gr
+  - gramps.eudald.gr
   rules:
-    - backendRefs:
-        - name: gramps-web
-          port: 5000
+  - backendRefs:
+    - name: gramps-web
+      port: 5000

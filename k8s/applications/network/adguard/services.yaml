@@ -24,7 +24,7 @@ metadata:
   name: adguard-dns
   namespace: adguard
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: dns.k8s.eudald.gr
+    external-dns.alpha.kubernetes.io/hostname: dns.eudald.gr
     io.cilium/lb-ipam-ips: "10.1.20.153"
 spec:
   externalTrafficPolicy: Local
