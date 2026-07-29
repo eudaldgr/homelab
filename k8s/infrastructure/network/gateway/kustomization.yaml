@@ -6,4 +6,3 @@ resources:
 - cert-eudald.yaml
 - gw-internal.yaml
 - gw-tls-passthrough.yaml
-- http-redirect.yaml
