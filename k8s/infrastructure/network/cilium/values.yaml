@@ -42,6 +42,12 @@ bpf:
   datapathMode: netkit
   hostLegacyRouting: false
   masquerade: true
+  preallocateMaps: true
+
+bpfClockProbe: true
+
+cni:
+  exclusive: false
 
 endpointRoutes:
   enabled: true
@@ -56,11 +62,17 @@ ipam:
 
 ipv4NativeRoutingCIDR: 10.42.0.0/16
 
+kubeProxyReplacementHealthzBindAddr: 0.0.0.0:10256
+
+localRedirectPolicies:
+  enabled: true
+
 enableMulticast: false
 multicast:
   enabled: false
 
 operator:
+  replicas: 2
   rollOutPods: true
   resources:
     requests:
@@ -119,3 +131,10 @@ ingressController:
 
 # Network Policy Audit Mode - Log violations without blocking
 policyAuditMode: false
+
+pmtuDiscovery:
+  enabled: true
+
+socketLB:
+  enabled: true
+  hostNamespaceOnly: true
