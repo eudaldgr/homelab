@@ -17,6 +17,25 @@ public-resources:
           path: /healthz
           method: GET
 
+  flux-webhook:
+    name: flux webhook
+    protocol: http
+    full-domain: flux-webhook.eudald.gr
+    auth:
+      sso-enabled: false
+    targets:
+      - hostname: webhook-receiver.flux-system.svc.cluster.local
+        port: 80
+        method: http
+        healthcheck:
+          hostname: webhook-receiver.flux-system.svc.cluster.local
+          port: 80
+          mode: http
+          scheme: http
+          path: /
+          method: GET
+          status: 404
+
   radarr:
     name: radarr
     protocol: http
