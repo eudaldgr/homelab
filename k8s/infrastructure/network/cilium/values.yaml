@@ -71,7 +71,7 @@ operator:
       memory: 256Mi
 
 # Roll out cilium agent pods automatically when ConfigMap is updated.
-rollOutCiliumPods: false
+rollOutCiliumPods: true
 updateStrategy:
   type: RollingUpdate
   rollingUpdate:
