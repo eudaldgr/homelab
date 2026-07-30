@@ -3,6 +3,10 @@ kubeProxyReplacement: true
 routingMode: native
 autoDirectNodeRoutes: true
 
+bandwidthManager:
+  enabled: true
+  bbr: true
+
 # Talos specific
 k8sServiceHost: 127.0.0.1
 k8sServicePort: 7445
@@ -92,6 +96,7 @@ externalIPs:
 loadBalancer:
   # https://docs.cilium.io/en/stable/network/kubernetes/kubeproxy-free/#maglev-consistent-hashing
   algorithm: maglev
+  mode: dsr
 
 gatewayAPI:
   enabled: true
