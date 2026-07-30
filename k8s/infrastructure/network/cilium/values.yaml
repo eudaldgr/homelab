@@ -71,6 +71,10 @@ operator:
 
 # Roll out cilium agent pods automatically when ConfigMap is updated.
 rollOutCiliumPods: true
+updateStrategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 1
 agent: true
 agentConfig:
   tolerations: []
