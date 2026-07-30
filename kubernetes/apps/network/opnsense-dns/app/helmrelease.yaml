@@ -65,13 +65,17 @@ spec:
           initialDelaySeconds: 10
           timeoutSeconds: 5
     triggerLoopOnEvent: true
+    extraArgs:
+      - --gateway-name=envoy-internal
     policy: upsert-only
     registry: noop
     sources:
       - service
+      - ingress
+      - gateway-httproute
     domainFilters:
       - eudald.gr
-    annotationFilter: external-dns.alpha.kubernetes.io/hostname=internal.eudald.gr
+    publishInternalServices: true
     podAnnotations:
       secret.reloader.stakater.com/reload: opnsense-dns-secret
     resources:
