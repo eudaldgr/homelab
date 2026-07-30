@@ -67,7 +67,7 @@ spec:
     triggerLoopOnEvent: true
     extraArgs:
       - --gateway-name=envoy-internal
-    policy: upsert-only
+    policy: sync
     registry: noop
     sources:
       - service
