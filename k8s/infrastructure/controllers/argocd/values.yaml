@@ -1,21 +1,14 @@
 # https://github.com/argoproj/argo-helm/blob/main/charts/argo-cd/values.yaml
+global:
+  networkPolicy:
+    create: false
+
 configs:
   cm:
     create: true
     application.resourceTrackingMethod: annotation+label
     url: https://argocd.eudald.gr
     kustomize.buildOptions: '--enable-helm'
-    oidc.config: |
-      name: Authentik
-      issuer: https://sso.eudald.gr/application/o/argocd/
-      clientID: $argocd-oidc-secret:oidc.authentik.clientID
-      clientSecret: $argocd-oidc-secret:oidc.authentik.clientSecret
-      requestedScopes:
-        - openid
-        - profile
-        - email
-        - groups
-
   cmp:
     create: true
     plugins:
@@ -57,12 +50,6 @@ controller:
 
 dex:
   enabled: false
-  # resources:
-  #   requests:
-  #     cpu: 10m
-  #     memory: 32Mi
-  #   limits:
-  #     memory: 128Mi
 
 redis-ha:
   enabled: false
