@@ -12,6 +12,8 @@ spec:
     kind: ClusterIssuer
   dnsNames:
     - dns.eudald.gr
+    - dns01.eudald.gr
+    - dns02.eudald.gr
   privateKey:
     algorithm: RSA
     rotationPolicy: Always
