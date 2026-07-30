@@ -90,6 +90,8 @@ l2announcements:
   enabled: false
 
 extraConfig:
+  enable-envoy-config: "false"
+  enable-gateway-api: "false"
   enable-l2-announcements: "false"
 
 externalIPs:
