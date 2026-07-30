@@ -86,13 +86,11 @@ agentConfig:
       cpu: 500m
       memory: 512Mi
 
-# Increase rate limit when doing L2 announcements
-k8sClientRateLimit:
-  qps: 20
-  burst: 100
-
 l2announcements:
   enabled: false
+
+extraConfig:
+  enable-l2-announcements: "false"
 
 externalIPs:
   enabled: true
@@ -102,19 +100,8 @@ loadBalancer:
   algorithm: maglev
   mode: dsr
 
-gatewayAPI:
-  enabled: true
-  enableAlpn: true
-  enableAppProtocol: true
 envoy:
-  securityContext:
-    capabilities:
-      keepCapNetBindService: true
-      envoy: [NET_ADMIN, PERFMON, BPF]
-  streamIdleTimeoutDurationSeconds: 600
-  idleTimeoutDurationSeconds: 60
-  connectTimeoutSeconds: 2
-  maxConnectionDurationSeconds: 0
+  enabled: false
 
 hubble:
   enabled: false
