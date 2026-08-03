@@ -3,10 +3,6 @@ apiVersion: secrets.infisical.com/v1beta1
 kind: InfisicalAuth
 metadata:
   name: infisical
-  labels:
-    app.kubernetes.io/name: infisical
-    app.kubernetes.io/component: authentication
-    app.kubernetes.io/part-of: infisical
 spec:
   infisicalConnectionRef:
     name: infisical-cloud
