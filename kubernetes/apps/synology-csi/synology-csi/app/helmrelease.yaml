@@ -41,7 +41,7 @@ spec:
     storageClasses:
       synology-iscsi-storage:
         disabled: true
-      synology-iscsi:
+      synology-iscsi-hdd:
         isDefault: false
         reclaimPolicy: Retain
         volumeBindingMode: WaitForFirstConsumer
@@ -49,6 +49,15 @@ spec:
           enableFuaSyncCache: "true"
           fsType: ext4
           location: /volume1
+          protocol: iscsi
+      synology-iscsi-nvme:
+        isDefault: false
+        reclaimPolicy: Retain
+        volumeBindingMode: WaitForFirstConsumer
+        parameters:
+          enableFuaSyncCache: "true"
+          fsType: ext4
+          location: /volume2
           protocol: iscsi
     volumeSnapshotClasses: null
   postRenderers:
