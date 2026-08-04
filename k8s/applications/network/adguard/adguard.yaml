@@ -112,7 +112,7 @@ spec:
       resources:
         requests:
           storage: 2Gi
-      storageClassName: "proxmox-csi"
+      storageClassName: "synology-iscsi-nvme"
   - metadata:
       name: adguard-config
     spec:
@@ -120,4 +120,4 @@ spec:
       resources:
         requests:
           storage: 1Gi
-      storageClassName: "proxmox-csi"
+      storageClassName: "synology-iscsi-nvme"

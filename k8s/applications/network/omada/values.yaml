@@ -19,12 +19,12 @@ service:
 persistence:
   data:
     enabled: true
-    storageClassName: proxmox-csi
+    storageClassName: synology-iscsi-nvme
     size: 2Gi
   logs:
     enabled: true
-    storageClassName: proxmox-csi
-    storageClass: proxmox-csi
+    storageClassName: synology-iscsi-nvme
+    storageClass: synology-iscsi-nvme
     size: 1Gi
 
 resources:

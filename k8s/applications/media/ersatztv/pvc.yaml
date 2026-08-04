@@ -5,7 +5,7 @@ metadata:
   namespace: ersatztv
 spec:
   accessModes: ["ReadWriteOnce"]
-  storageClassName: proxmox-csi
+  storageClassName: synology-iscsi-nvme
   resources:
     requests:
       storage: 5Gi

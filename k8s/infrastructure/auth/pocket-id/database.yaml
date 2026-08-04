@@ -53,10 +53,10 @@ spec:
   imageName: ghcr.io/cloudnative-pg/postgresql:17
   storage:
     size: 5Gi
-    storageClass: proxmox-csi
+    storageClass: synology-iscsi-nvme
   walStorage:
     size: 5Gi
-    storageClass: proxmox-csi
+    storageClass: synology-iscsi-nvme
   resources:
     requests:
       cpu: 100m
