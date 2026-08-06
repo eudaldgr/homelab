@@ -60,7 +60,7 @@ spec:
                 sizeLimit: 100Mi
           containers:
             - name: configarr
-              image: ghcr.io/vegops/configarr:1.30.0-r0@sha256:47d437a4a9117384ba4b6242eb3bdbe1b9640a8bbe94108637d7216bf20ce6e9
+              image: ghcr.io/vegops/configarr:1.30.0-r0@sha256:e86c753a7ef161bfd4ac3548bafa98c7864287ea6f2c0ef4e9649cfc262532ad
               imagePullPolicy: IfNotPresent
               env:
                 - name: TZ
