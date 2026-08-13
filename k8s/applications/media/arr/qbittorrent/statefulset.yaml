@@ -111,7 +111,7 @@ spec:
         name: etc
       spec:
         accessModes: ["ReadWriteOnce"]
-        storageClassName: synology-iscsi-nvme
+        storageClassName: ceph-block
         resources:
           requests:
             storage: 1Gi
@@ -119,7 +119,7 @@ spec:
         name: var
       spec:
         accessModes: ["ReadWriteOnce"]
-        storageClassName: synology-iscsi-nvme
+        storageClassName: ceph-block
         resources:
           requests:
             storage: 5Gi

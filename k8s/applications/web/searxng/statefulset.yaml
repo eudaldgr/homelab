@@ -103,7 +103,7 @@ spec:
         name: config
       spec:
         accessModes: ["ReadWriteOnce"]
-        storageClassName: synology-iscsi-nvme
+        storageClassName: ceph-block
         resources:
           requests:
             storage: 1Gi
