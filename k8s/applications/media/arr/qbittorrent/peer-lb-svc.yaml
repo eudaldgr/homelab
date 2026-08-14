@@ -4,7 +4,7 @@ metadata:
   name: qbittorrent-peer
   namespace: arr
   annotations:
-    io.cilium/lb-ipam-ips: "10.1.20.156"
+    lbipam.cilium.io/ips: "10.1.20.156,10.1.42.156"
 spec:
   type: LoadBalancer
   externalTrafficPolicy: Cluster

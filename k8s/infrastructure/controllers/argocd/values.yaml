@@ -76,6 +76,8 @@ server:
     enabled: true
   service:
     type: LoadBalancer
+    annotations:
+      lbipam.cilium.io/ips: "10.1.20.100,10.1.42.100"
     httpsPort: 443
     httpsTargetPort: 8443
   metrics: *metrics
