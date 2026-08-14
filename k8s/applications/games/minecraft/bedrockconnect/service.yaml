@@ -8,7 +8,7 @@ metadata:
   annotations:
     lbipam.cilium.io/ips: "10.1.20.154,10.1.42.154"
     external-dns.alpha.kubernetes.io/hostname: "geo.hivebedrock.network,hivebedrock.network,play.inpvp.net,mco.lbsg.net,play.galaxite.net,play.enchanted.gg"
-    external-dns.alpha.kubernetes.io/target: "10.1.20.154"
+    external-dns.alpha.kubernetes.io/target: "10.1.42.154"
     external-dns.alpha.kubernetes.io/ttl: "300"
 spec:
   type: LoadBalancer
