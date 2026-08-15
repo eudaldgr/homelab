@@ -3,16 +3,6 @@
 apiVersion: cilium.io/v2
 kind: CiliumLoadBalancerIPPool
 metadata:
-  name: pool
-spec:
-  allowFirstLastIPs: "No"
-  blocks:
-    - cidr: 10.1.20.0/24
----
-# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/cilium.io/ciliumloadbalancerippool_v2.json
-apiVersion: cilium.io/v2
-kind: CiliumLoadBalancerIPPool
-metadata:
   name: services
 spec:
   allowFirstLastIPs: "No"
@@ -66,11 +56,6 @@ spec:
       localASN: 65512
       peers:
         - name: opnsense
-          peerASN: 65510
-          peerAddress: 10.1.20.1
-          peerConfigRef:
-            name: l3-bgp-peer-config
-        - name: opnsense-vlan90
           peerASN: 65510
           peerAddress: 10.1.90.1
           peerConfigRef:
