@@ -11,7 +11,7 @@ config:
 service:
   type: LoadBalancer
   annotations:
-    lbipam.cilium.io/ips: "10.1.42.155,10.1.20.155"
+    lbipam.cilium.io/ips: "10.1.42.155"
     external-dns.alpha.kubernetes.io/hostname: omada.eudald.gr
     external-dns.alpha.kubernetes.io/target: "10.1.42.155"
     external-dns.alpha.kubernetes.io/ttl: "300"
