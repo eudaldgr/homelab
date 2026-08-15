@@ -70,6 +70,11 @@ spec:
           peerAddress: 10.1.20.1
           peerConfigRef:
             name: l3-bgp-peer-config
+        - name: opnsense-vlan90
+          peerASN: 65510
+          peerAddress: 10.1.90.1
+          peerConfigRef:
+            name: l3-bgp-peer-config
 ---
 apiVersion: v1
 kind: Service
