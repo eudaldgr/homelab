@@ -77,7 +77,7 @@ metadata:
   name: kube-api
   annotations:
     external-dns.alpha.kubernetes.io/hostname: k8s.eudald.gr
-    lbipam.cilium.io/ips: 10.1.42.50,10.1.20.50
+    lbipam.cilium.io/ips: 10.1.42.50
 spec:
   type: LoadBalancer
   externalTrafficPolicy: Local
