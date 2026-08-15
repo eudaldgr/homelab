@@ -1,0 +1,95 @@
+---
+version: v1alpha1
+machine:
+  features:
+    apidCheckExtKeyUsage: true
+    diskQuotaSupport: true
+    rbac: true
+  kernel:
+    modules:
+      - name: vfio_pci
+      - name: i915
+  kubelet:
+    image: ghcr.io/siderolabs/kubelet:v1.35.0
+    clusterDNS:
+      - 10.43.0.10
+    extraArgs:
+      rotate-server-certificates: "true"
+    extraConfig:
+      serializeImagePulls: false
+      shutdownGracePeriod: 90s
+      shutdownGracePeriodCriticalPods: 60s
+    defaultRuntimeSeccompProfileEnabled: true
+    disableManifestsDirectory: true
+---
+apiVersion: v1alpha1
+kind: ResolverConfig
+hostDNS:
+  enabled: true
+  forwardKubeDNSToHost: true
+---
+apiVersion: v1alpha1
+kind: FilesystemTrimConfig
+interval: 168h0m0s
+---
+apiVersion: v1alpha1
+kind: EtcFileConfig
+name: nfsmount.conf
+mode: 0o644
+contents: |
+  [ NFSMount_Global_Options ]
+  nfsvers=4.1
+  hard=True
+  nconnect=8
+  noatime=True
+  rsize=1048576
+  wsize=1048576
+---
+apiVersion: v1alpha1
+kind: SysctlConfig
+params:
+  vm.nr_hugepages: "0"
+---
+apiVersion: v1alpha1
+kind: KubeClusterConfig
+clusterName: homelab
+endpoint: https://10.1.20.50:6443
+---
+apiVersion: v1alpha1
+kind: KubeNodeConfig
+nodeIP:
+  validSubnets:
+    - 10.1.20.0/24
+labels:
+  node.kubernetes.io/exclude-from-external-load-balancers: ""
+  node.kubernetes.io/gpu: "true"
+  topology.kubernetes.io/region: homelab
+taints: {}
+---
+apiVersion: v1alpha1
+kind: KubeNetworkConfig
+dnsDomain: cluster.local
+podSubnets:
+  - 10.42.0.0/16
+serviceSubnets:
+  - 10.43.0.0/16
+---
+apiVersion: v1alpha1
+kind: KubePrismConfig
+port: 7445
+---
+apiVersion: v1alpha1
+kind: KubeTalosAPIAccessConfig
+allowedRoles:
+  - os:admin
+allowedKubernetesNamespaces:
+  - system-upgrade
+---
+apiVersion: v1alpha1
+kind: KubeCoreDNSConfig
+enabled: false
+---
+apiVersion: v1alpha1
+kind: KubeProxyConfig
+enabled: false
+image: registry.k8s.io/kube-proxy:v1.35.0

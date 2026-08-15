@@ -1,0 +1,48 @@
+---
+version: v1alpha1
+cluster:
+  etcd:
+    advertisedSubnets:
+      - 10.1.20.0/24
+    extraArgs:
+      auto-compaction-mode: periodic
+      auto-compaction-retention: "1"
+      election-timeout: "5000"
+      heartbeat-interval: "500"
+      quota-backend-bytes: "1073741824"
+      snapshot-count: "50000"
+---
+apiVersion: v1alpha1
+kind: KubeNodeConfig
+labels:
+  node-role.kubernetes.io/control-plane: ""
+---
+apiVersion: v1alpha1
+kind: KubeAPIServerConfig
+image: registry.k8s.io/kube-apiserver:v1.35.0
+certExtraSANs:
+  - 10.1.20.50
+  - 10.1.20.51
+  - 10.1.20.52
+  - 10.1.20.53
+extraArgs:
+  default-watch-cache-size: "100"
+---
+apiVersion: v1alpha1
+kind: KubeControllerManagerConfig
+image: registry.k8s.io/kube-controller-manager:v1.35.0
+extraArgs:
+  concurrent-deployment-syncs: "1"
+  concurrent-service-syncs: "1"
+---
+apiVersion: v1alpha1
+kind: KubeSchedulerConfig
+image: registry.k8s.io/kube-scheduler:v1.35.0
+---
+apiVersion: v1alpha1
+kind: KubeAuditPolicyConfig
+configuration:
+  apiVersion: audit.k8s.io/v1
+  kind: Policy
+  rules:
+    - level: Metadata
