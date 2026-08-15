@@ -59,7 +59,7 @@ metadata:
   name: adguard-home-0
   namespace: adguard
   annotations:
-    lbipam.cilium.io/ips: "10.1.20.150,10.1.42.150"
+    lbipam.cilium.io/ips: "10.1.42.150"
 spec:
   type: LoadBalancer
   selector:
@@ -84,7 +84,7 @@ metadata:
   name: adguard-home-1
   namespace: adguard
   annotations:
-    lbipam.cilium.io/ips: "10.1.20.151,10.1.42.151"
+    lbipam.cilium.io/ips: "10.1.42.151"
 spec:
   type: LoadBalancer
   selector:
