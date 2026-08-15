@@ -41,7 +41,7 @@ newtInstances:
       enabled: true
       type: LoadBalancer
       annotations:
-        lbipam.cilium.io/ips: "10.1.20.131,10.1.42.131"
+        lbipam.cilium.io/ips: "10.1.42.131"
     extraVolumes:
       - name: newt-blueprint
         configMap:
