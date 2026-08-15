@@ -47,7 +47,7 @@ spec:
                 name: opnsense-dns-secret
                 key: OPNSENSE_API_SECRET
           - name: OPNSENSE_HOST
-            value: https://10.1.20.1
+            value: https://10.1.90.1
           - name: OPNSENSE_SKIP_TLS_VERIFY
             value: "true"
           - name: LOG_LEVEL
