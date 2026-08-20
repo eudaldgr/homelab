@@ -47,7 +47,7 @@ spec:
             sizeLimit: 100Mi
       containers:
         - name: prowlarr
-          image: ghcr.io/vegops/prowlarr:2.4.0.5397-r2@sha256:5c57e1393941a7afa07c6deb9513a65040971e9e085d4ee8c1007e0d788ebcc1
+          image: ghcr.io/vegops/prowlarr:2.4.0.5397-r2@sha256:a410a53ef3178cc0ac1d18181944cefe72d8a3287d1435cb2dc630877bfbcc60
           ports:
             - name: http
               containerPort: 9696
