@@ -37,7 +37,7 @@ spec:
           emptyDir: {}
       containers:
         - name: bentopdf
-          image: ghcr.io/vegops/bentopdf:2.8.6-r0@sha256:27aebeb49050d5860b66081f65cb7106b3c5625f177cdfca0f40a45c41193567
+          image: ghcr.io/vegops/bentopdf:2.8.6-r0@sha256:d6820affc2ab189655dc3a051f8ab078efcc6d3ce40c4ccd8dcb6fc98eeaeebe
           ports:
             - name: http
               containerPort: 8080
