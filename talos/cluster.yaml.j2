@@ -24,6 +24,13 @@ machine:
 ---
 apiVersion: v1alpha1
 kind: ResolverConfig
+nameservers:
+  - address: 10.1.42.153
+  - address: 10.1.99.2
+searchDomains:
+  domains:
+    - cluster.local
+  disableDefault: true
 hostDNS:
   enabled: true
   forwardKubeDNSToHost: true
@@ -53,17 +60,17 @@ params:
 apiVersion: v1alpha1
 kind: KubeClusterConfig
 clusterName: homelab
-endpoint: https://10.1.20.50:6443
+endpoint: https://k8s.eudald.gr:6443
 ---
 apiVersion: v1alpha1
 kind: KubeNodeConfig
 nodeIP:
   validSubnets:
-    - 10.1.20.0/24
+    - 10.1.90.0/24
 labels:
   node.kubernetes.io/exclude-from-external-load-balancers: ""
   node.kubernetes.io/gpu: "true"
-  topology.kubernetes.io/region: homelab
+  topology.kubernetes.io/region: main
 taints: {}
 ---
 apiVersion: v1alpha1

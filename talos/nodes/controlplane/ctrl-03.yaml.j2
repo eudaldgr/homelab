@@ -10,25 +10,36 @@ selector:
   match: mac(link.permanent_addr) == "bc:24:11:00:00:03"
 ---
 apiVersion: v1alpha1
-kind: DHCPv4Config
-name: net0
-clientIdentifier: mac
----
-apiVersion: v1alpha1
-kind: LinkAliasConfig
-name: storage0
-selector:
-  match: mac(link.permanent_addr) == "bc:24:11:00:02:03"
----
-apiVersion: v1alpha1
 kind: LinkConfig
-name: storage0
+name: net0
 up: true
-mtu: 1500
+mtu: 9000
+---
+apiVersion: v1alpha1
+kind: VLANConfig
+name: net0.30
+vlanID: 30
+parent: net0
+up: true
+mtu: 9000
 addresses:
   - address: 10.1.30.63/24
 ---
 apiVersion: v1alpha1
+kind: VLANConfig
+name: net0.90
+vlanID: 90
+parent: net0
+up: true
+mtu: 9000
+---
+apiVersion: v1alpha1
+kind: DHCPv4Config
+name: net0.90
+routeMetric: 2048
+clientIdentifier: mac
+---
+apiVersion: v1alpha1
 kind: KubeNodeConfig
 labels:
-  topology.kubernetes.io/zone: pve03
+  topology.kubernetes.io/zone: m

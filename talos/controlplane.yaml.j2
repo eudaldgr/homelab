@@ -3,7 +3,7 @@ version: v1alpha1
 cluster:
   etcd:
     advertisedSubnets:
-      - 10.1.20.0/24
+      - 10.1.90.0/24
     extraArgs:
       auto-compaction-mode: periodic
       auto-compaction-retention: "1"
@@ -26,7 +26,9 @@ certExtraSANs:
   - 10.1.20.52
   - 10.1.20.53
 extraArgs:
+  api-audiences: "https://10.1.20.50:6443,https://k8s.eudald.gr:6443"
   default-watch-cache-size: "100"
+  service-account-issuer: "https://10.1.20.50:6443"
 ---
 apiVersion: v1alpha1
 kind: KubeControllerManagerConfig
