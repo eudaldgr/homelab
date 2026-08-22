@@ -11,9 +11,9 @@ resource "proxmox_virtual_environment_vm" "talos" {
   on_boot       = true
   scsi_hardware = "virtio-scsi-pci"
 
-  stop_on_destroy                      = true
-  purge_on_destroy                     = true
-  delete_unreferenced_disks_on_destroy = true
+  stop_on_destroy                      = false
+  purge_on_destroy                     = false
+  delete_unreferenced_disks_on_destroy = false
 
   cpu {
     cores = each.value.cores
@@ -25,18 +25,12 @@ resource "proxmox_virtual_environment_vm" "talos" {
     floating  = 0
   }
 
-  dynamic "serial_device" {
-    for_each = each.value.igpu ? [1] : []
-    content {
-      device = "socket"
-    }
+  serial_device {
+    device = "socket"
   }
 
-  dynamic "vga" {
-    for_each = each.value.igpu ? [1] : []
-    content {
-      type = "serial0"
-    }
+  vga {
+    type = "serial0"
   }
 
   efi_disk {
@@ -50,7 +44,7 @@ resource "proxmox_virtual_environment_vm" "talos" {
     size         = each.value.disk
     datastore_id = var.nodes[each.value.node].local_storage
     file_format  = "raw"
-    file_id      = each.value.igpu ? proxmox_download_file.talos_gpu.id : proxmox_download_file.talos_std.id
+    file_id      = proxmox_download_file.talos_gpu.id
     discard      = "on"
     ssd          = true
   }
@@ -62,19 +56,8 @@ resource "proxmox_virtual_environment_vm" "talos" {
   network_device {
     model       = "virtio"
     bridge      = "vmbr1"
-    vlan_id     = 20
     mac_address = each.value.mac
-  }
-
-  dynamic "network_device" {
-    for_each = try(each.value.storage_mac, null) != null ? [each.value] : []
-
-    content {
-      model       = "virtio"
-      bridge      = "vmbr1"
-      vlan_id     = 30
-      mac_address = network_device.value.storage_mac
-    }
+    trunks      = "30;90"
   }
 
   agent {
@@ -85,23 +68,27 @@ resource "proxmox_virtual_environment_vm" "talos" {
     }
   }
 
-  dynamic "hostpci" {
-    for_each = each.value.igpu ? ["iGPU"] : []
-    content {
-      device  = "hostpci0"
-      mapping = hostpci.value
-      pcie    = true
-      rombar  = true
-      xvga    = true
-    }
+  hostpci {
+    device  = "hostpci0"
+    mapping = "iGPU"
+    pcie    = true
+    rombar  = true
+    xvga    = true
+  }
+
+  hostpci {
+    device  = "hostpci1"
+    mapping = "RookCeph"
+    pcie    = true
+    rombar  = false
   }
 
   lifecycle {
-    ignore_changes = [disk[0].file_id]
+    prevent_destroy = true
+    ignore_changes  = [disk[0].file_id]
   }
 
   depends_on = [
-    proxmox_download_file.talos_std,
     proxmox_download_file.talos_gpu,
   ]
 }

@@ -6,11 +6,5 @@ terraform {
     talos = {
       source = "siderolabs/talos"
     }
-    local = {
-      source = "hashicorp/local"
-    }
-    external = {
-      source = "hashicorp/external"
-    }
   }
 }

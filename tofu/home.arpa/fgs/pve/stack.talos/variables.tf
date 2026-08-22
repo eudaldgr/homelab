@@ -1,12 +1,9 @@
 variable "proxmox" {
   description = "Proxmox VE API configuration"
   type = object({
-    cluster_name = optional(string, "homelab")
-    endpoint     = string
-    username     = optional(string, "root@pam")
-    password     = optional(string)
-    api_token    = optional(string)
-    insecure     = optional(bool, false)
+    endpoint  = string
+    api_token = optional(string)
+    insecure  = optional(bool, false)
   })
 }
 
@@ -19,48 +16,20 @@ variable "nodes" {
 }
 
 variable "talos" {
-  description = "Talos cluster configuration"
+  description = "Talos image configuration"
   type = object({
-    cluster_name       = optional(string, "homelab")
-    vip                = string
-    gateway            = string
-    subnet             = string
-    talos_version      = string
-    kubernetes_version = string
+    talos_version = string
   })
 }
 
 variable "talos_controlplanes" {
-  description = "Talos control plane nodes"
+  description = "Talos virtual machines"
   type = map(object({
-    node               = string
-    vmid               = number
-    cores              = number
-    memory             = number
-    disk               = number
-    ip                 = string
-    mac                = string
-    storage_ip         = optional(string)
-    storage_mac        = optional(string)
-    igpu               = optional(bool, false)
-    schedule_workloads = optional(bool, false)
+    node   = string
+    vmid   = number
+    cores  = number
+    memory = number
+    disk   = number
+    mac    = string
   }))
-}
-
-variable "talos_workers" {
-  description = "Talos worker nodes"
-  type = map(object({
-    node        = string
-    vmid        = number
-    cores       = number
-    memory      = number
-    disk        = number
-    ip          = string
-    mac         = string
-    storage_ip  = optional(string)
-    storage_mac = optional(string)
-    igpu        = optional(bool, false)
-  }))
-  default  = null
-  nullable = true
 }

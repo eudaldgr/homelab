@@ -8,14 +8,6 @@ terraform {
       source  = "siderolabs/talos"
       version = "~> 0.11.0"
     }
-    local = {
-      source  = "hashicorp/local"
-      version = "~> 2.9.0"
-    }
-    external = {
-      source  = "hashicorp/external"
-      version = "~> 2.4.0"
-    }
   }
 }
 
@@ -31,5 +23,3 @@ provider "proxmox" {
 }
 
 provider "talos" {}
-provider "local" {}
-provider "external" {}
