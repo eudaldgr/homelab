@@ -1,4 +1,4 @@
-resource "proxmox_virtual_environment_storage_directory" "local" {
+resource "proxmox_storage_directory" "local" {
   id    = "local"
   path  = "/var/lib/vz"
   nodes = []
@@ -8,7 +8,7 @@ resource "proxmox_virtual_environment_storage_directory" "local" {
   disable = true
 }
 
-resource "proxmox_virtual_environment_storage_zfspool" "local-zfs" {
+resource "proxmox_storage_zfspool" "local-zfs" {
   id    = "local-zfs"
   nodes = []
 
@@ -17,22 +17,12 @@ resource "proxmox_virtual_environment_storage_zfspool" "local-zfs" {
   thin_provision = true
 }
 
-resource "proxmox_virtual_environment_storage_nfs" "ds920plus-shared" {
+resource "proxmox_storage_nfs" "ds920plus-shared" {
   id     = "ds920plus-shared"
   server = "ds920plus.${var.dns.domain}"
   export = "/volume2/pve-shared"
 
   content = ["vztmpl", "iso", "snippets"]
-
-  snapshot_as_volume_chain = true
-}
-
-resource "proxmox_virtual_environment_storage_nfs" "ds920plus-data" {
-  id     = "ds920plus-data"
-  server = "ds920plus.${var.dns.domain}"
-  export = "/volume2/pve-data"
-
-  content = ["images", "rootdir"]
 
   snapshot_as_volume_chain = true
 }

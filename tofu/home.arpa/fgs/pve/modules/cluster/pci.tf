@@ -1,4 +1,4 @@
-resource "proxmox_virtual_environment_hardware_mapping_pci" "igpu" {
+resource "proxmox_hardware_mapping_pci" "igpu" {
   name = "iGPU"
   map = [
     for key, val in var.nodes : {
@@ -12,7 +12,7 @@ resource "proxmox_virtual_environment_hardware_mapping_pci" "igpu" {
   ]
 }
 
-resource "proxmox_virtual_environment_hardware_mapping_pci" "rook_ceph" {
+resource "proxmox_hardware_mapping_pci" "rook_ceph" {
   name = "RookCeph"
   map = [
     for key, val in var.nodes : {
