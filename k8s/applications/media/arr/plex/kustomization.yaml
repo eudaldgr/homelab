@@ -4,4 +4,5 @@ kind: Kustomization
 resources:
 - svc.yaml
 - http-route.yaml
+- resourceclaimtemplate.yaml
 - statefulset.yaml
