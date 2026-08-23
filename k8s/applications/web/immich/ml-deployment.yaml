@@ -41,7 +41,7 @@ spec:
             sizeLimit: 1Gi
       containers:
         - name: machine-learning
-          image: ghcr.io/immich-app/immich-machine-learning:v3.0.2@sha256:412f68e46e1966d0f87a8733a430369ee184b3a83e7b1e2db536dff291a34aa7
+          image: ghcr.io/immich-app/immich-machine-learning:v3.1.0@sha256:5a0839dc5303cd7215bcd2180a26aed3af41675aefb3e75e5157e9f10ad16e6e
           ports:
             - name: http
               containerPort: 3003
