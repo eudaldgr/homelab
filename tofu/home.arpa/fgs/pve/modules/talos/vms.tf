@@ -44,7 +44,7 @@ resource "proxmox_virtual_environment_vm" "talos" {
     size         = each.value.disk
     datastore_id = var.nodes[each.value.node].local_storage
     file_format  = "raw"
-    file_id      = proxmox_download_file.talos_gpu.id
+    file_id      = proxmox_download_file.talos_gpu[each.value.node].id
     discard      = "on"
     ssd          = true
   }

@@ -3,6 +3,7 @@ resource "talos_image_factory_schematic" "gpu" {
     customization = {
       systemExtensions = {
         officialExtensions = [
+          "siderolabs/drbd",
           "siderolabs/i915",
           "siderolabs/intel-ucode",
           "siderolabs/iscsi-tools",
@@ -21,9 +22,11 @@ data "talos_image_factory_urls" "gpu" {
 }
 
 resource "proxmox_download_file" "talos_gpu" {
-  node_name    = sort(keys(var.nodes))[0]
+  for_each = var.nodes
+
+  node_name    = each.key
   content_type = "iso"
-  datastore_id = var.nodes[sort(keys(var.nodes))[0]].iso_storage
+  datastore_id = each.value.iso_storage
 
   file_name               = "talos-${var.talos_version}-gpu-nocloud-amd64.img"
   url                     = data.talos_image_factory_urls.gpu.urls.disk_image

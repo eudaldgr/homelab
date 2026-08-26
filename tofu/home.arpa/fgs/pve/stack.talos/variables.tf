@@ -11,7 +11,7 @@ variable "nodes" {
   description = "Map of Proxmox nodes with storage configuration"
   type = map(object({
     local_storage = optional(string, "local-zfs")
-    iso_storage   = optional(string, "ds920plus-shared")
+    iso_storage   = optional(string, "local")
   }))
 }
 
