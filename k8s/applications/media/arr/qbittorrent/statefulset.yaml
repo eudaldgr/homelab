@@ -44,7 +44,7 @@ spec:
             sizeLimit: 1Gi
       containers:
         - name: qbittorrent
-          image: ghcr.io/vegops/qbittorrent:5.2.2-r1@sha256:84527027a9b493d171bd09b0fdba2eb583d3f573cef2578ffafb5d63aa945427
+          image: ghcr.io/vegops/qbittorrent:5.2.3-r1@sha256:5f63b99d6c4ac6f830d6fe1f79bbdc0e7a13045f01085bca6211fb07c4c47f7d
           ports:
             - name: http
               containerPort: 8080
