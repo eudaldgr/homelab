@@ -17,7 +17,7 @@ machine:
       rotate-server-certificates: "true"
     extraConfig:
       serializeImagePulls: false
-      shutdownGracePeriod: 90s
+      shutdownGracePeriod: 120s
       shutdownGracePeriodCriticalPods: 60s
     defaultRuntimeSeccompProfileEnabled: true
     disableManifestsDirectory: true
@@ -100,3 +100,13 @@ apiVersion: v1alpha1
 kind: KubeProxyConfig
 enabled: false
 image: registry.k8s.io/kube-proxy:v1.35.0
+---
+apiVersion: v1alpha1
+kind: KernelModuleConfig
+name: drbd
+parameters:
+  - usermode_helper=disabled
+---
+apiVersion: v1alpha1
+kind: KernelModuleConfig
+name: drbd_transport_tcp
