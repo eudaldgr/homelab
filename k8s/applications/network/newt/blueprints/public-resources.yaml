@@ -47,12 +47,12 @@ public-resources:
         match: path
         value: /api/*
     targets:
-      - hostname: radarr.arr.svc.cluster.local
-        port: 7878
+      - hostname: radarr.media.svc.cluster.local
+        port: 80
         method: http
         healthcheck:
-          hostname: radarr.arr.svc.cluster.local
-          port: 7878
+          hostname: radarr.media.svc.cluster.local
+          port: 80
           mode: http
           scheme: http
           path: /
@@ -69,12 +69,12 @@ public-resources:
         match: path
         value: /api/*
     targets:
-      - hostname: sonarr.arr.svc.cluster.local
-        port: 8989
+      - hostname: sonarr.media.svc.cluster.local
+        port: 80
         method: http
         healthcheck:
-          hostname: sonarr.arr.svc.cluster.local
-          port: 8989
+          hostname: sonarr.media.svc.cluster.local
+          port: 80
           mode: http
           scheme: http
           path: /
@@ -109,12 +109,12 @@ public-resources:
     auth:
       sso-enabled: true
     targets:
-      - hostname: prowlarr.arr.svc.cluster.local
-        port: 9696
+      - hostname: prowlarr.media.svc.cluster.local
+        port: 80
         method: http
         healthcheck:
-          hostname: prowlarr.arr.svc.cluster.local
-          port: 9696
+          hostname: prowlarr.media.svc.cluster.local
+          port: 80
           mode: http
           scheme: http
           path: /
@@ -127,12 +127,12 @@ public-resources:
     auth:
       sso-enabled: true
     targets:
-      - hostname: qbittorrent.arr.svc.cluster.local
-        port: 8080
+      - hostname: qbittorrent.media.svc.cluster.local
+        port: 80
         method: http
         healthcheck:
-          hostname: qbittorrent.arr.svc.cluster.local
-          port: 8080
+          hostname: qbittorrent.media.svc.cluster.local
+          port: 80
           mode: http
           scheme: http
           path: /
@@ -143,12 +143,12 @@ public-resources:
     protocol: http
     full-domain: seerr.eudald.gr
     targets:
-      - hostname: seerr.arr.svc.cluster.local
-        port: 5055
+      - hostname: seerr.media.svc.cluster.local
+        port: 80
         method: http
         healthcheck:
-          hostname: seerr.arr.svc.cluster.local
-          port: 5055
+          hostname: seerr.media.svc.cluster.local
+          port: 80
           mode: http
           scheme: http
           path: /
@@ -163,12 +163,12 @@ public-resources:
         match: path
         value: /api/*
     targets:
-      - hostname: tautulli.arr.svc.cluster.local
-        port: 8181
+      - hostname: tautulli.media.svc.cluster.local
+        port: 80
         method: http
         healthcheck:
-          hostname: tautulli.arr.svc.cluster.local
-          port: 8181
+          hostname: tautulli.media.svc.cluster.local
+          port: 80
           mode: http
           scheme: http
           path: /
@@ -179,11 +179,11 @@ public-resources:
     protocol: http
     full-domain: plex.eudald.gr
     targets:
-      - hostname: plex.arr.svc.cluster.local
+      - hostname: plex.media.svc.cluster.local
         port: 32400
         method: http
         healthcheck:
-          hostname: plex.arr.svc.cluster.local
+          hostname: plex.media.svc.cluster.local
           port: 32400
           mode: http
           scheme: http

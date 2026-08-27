@@ -16,6 +16,15 @@ spec:
     namespace: flux-system
   wait: false
   patches:
+    - # Copy the namespace from the Kustomization to the InfisicalStaticSecret
+      patch: |-
+        - op: copy
+          from: /metadata/namespace
+          path: /spec/targets/0/namespace
+      target:
+        group: secrets.infisical.com
+        kind: InfisicalStaticSecret
+        name: kopiur-repository
     - # Add Kustomization defaults for all child Kustomizations
       patch: |-
         apiVersion: kustomize.toolkit.fluxcd.io/v1

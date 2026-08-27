@@ -1,0 +1,108 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: qbittorrent
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: qbittorrent
+  interval: 1h
+  values:
+    controllers:
+      qbittorrent:
+        containers:
+          app:
+            image:
+              repository: ghcr.io/vegops/qbittorrent
+              tag: 5.2.2-r1@sha256:84527027a9b493d171bd09b0fdba2eb583d3f573cef2578ffafb5d63aa945427
+            env:
+              TZ: Europe/Madrid
+              QBT_WEBUI_PORT: &port 80
+              QBT_TORRENTING_PORT: &torrentPort 65211
+            probes:
+              liveness:
+                enabled: true
+                spec:
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/v2/app/version
+                    port: *port
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 10
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+            resources:
+              requests:
+                cpu: 100m
+                memory: 512Mi
+              limits:
+                memory: 2Gi
+    defaultPodOptions:
+      terminationGracePeriodSeconds: 300
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+        fsGroupChangePolicy: OnRootMismatch
+    service:
+      app:
+        forceRename: "{{ .Release.Name }}"
+        primary: true
+        ports:
+          http:
+            port: *port
+      bittorrent:
+        type: LoadBalancer
+        annotations:
+          lbipam.cilium.io/ips: 10.1.42.156
+        externalTrafficPolicy: Local
+        ports:
+          bittorrent-tcp:
+            port: *torrentPort
+            protocol: TCP
+    route:
+      app:
+        hostnames:
+          - "{{ .Release.Name }}.eudald.gr"
+          - torrent.eudald.gr
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: *port
+    persistence:
+      config:
+        existingClaim: "{{ .Release.Name }}"
+        globalMounts:
+          - path: /qbittorrent/etc
+            subPath: etc
+          - path: /qbittorrent/var
+            subPath: var
+      media:
+        type: nfs
+        server: ds920plus.home.eudald.gr
+        path: /volume1/data/torrents
+        globalMounts:
+          - path: /data/torrents
+          - path: /qbittorrent/media
+      tmp:
+        type: emptyDir
