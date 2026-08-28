@@ -47,7 +47,7 @@ spec:
             sizeLimit: 100Mi
       containers:
         - name: lidarr
-          image: ghcr.io/vegops/lidarr:3.1.0.4875-r1@sha256:572be7875f8b43e045470fb9d1c5ef43decaca28e2a0d7e4f1f7cb87ffdea39c
+          image: ghcr.io/vegops/lidarr:3.1.0.4875-r1@sha256:cfb0f7d3ef1d74f054cecd1b5c0aef5b91e7b0c6d5843ddf26c4a613e3b7589a
           ports:
             - name: http
               containerPort: 8686
