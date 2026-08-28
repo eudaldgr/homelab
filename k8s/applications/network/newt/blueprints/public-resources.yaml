@@ -91,12 +91,12 @@ public-resources:
         match: path
         value: /api/*
     targets:
-      - hostname: lidarr.arr.svc.cluster.local
-        port: 8686
+      - hostname: lidarr.media.svc.cluster.local
+        port: 80
         method: http
         healthcheck:
-          hostname: lidarr.arr.svc.cluster.local
-          port: 8686
+          hostname: lidarr.media.svc.cluster.local
+          port: 80
           mode: http
           scheme: http
           path: /

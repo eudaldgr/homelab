@@ -48,7 +48,6 @@ ssh/
 *.secret
 secrets.yml
 secrets.yaml
-config.yml
 config.yaml
 !example.conf
 !*.conf.example

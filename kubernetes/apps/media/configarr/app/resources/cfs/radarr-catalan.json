@@ -1,0 +1,20 @@
+{
+  "trash_id": "local-radarr-prefer-catalan",
+  "trash_scores": {
+    "default": 10000
+  },
+  "trash_description": "Prefer Language X",
+  "name": "Language: Prefer Catalan",
+  "includeCustomFormatWhenRenaming": false,
+  "specifications": [
+    {
+      "name": "Catalan Language",
+      "implementation": "LanguageSpecification",
+      "negate": false,
+      "required": false,
+      "fields": {
+        "value": 38
+      }
+    }
+  ]
+}

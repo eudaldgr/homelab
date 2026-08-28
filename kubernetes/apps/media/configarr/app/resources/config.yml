@@ -1,0 +1,19 @@
+trashGuideUrl: https://github.com/TRaSH-Guides/Guides
+recyclarrConfigUrl: https://github.com/recyclarr/config-templates
+localCustomFormatsPath: /configarr/etc/cfs
+localConfigTemplatesPath: /configarr/etc/templates
+telemetry: false
+
+radarr:
+  movies:
+    base_url: http://radarr.media.svc.cluster.local
+    api_key: !env RADARR_API_KEY
+    include:
+      - template: radarr
+
+sonarr:
+  series:
+    base_url: http://sonarr.media.svc.cluster.local
+    api_key: !env SONARR_API_KEY
+    include:
+      - template: sonarr
