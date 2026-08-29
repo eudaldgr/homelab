@@ -1,5 +1,6 @@
 trashGuideUrl: https://github.com/TRaSH-Guides/Guides
 recyclarrConfigUrl: https://github.com/recyclarr/config-templates
+recyclarrRevision: 4ae377bb704fc7fd69a544ad04e91357e0b09f62
 localCustomFormatsPath: /configarr/etc/cfs
 localConfigTemplatesPath: /configarr/etc/templates
 telemetry: false
