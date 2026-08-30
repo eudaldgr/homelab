@@ -10,7 +10,7 @@ pangolin_badger_version: "v1.4.1"
 # renovate: datasource=docker depName=docker.io/crowdsecurity/crowdsec versioning=docker
 pangolin_crowdsec_version: "v1.7.8@sha256:2f527c9bb8b367120eb08b82890aa912ce96bfa1ada93dda0721700e4b4e0dde"
 # renovate: datasource=github-tags depName=maxlerebourg/crowdsec-bouncer-traefik-plugin
-pangolin_crowdsec_bouncer_version: "v1.6.0"
+pangolin_crowdsec_bouncer_version: "v1.7.1"
 pangolin_crowdsec_fail_open: true
 pangolin_crowdsec: false
 pangolin_email: false
