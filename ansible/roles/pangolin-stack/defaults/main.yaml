@@ -2,7 +2,7 @@
 # renovate: datasource=docker depName=ghcr.io/fosrl/pangolin versioning=docker extractVersion=^ee-(?<version>.*)$
 pangolin_app_version: "ee-1.19.4@sha256:c949d4d14645c61e65e6df153b9d2c10f2eefe9205866ba96c2ec55861d73c84"
 # renovate: datasource=docker depName=ghcr.io/fosrl/gerbil versioning=docker
-pangolin_gerbil_version: "1.4.2@sha256:6d640c114be57435b37b5a042872f116b53e984546f351820d6a758436d0f991"
+pangolin_gerbil_version: "1.5.1@sha256:e8010d0354d7dc3b8cb1c80d1ae9d961c02e8b1fccc353ef1dfc37631722f7f6"
 # renovate: datasource=docker depName=docker.io/library/traefik versioning=docker
 pangolin_traefik_version: "v3.6.16@sha256:f79c88ed5252ae1e31c757a9796d751461ddb502437b8d8526db9e12605a82eb"
 # renovate: datasource=github-tags depName=fosrl/badger
