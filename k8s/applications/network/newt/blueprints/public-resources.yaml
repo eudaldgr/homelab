@@ -1,22 +1,4 @@
 public-resources:
-  sso:
-    name: sso
-    protocol: http
-    full-domain: sso.eudald.gr
-    auth:
-      sso-enabled: false
-    targets:
-      - hostname: pocket-id.pocket-id.svc.cluster.local
-        port: 1411
-        method: http
-        healthcheck:
-          hostname: pocket-id.pocket-id.svc.cluster.local
-          port: 1411
-          mode: http
-          scheme: http
-          path: /healthz
-          method: GET
-
   flux-webhook:
     name: flux webhook
     protocol: http
@@ -223,22 +205,6 @@ public-resources:
             - name: X-Real-IP
               value: 127.0.0.1
 
-  immich:
-    name: immich
-    protocol: http
-    full-domain: immich.eudald.gr
-    targets:
-      - hostname: immich-server.immich.svc.cluster.local
-        port: 2283
-        method: http
-        healthcheck:
-          hostname: immich-server.immich.svc.cluster.local
-          port: 2283
-          mode: http
-          scheme: http
-          path: /api/server/ping
-          method: GET
-
   vaultwarden:
     name: vaultwarden
     protocol: http
@@ -262,24 +228,6 @@ public-resources:
           mode: http
           scheme: http
           path: /alive
-          method: GET
-
-  ersatztv:
-    name: ersatztv
-    protocol: http
-    full-domain: tv.eudald.gr
-    auth:
-      sso-enabled: true
-    targets:
-      - hostname: ersatztv.ersatztv.svc.cluster.local
-        port: 8409
-        method: http
-        healthcheck:
-          hostname: ersatztv.ersatztv.svc.cluster.local
-          port: 8409
-          mode: http
-          scheme: http
-          path: /
           method: GET
 
   memos:
