@@ -298,7 +298,7 @@ public-resources:
   kromgo:
     name: kromgo
     protocol: http
-    full-domain: badges.eudald.gr
+    full-domain: kromgo.eudald.gr
     targets:
       - hostname: kromgo.o11y.svc.cluster.local
         port: 80
