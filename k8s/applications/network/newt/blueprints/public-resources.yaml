@@ -301,11 +301,11 @@ public-resources:
     full-domain: kromgo.eudald.gr
     targets:
       - hostname: kromgo.o11y.svc.cluster.local
-        port: 80
+        port: 8080
         method: http
         healthcheck:
           hostname: kromgo.o11y.svc.cluster.local
-          port: 80
+          port: 8080
           mode: http
           scheme: http
           path: /readyz

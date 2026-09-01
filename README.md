@@ -2,15 +2,27 @@
 
 # Eudald's Homelab
 
-_GitOps-managed home infrastructure powered by Talos, Kubernetes, OpenTofu, Argo CD, and Cilium._
+_GitOps-managed home infrastructure powered by Talos, Kubernetes, OpenTofu, Flux CD, and Cilium._
 
-<p>
-  <a href="https://badges.eudald.gr"><img alt="Targets" src="https://badges.eudald.gr/badges/targets"></a>
-  <a href="https://badges.eudald.gr"><img alt="Nodes" src="https://badges.eudald.gr/badges/nodes"></a>
-  <a href="https://badges.eudald.gr"><img alt="Pods" src="https://badges.eudald.gr/badges/pods"></a>
-  <a href="https://badges.eudald.gr"><img alt="CPU" src="https://badges.eudald.gr/badges/cpu"></a>
-  <a href="https://badges.eudald.gr"><img alt="Memory" src="https://badges.eudald.gr/badges/memory"></a>
-</p>
+</div>
+
+<div align="center">
+
+  ![Talos](https://kromgo.eudald.gr/badges/talos_version)&nbsp;&nbsp;
+  ![Kubernetes](https://kromgo.eudald.gr/badges/kubernetes_version)&nbsp;&nbsp;
+  ![Flux](https://kromgo.eudald.gr/badges/flux_version)
+
+</div>
+
+<div align="center">
+
+  ![Nodes](https://kromgo.eudald.gr/badges/cluster_node_count)&nbsp;&nbsp;
+  ![Pods](https://kromgo.eudald.gr/badges/cluster_pod_count)&nbsp;&nbsp;
+  ![CPU](https://kromgo.eudald.gr/badges/cluster_cpu_usage)&nbsp;&nbsp;
+  ![Memory](https://kromgo.eudald.gr/badges/cluster_memory_usage)&nbsp;&nbsp;
+  ![Power](https://kromgo.eudald.gr/badges/cluster_power_usage)&nbsp;&nbsp;
+  ![Age](https://kromgo.eudald.gr/badges/cluster_birth_age)&nbsp;&nbsp;
+  ![Uptime](https://kromgo.eudald.gr/badges/cluster_uptime_age)
 
 </div>
 
@@ -38,7 +50,6 @@ The active cluster is a six-node Talos Kubernetes deployment on Proxmox VE.
 | Role | Nodes |
 | --- | --- |
 | Control plane | `ctrl-01`, `ctrl-02`, `ctrl-03` |
-| Workers | `work-01`, `work-02`, `work-03` |
 
 The Kubernetes API is exposed at `https://10.1.20.50:6443`. Local read-only
 inspection uses the generated kubeconfig:
@@ -153,8 +164,6 @@ tofu -chdir=tofu/home.arpa/fgs/pve/stack.cluster validate
 tofu -chdir=tofu/home.arpa/fgs/pve/stack.talos validate
 tofu -chdir=tofu/home.arpa/fgs/pve/stack.k8s validate
 ```
-
-For agent and operator guardrails, read [AGENTS.md](./AGENTS.md).
 
 ---
 
