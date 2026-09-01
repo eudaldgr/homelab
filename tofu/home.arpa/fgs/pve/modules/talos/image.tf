@@ -1,17 +1,6 @@
 resource "talos_image_factory_schematic" "gpu" {
-  schematic = yamlencode({
-    customization = {
-      systemExtensions = {
-        officialExtensions = [
-          "siderolabs/drbd",
-          "siderolabs/i915",
-          "siderolabs/intel-ucode",
-          "siderolabs/iscsi-tools",
-          "siderolabs/qemu-guest-agent",
-        ]
-      }
-    }
-  })
+  # One hardware definition for VM boot images and Talos/Tuppr installers.
+  schematic = file("${path.module}/../../../../../../talos/schematic.yaml.j2")
 }
 
 data "talos_image_factory_urls" "gpu" {

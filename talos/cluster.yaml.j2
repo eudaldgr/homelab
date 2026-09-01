@@ -1,43 +1,136 @@
 ---
 version: v1alpha1
 machine:
+  ca:
+    crt: "${TALOS_MACHINE_CA_CRT}"
   features:
     apidCheckExtKeyUsage: true
     diskQuotaSupport: true
     rbac: true
-  kernel:
-    modules:
-      - name: vfio_pci
-      - name: i915
-  kubelet:
-    image: ghcr.io/siderolabs/kubelet:v1.35.0
-    clusterDNS:
-      - 10.43.0.10
-    extraArgs:
-      rotate-server-certificates: "true"
-    extraConfig:
-      serializeImagePulls: false
-      shutdownGracePeriod: 120s
-      shutdownGracePeriodCriticalPods: 60s
-    defaultRuntimeSeccompProfileEnabled: true
-    disableManifestsDirectory: true
+  token: "${TALOS_MACHINE_TOKEN}"
+cluster:
+  ca:
+    crt: "${TALOS_CLUSTER_CA_CRT}"
+  clusterName: homelab
+  controlPlane:
+    endpoint: https://k8s.eudald.gr:6443
+  token: "${TALOS_CLUSTER_TOKEN}"
+---
+apiVersion: v1alpha1
+kind: LinkAliasConfig
+name: net0
+selector:
+  match: link.driver == "virtio_net" && mac(link.permanent_addr).startsWith("bc:24:11:00:00:")
+---
+apiVersion: v1alpha1
+kind: LinkConfig
+name: net0
+mtu: 9000
+---
+apiVersion: v1alpha1
+kind: DHCPv4Config
+name: net0
+clientIdentifier: mac
+---
+apiVersion: v1alpha1
+kind: VLANConfig
+name: net0.50
+vlanID: 50
+parent: net0
+mtu: 9000
+---
+apiVersion: v1alpha1
+kind: VLANConfig
+name: net0.60
+vlanID: 60
+parent: net0
+mtu: 9000
 ---
 apiVersion: v1alpha1
 kind: ResolverConfig
-nameservers:
-  - address: 10.1.42.153
-  - address: 10.1.99.2
 searchDomains:
-  domains:
-    - cluster.local
-  disableDefault: true
+  domains: []
 hostDNS:
   enabled: true
-  forwardKubeDNSToHost: true
+  forwardKubeDNSToHost: true # Requires Cilium socketLB features
+  resolveMemberNames: true
+---
+apiVersion: v1alpha1
+kind: DiscoveryServiceConfig
+name: default
+endpoint: https://discovery.talos.dev/
+---
+apiVersion: v1alpha1
+kind: DiscoveryIdentityConfig
+clusterID: "${TALOS_CLUSTER_ID}"
+clusterSecret: "${TALOS_CLUSTER_SECRET}"
+---
+apiVersion: v1alpha1
+kind: UnattendedInstallConfig
+installer:
+  image: factory.talos.dev/metal-installer/{{ schematic }}:v1.14.0-rc.2
+provisioning:
+  diskSelector:
+    match: disk.model == "QEMU HARDDISK"
+  wipe: false
 ---
 apiVersion: v1alpha1
 kind: FilesystemTrimConfig
 interval: 168h0m0s
+---
+apiVersion: v1alpha1
+kind: FilesystemScrubConfig
+interval: 168h0m0s
+---
+apiVersion: v1alpha1
+kind: WatchdogTimerConfig
+device: /dev/watchdog0
+timeout: 5m
+---
+apiVersion: v1alpha1
+kind: KernelModuleConfig
+name: dm_thin_pool
+---
+apiVersion: v1alpha1
+kind: KernelModuleConfig
+name: drbd
+parameters:
+  - usermode_helper=disabled
+---
+apiVersion: v1alpha1
+kind: KernelModuleConfig
+name: drbd_transport_tcp
+---
+apiVersion: v1alpha1
+kind: KernelModuleConfig
+name: nbd
+---
+apiVersion: v1alpha1
+kind: SysctlConfig
+params:
+  fs.inotify.max_user_instances: "8192"
+  fs.inotify.max_user_watches: "1048576"
+  net.core.default_qdisc: fq
+  net.core.rmem_max: "67108864"
+  net.core.wmem_max: "67108864"
+  net.ipv4.ip_local_port_range: 1024 65535
+  net.ipv4.neigh.default.gc_thresh1: "4096"
+  net.ipv4.neigh.default.gc_thresh2: "8192"
+  net.ipv4.neigh.default.gc_thresh3: "16384"
+  net.ipv4.ping_group_range: 0 2147483647
+  net.ipv4.tcp_congestion_control: bbr
+  net.ipv4.tcp_fastopen: "3"
+  net.ipv4.tcp_mtu_probing: "1"
+  net.ipv4.tcp_notsent_lowat: "131072"
+  net.ipv4.tcp_rmem: 4096 131072 67108864
+  net.ipv4.tcp_slow_start_after_idle: "0"
+  net.ipv4.tcp_window_scaling: "1"
+  net.ipv4.tcp_wmem: 4096 65536 67108864
+  net/ipv6/conf/net0.50/disable_ipv6: "1" # keep the host off IPv6 on the IoT segment
+  net/ipv6/conf/net0.60/disable_ipv6: "1" # keep the host off IPv6 on the IoT segment
+  sunrpc.tcp_max_slot_table_entries: "128"
+  sunrpc.tcp_slot_table_entries: "128"
+  user.max_user_namespaces: "11255"
 ---
 apiVersion: v1alpha1
 kind: EtcFileConfig
@@ -47,20 +140,19 @@ contents: |
   [ NFSMount_Global_Options ]
   nfsvers=4.1
   hard=True
-  nconnect=8
+  nconnect=16
   noatime=True
   rsize=1048576
   wsize=1048576
 ---
 apiVersion: v1alpha1
-kind: SysctlConfig
-params:
-  vm.nr_hugepages: "0"
----
-apiVersion: v1alpha1
-kind: KubeClusterConfig
-clusterName: homelab
-endpoint: https://k8s.eudald.gr:6443
+kind: CRICustomizationConfig
+name: containerd
+content: |
+  [plugins."io.containerd.cri.v1.images"]
+    discard_unpacked_layers = false
+  [plugins."io.containerd.cri.v1.runtime"]
+    device_ownership_from_security_context = true
 ---
 apiVersion: v1alpha1
 kind: KubeNodeConfig
@@ -68,10 +160,21 @@ nodeIP:
   validSubnets:
     - 10.1.90.0/24
 labels:
-  node.kubernetes.io/exclude-from-external-load-balancers: ""
   node.kubernetes.io/gpu: "true"
   topology.kubernetes.io/region: main
-taints: {}
+---
+apiVersion: v1alpha1
+kind: KubeletConfig
+config:
+  crashLoopBackOff:
+    maxContainerRestartPeriod: 60s
+  imageMaximumGCAge: 168h
+  maxParallelImagePulls: 3
+  serializeImagePulls: false
+  shutdownGracePeriod: 90s
+  shutdownGracePeriodCriticalPods: 60s
+defaultRuntimeSeccompProfileEnabled: true
+image: ghcr.io/siderolabs/kubelet:v1.37.0
 ---
 apiVersion: v1alpha1
 kind: KubeNetworkConfig
@@ -84,29 +187,3 @@ serviceSubnets:
 apiVersion: v1alpha1
 kind: KubePrismConfig
 port: 7445
----
-apiVersion: v1alpha1
-kind: KubeTalosAPIAccessConfig
-allowedRoles:
-  - os:admin
-allowedKubernetesNamespaces:
-  - system-upgrade
----
-apiVersion: v1alpha1
-kind: KubeCoreDNSConfig
-enabled: false
----
-apiVersion: v1alpha1
-kind: KubeProxyConfig
-enabled: false
-image: registry.k8s.io/kube-proxy:v1.35.0
----
-apiVersion: v1alpha1
-kind: KernelModuleConfig
-name: drbd
-parameters:
-  - usermode_helper=disabled
----
-apiVersion: v1alpha1
-kind: KernelModuleConfig
-name: drbd_transport_tcp

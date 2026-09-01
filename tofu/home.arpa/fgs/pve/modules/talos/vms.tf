@@ -57,7 +57,8 @@ resource "proxmox_virtual_environment_vm" "talos" {
     model       = "virtio"
     bridge      = "vmbr1"
     mac_address = each.value.mac
-    trunks      = "30;90"
+    vlan_id     = 90
+    trunks      = "30;50;60"
   }
 
   agent {
