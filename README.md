@@ -8,21 +8,21 @@ _GitOps-managed home infrastructure powered by Talos, Kubernetes, OpenTofu, Flux
 
 <div align="center">
 
-  ![Talos](https://kromgo.eudald.gr/badges/talos_version)&nbsp;&nbsp;
-  ![Kubernetes](https://kromgo.eudald.gr/badges/kubernetes_version)&nbsp;&nbsp;
-  ![Flux](https://kromgo.eudald.gr/badges/flux_version)
+  [![Talos](https://kromgo.eudald.gr/badges/talos_version)](https://talos.dev)&nbsp;&nbsp;
+  [![Kubernetes](https://kromgo.eudald.gr/badges/kubernetes_version)](https://kubernetes.io)&nbsp;&nbsp;
+  [![Flux](https://kromgo.eudald.gr/badges/flux_version)](https://fluxcd.io)
 
 </div>
 
 <div align="center">
 
-  ![Nodes](https://kromgo.eudald.gr/badges/cluster_node_count)&nbsp;&nbsp;
-  ![Pods](https://kromgo.eudald.gr/badges/cluster_pod_count)&nbsp;&nbsp;
-  ![CPU](https://kromgo.eudald.gr/badges/cluster_cpu_usage)&nbsp;&nbsp;
-  ![Memory](https://kromgo.eudald.gr/badges/cluster_memory_usage)&nbsp;&nbsp;
-  ![Power](https://kromgo.eudald.gr/badges/cluster_power_usage)&nbsp;&nbsp;
-  ![Age](https://kromgo.eudald.gr/badges/cluster_birth_age)&nbsp;&nbsp;
-  ![Uptime](https://kromgo.eudald.gr/badges/cluster_uptime_age)
+  [![Nodes](https://kromgo.eudald.gr/badges/cluster_node_count)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
+  [![Pods](https://kromgo.eudald.gr/badges/cluster_pod_count)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
+  [![CPU](https://kromgo.eudald.gr/badges/cluster_cpu_usage)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
+  [![Memory](https://kromgo.eudald.gr/badges/cluster_memory_usage)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
+  [![Power](https://kromgo.eudald.gr/badges/cluster_power_usage)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
+  [![Age](https://kromgo.eudald.gr/badges/cluster_birth_age)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
+  [![Uptime](https://kromgo.eudald.gr/badges/cluster_uptime_age)](https://github.com/home-operations/kromgo)
 
 </div>
 
