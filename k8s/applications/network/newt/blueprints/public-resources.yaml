@@ -235,11 +235,11 @@ public-resources:
     protocol: http
     full-domain: tools.eudald.gr
     targets:
-      - hostname: it-tools.it-tools.svc.cluster.local
+      - hostname: it-tools.utilities.svc.cluster.local
         port: 80
         method: http
         healthcheck:
-          hostname: it-tools.it-tools.svc.cluster.local
+          hostname: it-tools.utilities.svc.cluster.local
           port: 80
           mode: http
           scheme: http
