@@ -9,5 +9,6 @@ components:
 
 resources:
   - ./namespace.yaml
+  - ./bentopdf/ks.yaml
   - ./it-tools/ks.yaml
   - ./searxng/ks.yaml

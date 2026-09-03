@@ -177,11 +177,11 @@ public-resources:
     protocol: http
     full-domain: pdf.eudald.gr
     targets:
-      - hostname: bentopdf.bentopdf.svc.cluster.local
+      - hostname: bentopdf.utilities.svc.cluster.local
         port: 80
         method: http
         healthcheck:
-          hostname: bentopdf.bentopdf.svc.cluster.local
+          hostname: bentopdf.utilities.svc.cluster.local
           port: 80
           mode: http
           scheme: http

@@ -79,7 +79,7 @@ engines:
     timeout: 1.0
 
 general:
-  instance_name: Vzkn Search
+  instance_name: Corn Search
 
 ui:
   default_locale: ""
