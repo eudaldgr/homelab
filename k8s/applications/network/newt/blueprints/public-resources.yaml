@@ -230,55 +230,6 @@ public-resources:
           path: /alive
           method: GET
 
-  memos:
-    name: memos
-    protocol: http
-    full-domain: memos.eudald.gr
-    auth:
-      sso-enabled: true
-    rules:
-      - action: allow
-        match: path
-        value: /api/*
-      - action: allow
-        match: path
-        value: /assets/*
-      - action: allow
-        match: path
-        value: /explore*
-      - action: allow
-        match: path
-        value: /memos.api.v1.*
-      - action: allow
-        match: path
-        value: /auth/callback*
-      - action: allow
-        match: path
-        value: /auth
-      - action: allow
-        match: path
-        value: /site.webmanifest
-      - action: allow
-        match: path
-        value: /logo.webp
-      - action: allow
-        match: path
-        value: /full-logo.webp
-      - action: allow
-        match: path
-        value: /android-chrome-192x192.png
-    targets:
-      - hostname: memos.memos.svc.cluster.local
-        port: 5230
-        method: http
-        healthcheck:
-          hostname: memos.memos.svc.cluster.local
-          port: 5230
-          mode: http
-          scheme: http
-          path: /
-          method: GET
-
   it-tools:
     name: it tools
     protocol: http
@@ -310,19 +261,3 @@ public-resources:
           scheme: http
           path: /readyz
           method: GET
-
-  minecraft-java:
-    name: minecraft java
-    mode: tcp
-    proxy-port: 25565
-    targets:
-      - hostname: minecraft.minecraft.svc.cluster.local
-        port: 25565
-
-  minecraft-bedrock:
-    name: minecraft bedrock
-    mode: udp
-    proxy-port: 19132
-    targets:
-      - hostname: minecraft.minecraft.svc.cluster.local
-        port: 19132
