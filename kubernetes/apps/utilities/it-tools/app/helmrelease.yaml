@@ -30,7 +30,7 @@ spec:
                 spec:
                   httpGet:
                     path: /
-                    port: &port 80
+                    port: &port 8080
                   periodSeconds: 15
               startup:
                 enabled: true
@@ -60,7 +60,8 @@ spec:
       app:
         ports:
           http:
-            port: *port
+            port: 80
+            targetPort: *port
     route:
       app:
         hostnames:
