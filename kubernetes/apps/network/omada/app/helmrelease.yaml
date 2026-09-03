@@ -1,0 +1,83 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: omada
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: omada
+  interval: 1h
+  timeout: 10m
+  values:
+    fullnameOverride: omada
+    image:
+      pullPolicy: IfNotPresent
+    config:
+      rootless: true
+      timezone: Europe/Madrid
+      showServerLogs: true
+      showMongoDBLogs: false
+      tlsSecretName: eudald-gr-tls
+    service:
+      type: LoadBalancer
+      annotations:
+        lbipam.cilium.io/ips: "10.1.42.155"
+        external-dns.alpha.kubernetes.io/hostname: omada.eudald.gr
+        external-dns.alpha.kubernetes.io/target: "10.1.42.155"
+        external-dns.alpha.kubernetes.io/ttl: "300"
+    persistence:
+      data:
+        enabled: true
+        storageClassName: ceph-block
+        size: 2Gi
+      logs:
+        enabled: true
+        storageClass: ceph-block
+        size: 1Gi
+    resources:
+      requests:
+        cpu: 100m
+        memory: 2Gi
+      limits:
+        cpu: 750m
+        memory: 3Gi
+    startupProbe:
+      httpGet:
+        path: /login
+        port: manage-https
+        scheme: HTTPS
+      failureThreshold: 60
+      periodSeconds: 30
+    readinessProbe:
+      httpGet:
+        path: /login
+        port: manage-https
+        scheme: HTTPS
+      initialDelaySeconds: 60
+      periodSeconds: 15
+      timeoutSeconds: 10
+      failureThreshold: 3
+  postRenderers:
+    - kustomize:
+        patches:
+          - patch: |
+              apiVersion: apps/v1
+              kind: StatefulSet
+              metadata:
+                name: omada
+                annotations:
+                  secret.reloader.stakater.com/reload: eudald-gr-tls
+          - patch: |
+              apiVersion: v1
+              kind: Service
+              metadata:
+                name: omada
+              spec:
+                externalTrafficPolicy: Local
+                ports:
+                  - name: https
+                    port: 443
+                    protocol: TCP
+                    targetPort: manage-https
