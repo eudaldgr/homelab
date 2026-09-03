@@ -194,11 +194,11 @@ public-resources:
     full-domain: searx.eudald.gr
     targets:
       - method: http
-        hostname: searxng.searxng.svc.cluster.local
+        hostname: searxng.utilities.svc.cluster.local
         port: 8080
         healthcheck:
           enabled: true
-          hostname: searxng.searxng.svc.cluster.local
+          hostname: searxng.utilities.svc.cluster.local
           port: 8080
           path: /healthz
           headers:
