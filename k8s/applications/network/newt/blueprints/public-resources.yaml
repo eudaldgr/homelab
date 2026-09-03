@@ -195,11 +195,11 @@ public-resources:
     targets:
       - method: http
         hostname: searxng.utilities.svc.cluster.local
-        port: 8080
+        port: 80
         healthcheck:
           enabled: true
           hostname: searxng.utilities.svc.cluster.local
-          port: 8080
+          port: 80
           path: /healthz
           headers:
             - name: X-Real-IP
