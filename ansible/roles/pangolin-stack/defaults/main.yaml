@@ -4,7 +4,7 @@ pangolin_app_version: "ee-1.19.4@sha256:c949d4d14645c61e65e6df153b9d2c10f2eefe92
 # renovate: datasource=docker depName=ghcr.io/fosrl/gerbil versioning=docker
 pangolin_gerbil_version: "1.4.2@sha256:6d640c114be57435b37b5a042872f116b53e984546f351820d6a758436d0f991"
 # renovate: datasource=docker depName=docker.io/library/traefik versioning=docker
-pangolin_traefik_version: "v3.6.16@sha256:f79c88ed5252ae1e31c757a9796d751461ddb502437b8d8526db9e12605a82eb"
+pangolin_traefik_version: "v3.7.13@sha256:f86a2cab1b5c649070c49f883c743dd32d8485a56e3368c5f93b9e91f1e91259"
 # renovate: datasource=github-tags depName=fosrl/badger
 pangolin_badger_version: "v1.4.1"
 # renovate: datasource=docker depName=docker.io/crowdsecurity/crowdsec versioning=docker
