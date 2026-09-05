@@ -1,7 +1,7 @@
 ---
 services:
   app:
-    image: docker.io/fosrl/newt:1.14.0@sha256:60c78391e3b5cb8a260490fb26b8b7329ed5448077629da89a564af80d3a9fad
+    image: docker.io/fosrl/newt:1.16.0@sha256:345fdeb369be6608d82c41d70637636c78b2c04a6112ff6ec20fc21c48afc899
     container_name: newt_app_1
     environment:
       - PANGOLIN_ENDPOINT=${PANGOLIN_ENDPOINT}
