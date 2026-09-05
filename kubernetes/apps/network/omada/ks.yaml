@@ -5,10 +5,18 @@ kind: Kustomization
 metadata:
   name: omada
 spec:
+  components:
+    - ../../../../components/kopiur/backup
   dependsOn:
     - name: certificates-import
   interval: 1h
   path: ./kubernetes/apps/network/omada/app
+  postBuild:
+    substitute:
+      APP: omada
+      KOPIUR_CAPACITY: 2Gi
+      KOPIUR_PGID: "508"
+      KOPIUR_PUID: "508"
   prune: true
   sourceRef:
     kind: GitRepository

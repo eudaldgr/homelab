@@ -29,13 +29,20 @@ spec:
         external-dns.alpha.kubernetes.io/ttl: "300"
     persistence:
       data:
-        enabled: true
-        storageClassName: ceph-block
-        size: 2Gi
+        enabled: false
       logs:
-        enabled: true
-        storageClass: ceph-block
-        size: 1Gi
+        enabled: false
+      extraVolumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: omada
+        - name: logs
+          emptyDir: {}
+      extraVolumeMounts:
+        - name: data
+          mountPath: /opt/tplink/EAPController/data
+        - name: logs
+          mountPath: /opt/tplink/EAPController/logs
     resources:
       requests:
         cpu: 100m
