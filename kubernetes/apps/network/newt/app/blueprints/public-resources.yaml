@@ -219,11 +219,11 @@ public-resources:
         match: path
         value: /admin/*
     targets:
-      - hostname: vaultwarden-0.vaultwarden.vaultwarden.svc.cluster.local
+      - hostname: vaultwarden.vaultwarden.svc.cluster.local
         port: 80
         method: http
         healthcheck:
-          hostname: vaultwarden-0.vaultwarden.vaultwarden.svc.cluster.local
+          hostname: vaultwarden.vaultwarden.svc.cluster.local
           port: 80
           mode: http
           scheme: http
