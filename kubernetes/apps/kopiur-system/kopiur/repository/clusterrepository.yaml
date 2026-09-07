@@ -14,7 +14,7 @@ spec:
           name: kopiur-repository-secret
           namespace: kopiur-system
       bucket: kopiur
-      endpoint: ds920plus.home.eudald.gr:9000
+      endpoint: ds920plus.lan.eudald.gr:9000
       region: cat-emp-01
       tls:
         disableTls: true

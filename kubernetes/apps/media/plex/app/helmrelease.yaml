@@ -110,7 +110,7 @@ spec:
           - path: /plex/etc
       media:
         type: nfs
-        server: ds920plus.home.eudald.gr
+        server: ds920plus.lan.eudald.gr
         path: /volume1/data/media
         globalMounts:
           - path: /data/media

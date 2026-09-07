@@ -90,7 +90,7 @@ spec:
           - path: /radarr/data
       media:
         type: nfs
-        server: ds920plus.home.eudald.gr
+        server: ds920plus.lan.eudald.gr
         path: /volume1/data
         globalMounts:
           - path: /data
