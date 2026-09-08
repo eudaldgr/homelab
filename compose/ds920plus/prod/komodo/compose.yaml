@@ -1,28 +1,6 @@
 name: komodo
 
 services:
-  # docker:
-  #   image: docker.io/docker:29.3.0-dind@sha256:1ba18449911d01f477a3fc104123c85d677addc60701b14b3fcb5381f9c4a537
-  #   container_name: komodo_docker_1
-  #   user: "${PUID}:${PGID}"
-  #   privileged: true
-  #   network_mode: host
-  #   stop_grace_period: 1m
-  #   environment:
-  #     DOCKER_ENSURE_BRIDGE: "dind0:10.32.0.1/16"
-  #   entrypoint: /entrypoint.sh
-  #   command: >
-  #     dockerd
-  #       --bridge dind0
-  #       --data-root /data/data
-  #       --exec-root /data/exec
-  #       --host unix:///data/docker.sock
-  #       --pidfile /data/docker.pid
-  #   volumes:
-  #     - ${APP_DATA_DIR}/entrypoint.sh:/entrypoint.sh
-  #     - ${APP_DATA_DIR}/data/docker:/data
-  #   restart: unless-stopped
-
   postgres:
     image: ghcr.io/ferretdb/postgres-documentdb:17-0.107.0@sha256:2386795ec2aa7ae559304361979f1dc5708d383ee9020ae63dadc2940dfe58f7
     container_name: komodo_postgres_1
@@ -33,7 +11,7 @@ services:
       POSTGRES_PASSWORD: ${KOMODO_DB_PASSWORD}
       POSTGRES_DB: postgres
     volumes:
-      - ${APP_DATA_DIR}/data/postgres:/var/lib/postgresql/data
+      - ${APP_DATA_DIR}/komodo/data/postgres:/var/lib/postgresql/data
     restart: unless-stopped
 
   ferretdb:
@@ -47,7 +25,7 @@ services:
     environment:
       FERRETDB_POSTGRESQL_URL: postgres://${KOMODO_DB_USERNAME}:${KOMODO_DB_PASSWORD}@komodo_postgres_1:5432/postgres
     volumes:
-      - ${APP_DATA_DIR}/data/ferretdb:/state
+      - ${APP_DATA_DIR}/komodo/data/ferretdb:/state
     restart: unless-stopped
 
   core:
@@ -57,7 +35,7 @@ services:
     depends_on:
       - ferretdb
     ports:
-      - "9120:9120"
+      - 9120:9120
     environment:
       TZ: ${TZ}
       KOMODO_DATABASE_ADDRESS: komodo_ferretdb_1:27017
@@ -68,10 +46,10 @@ services:
       KOMODO_JWT_SECRET: ${KOMODO_JWT_SECRET}
       KOMODO_WEBHOOK_SECRET: ${KOMODO_WEBHOOK_SECRET}
     env_file:
-      - ${APP_DATA_DIR}/settings.env
+      - ${APP_DATA_DIR}/komodo/settings.env
     volumes:
-      - ${APP_DATA_DIR}/data/core:/backups
-      - ${APP_DATA_DIR}/data/keys:/config/keys
+      - ${APP_DATA_DIR}/komodo/data/core:/backups
+      - ${APP_DATA_DIR}/komodo/data/keys:/config/keys
     labels:
       - komodo.skip=
       # Public Resource Configuration
@@ -92,14 +70,18 @@ services:
     restart: unless-stopped
 
   periphery:
-    image: ghcr.io/moghtech/komodo-periphery:2.2.0@sha256:7fb1a4807d125ce036a17d37c940b4001402afcaf342a2c720c98d096b1b54da
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM ghcr.io/moghtech/komodo-periphery:2.2.0@sha256:7fb1a4807d125ce036a17d37c940b4001402afcaf342a2c720c98d096b1b54da
+        COPY --from=docker.io/infisical/cli:0.43.121@sha256:4fd22fff5878e9313e824ec7360b065c546fe5172f4c641e91220e769fb4687a /bin/infisical /usr/local/bin/infisical
     container_name: komodo_periphery_1
     init: true
     environment:
       COMPOSE_KOMODO_IMAGE_TAG: latest
       TZ: ${TZ}
       PERIPHERY_ROOT_DIRECTORY: /etc/komodo
-      PERIPHERY_CORE_ADDRESS: ${PERIPHERY_CORE_ADDRESS}
+      PERIPHERY_CORE_ADDRESS: ws://komodo_core_1:9120
       PERIPHERY_CONNECT_AS: ds920plus
       PERIPHERY_CORE_PUBLIC_KEY: file:/config/keys/core.pub
       PERIPHERY_DISABLE_TERMINALS: false
@@ -110,28 +92,9 @@ services:
       PERIPHERY_PRETTY_STARTUP_CONFIG: false
       PERIPHERY_CORE_TLS_INSECURE_SKIP_VERIFY: true
       DOCKER_API_VERSION: 1.43
-      # SOPS settings
-      SOPS_AGE_KEY_FILE: /root/keys.txt
     volumes:
-      - ${APP_DATA_DIR}/data/periphery/config:/etc/komodo
-      - ${APP_DATA_DIR}/data/keys:/config/keys
+      - ${APP_DATA_DIR}/komodo/data/periphery/config:/etc/komodo
+      - ${APP_DATA_DIR}/komodo/data/keys:/config/keys
       - /proc:/proc
       - /var/run/docker.sock:/var/run/docker.sock
-      # - ${APP_DATA_DIR}/data/docker:/var/run
-      # SOPS binary
-      - bin:/opt:ro
-      - ${APP_DATA_DIR}/data/sops/keys.txt:/root/keys.txt:ro
     restart: unless-stopped
-
-  sops:
-    image: ghcr.io/getsops/sops:v3.13.2@sha256:0bc8915bce25ea3bf0f3e27a74cb5ad092488e6e5245af384816d628ed7fd426
-    container_name: komodo_sops_1
-    labels:
-      komodo.skip:
-    entrypoint: ["tail", "-f", "/dev/null"]
-    volumes:
-      - bin:/usr/local/bin:ro
-    restart: unless-stopped
-
-volumes:
-  bin:

@@ -1,10 +1,20 @@
 name: rustfs
 
 services:
+  chown:
+    image: ghcr.io/vegops/chown:latest
+    container_name: rustfs_chown_1
+    volumes:
+      - ${S3_DATA_DIR}/rustfs:/chown
+    command: "-R ${PUID}:${PGID} /chown"
+
   app:
-    image: docker.io/rustfs/rustfs:1.0.0-beta.2@sha256:6bd08dc511cebe0a4b5c35c266db465c7eb92cf3df4321c69967be66fe4cb395
+    image: docker.io/library/rustfs/rustfs:1.0.0-beta.2@sha256:6bd08dc511cebe0a4b5c35c266db465c7eb92cf3df4321c69967be66fe4cb395
     container_name: rustfs_app_1
     user: "${PUID}:${PGID}"
+    depends_on:
+      chown:
+        condition: service_completed_successfully
     healthcheck:
       test: ["CMD-SHELL", "nc -z 127.0.0.1 9000 || exit 1"]
       interval: 10s
@@ -12,18 +22,18 @@ services:
       retries: 3
       start_period: 90s
     environment:
-      - TZ=${TZ}
-      - RUSTFS_SERVER_DOMAINS=${RUSTFS_HOSTNAME}
-      - RUSTFS_CONSOLE_ENABLE=true
-      - RUSTFS_ACCESS_KEY=${RUSTFS_ACCESS_KEY} # Generate your own access key with `openssl rand -hex 16`
-      - RUSTFS_SECRET_KEY=${RUSTFS_SECRET_KEY} # Generate your own secret key with `openssl rand -hex 32`
-      # - RUSTFS_OBS_ENVIRONMENT=development
-      # - RUSTFS_OBS_LOGGER_LEVEL=debug
-      # - RUSTFS_OBS_LOG_STDOUT_ENABLED="true"
-      # - RUST_BACKTRACE=1
+      TZ: ${TZ}
+      RUSTFS_SERVER_DOMAINS: ${RUSTFS_HOSTNAME}
+      RUSTFS_CONSOLE_ENABLE: true
+      RUSTFS_ACCESS_KEY: ${RUSTFS_ACCESS_KEY} # Generate your own access key with `openssl rand -hex 16`
+      RUSTFS_SECRET_KEY: ${RUSTFS_SECRET_KEY} # Generate your own secret key with `openssl rand -hex 32`
+      # RUSTFS_OBS_ENVIRONMENT: development
+      # RUSTFS_OBS_LOGGER_LEVEL: debug
+      # RUSTFS_OBS_LOG_STDOUT_ENABLED: "true"
+      # RUST_BACKTRACE: 1
     volumes:
-      - ${APP_DATA_DIR}/data:/data
-      - ${APP_DATA_DIR}/logs:/logs
+      - ${S3_DATA_DIR}/rustfs/data:/data
+      - ${S3_DATA_DIR}/rustfs/logs:/logs
     ports:
       - 9000:9000
       - 9001:9001

@@ -1,14 +1,15 @@
----
+name: newt
+
 services:
   app:
     image: docker.io/fosrl/newt:1.14.0@sha256:60c78391e3b5cb8a260490fb26b8b7329ed5448077629da89a564af80d3a9fad
     container_name: newt_app_1
     environment:
-      - PANGOLIN_ENDPOINT=${PANGOLIN_ENDPOINT}
-      - NEWT_ID=${NEWT_ID}
-      - NEWT_SECRET=${NEWT_SECRET}
-      - DOCKER_SOCKET=/var/run/docker.sock
-      - BLUEPRINT_FILE=/blueprints/blueprint.yaml
+      PANGOLIN_ENDPOINT: ${PANGOLIN_ENDPOINT}
+      NEWT_ID: ${NEWT_ID}
+      NEWT_SECRET: ${NEWT_SECRET}
+      DOCKER_SOCKET: /var/run/docker.sock
+      BLUEPRINT_FILE: /blueprints/blueprint.yaml
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ${APP_DATA_DIR}/newt/blueprints:/blueprints:ro
