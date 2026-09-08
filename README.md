@@ -38,7 +38,7 @@ The operating model is deliberately boring:
 
 1. OpenTofu creates and bootstraps the infrastructure.
 1. Talos runs Kubernetes on Proxmox VMs.
-1. Argo CD reconciles the desired state from `k8s/`.
+1. Flux CD reconciles the desired state from `kubernetes/`.
 1. Controllers handle networking, storage, certificates, databases, policy, and backups.
 
 ---
@@ -57,7 +57,7 @@ inspection uses the generated kubeconfig:
 ```bash
 export KUBECONFIG=./tofu/home.arpa/fgs/pve/output/kubeconfig
 kubectl get nodes -o wide
-kubectl get applications.argoproj.io -n argocd -o wide
+flux get kustomizations -A
 ```
 
 The `Targets` badge counts Prometheus scrape targets that are currently up. It
@@ -67,39 +67,34 @@ is a monitoring signal, not a count of pods or public services.
 
 | Area | Components |
 | --- | --- |
-| GitOps | Argo CD, ApplicationSet, Kustomize, Helm charts rendered by Kustomize |
+| GitOps | Flux CD, Kustomize, Helm Controller |
 | Networking | Cilium, Gateway API, LB IPAM, BGP, L2 announcement, ExternalDNS with AdGuard webhook |
 | Ingress and tunnels | HTTPRoute, TLS passthrough, Pocket ID, Newt/Pangolin |
-| Secrets | Bitnami Sealed Secrets, SOPS for local encrypted files |
+| Secrets | Infisical and SOPS for local encrypted files |
 | Storage | Proxmox CSI on Ceph SSD and local ZFS, NFS for selected shared data |
 | Databases | CloudNativePG with barman-cloud ObjectStore backups |
-| Backups | Velero with Kopia, RustFS local target, Backblaze B2 offsite target |
+| Backups | Kopiur volume snapshots and CloudNativePG object-store backups |
 | Observability and policy | kube-prometheus-stack, Hubble, Falco, Gatekeeper, Kyverno |
 
 ---
 
 ## GitOps
 
-Argo CD watches this repository through two ApplicationSets:
-
-- `k8s/applications/application-set.yaml` discovers `k8s/applications/*/*`
-- `k8s/infrastructure/application-set.yaml` discovers `k8s/infrastructure/*/*`
-
-Each deployable application or platform component owns its own
-`kustomization.yaml`. There is no root kustomization that builds every app at
-once; validation is done at the changed leaf.
+Flux bootstraps from `kubernetes/flux/cluster` and reconciles the platform and
+applications under `kubernetes/apps`. Each deployable component owns a leaf
+`Kustomization` and its manifests.
 
 ```bash
-kustomize build --enable-helm k8s/infrastructure/controllers/argocd
-kustomize build --enable-helm k8s/applications/tools/it-tools
+flux get sources git -A
+flux get kustomizations -A
+kustomize build kubernetes/apps/network/omada/app
 ```
 
 ```mermaid
 flowchart TD
-  repo["Git repository"] --> appsets["Argo CD ApplicationSets"]
-  appsets --> applications["k8s/applications/*/*"]
-  appsets --> infrastructure["k8s/infrastructure/*/*"]
-  infrastructure --> platform["Platform controllers"]
+  repo["Git repository"] --> flux["Flux CD"]
+  flux --> applications["kubernetes/apps"]
+  applications --> platform["Platform controllers"]
   applications --> workloads["User-facing workloads"]
   platform --> cluster["Talos Kubernetes"]
   workloads --> cluster
@@ -115,7 +110,7 @@ The Proxmox Kubernetes path is split into three OpenTofu stages.
 | --- | --- | --- |
 | Cluster | `tofu/home.arpa/fgs/pve/stack.cluster/` | Proxmox resources, VM definitions, DNS, storage, ACLs |
 | Talos | `tofu/home.arpa/fgs/pve/stack.talos/` | Talos machine config, Kubernetes bootstrap, Cilium bootstrap, kubeconfig output |
-| Kubernetes | `tofu/home.arpa/fgs/pve/stack.k8s/` | cert-manager, Sealed Secrets, Argo CD, and GitOps bootstrap |
+| Kubernetes | `tofu/home.arpa/fgs/pve/stack.k8s/` | Kubernetes bootstrap resources |
 
 Additional infrastructure lives in:
 
@@ -133,8 +128,8 @@ Additional infrastructure lives in:
 ├── ansible/      # Host preparation for container hosts, Komodo, and Pangolin
 ├── compose/      # Compose stacks for ds920plus, split into prod and archive
 ├── coreboot/     # Coreboot firmware work
-├── k8s/          # Kubernetes desired state reconciled by Argo CD
 ├── komodo/       # Komodo resources: servers, repos, syncs, actions, builders
+├── kubernetes/   # Kubernetes desired state reconciled by Flux CD
 ├── packer/       # Packer templates and variables
 ├── scripts/      # Local operator helpers
 ├── secrets/      # Sensitive material
@@ -150,11 +145,11 @@ Useful read-only checks:
 ```bash
 export KUBECONFIG=./tofu/home.arpa/fgs/pve/output/kubeconfig
 
-kubectl get applications.argoproj.io -n argocd -o wide
+flux get kustomizations -A
 kubectl get gateway,httproute -A -o wide
 kubectl get storageclass,pvc -A
 kubectl get clusters.postgresql.cnpg.io -A -o wide
-kubectl get schedules.velero.io -n velero -o wide
+kubectl get snapshotschedules.kopiur.home-operations.com -A
 ```
 
 OpenTofu validation is run per stack:
@@ -174,7 +169,7 @@ This repository controls real infrastructure.
 - Prefer GitOps over manual cluster mutation.
 - Treat `./deploy` as unsafe notes, not as a normal deployment command.
 - Do not commit plaintext secrets, kubeconfigs, private keys, tfstate, or local environment files.
-- Do not modify SOPS-encrypted files or sealed secret source material unless that is the explicit task.
+- Do not modify encrypted secret material unless that is the explicit task.
 
 ---
 
@@ -183,4 +178,4 @@ This repository controls real infrastructure.
 The layout is inspired by the home-operations community, especially repositories
 that keep infrastructure understandable by making the current state visible at a
 glance. The implementation here is tailored to this cluster's actual Proxmox,
-Talos, Cilium, Proxmox CSI, Sealed Secrets, Velero, and Compose setup.
+Talos, Cilium, Proxmox CSI, Flux CD, Kopiur, and Compose setup.
