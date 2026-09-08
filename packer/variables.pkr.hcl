@@ -1,22 +1,5 @@
 // variables.pkr.hcl
 
-# proxmox variables
-variable "proxmox_nodes" {
-  description = "List of Proxmox nodes"
-  type = list(object({
-    name          = string
-    host          = string
-    port          = number
-    tls           = bool
-    username      = string
-    password      = string
-    token         = string
-    local_storage = string
-    iso_storage   = string
-    data_storage  = string
-  }))
-}
-
 # hcloud variables
 variable "hcloud_token" {
   type      = string
