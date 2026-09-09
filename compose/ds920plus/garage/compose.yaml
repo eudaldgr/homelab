@@ -1,12 +1,5 @@
 name: garage
 
-x-lockdown: &lockdown
-  read_only: true
-  security_opt:
-    - "no-new-privileges=true"
-  cap_drop:
-    - ALL
-
 services:
   chown:
     image: ghcr.io/vegops/chown:latest
@@ -18,7 +11,6 @@ services:
   app:
     image: ghcr.io/vegops/garage:2.3.0-r0@sha256:2529a9d4715b05ded8a7d475d8494e8d83b2e2a013538940a8633806a7f86584
     container_name: garage_app_1
-    <<: *lockdown
     user: 65532:65532
     depends_on:
       chown:
@@ -43,7 +35,6 @@ services:
   webui:
     image: ghcr.io/vegops/garage-webui:1.1.0-r0@sha256:dc63b352d45acc55209ec13f1092a2ee3fcb0baa87717a575dfe1bdcdf7c9297
     container_name: garage_webui_1
-    <<: *lockdown
     depends_on:
       app:
         condition: service_healthy
