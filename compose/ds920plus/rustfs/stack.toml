@@ -6,7 +6,7 @@ deploy = true
 [stack.config]
 server_id = "ds920plus"
 linked_repo = "homelab"
-run_directory = "compose/ds920plus/prod/rustfs"
+run_directory = "compose/ds920plus/rustfs"
 auto_pull = true
 send_alerts = true
 
