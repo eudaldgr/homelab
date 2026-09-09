@@ -9,7 +9,7 @@ services:
     command: "-R ${PUID}:${PGID} /chown"
 
   app:
-    image: docker.io/library/rustfs/rustfs:1.0.0-beta.2@sha256:6bd08dc511cebe0a4b5c35c266db465c7eb92cf3df4321c69967be66fe4cb395
+    image: docker.io/rustfs/rustfs:1.0.0-beta.2@sha256:6bd08dc511cebe0a4b5c35c266db465c7eb92cf3df4321c69967be66fe4cb395
     container_name: rustfs_app_1
     user: "${PUID}:${PGID}"
     depends_on:

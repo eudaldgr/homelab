@@ -11,5 +11,5 @@ delete = true
 
 resource_path = [
   "komodo",
-  "compose/ds920plus/prod",
+  "compose/ds920plus",
 ]

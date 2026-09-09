@@ -10,6 +10,13 @@ run_directory = "compose/ds920plus/prod/rustfs"
 auto_pull = true
 send_alerts = true
 
+environment = """
+PUID=[[PUID]]
+PGID=[[PGID]]
+S3_DATA_DIR=[[S3_DATA_DIR]]
+TZ=[[TZ]]
+"""
+
 compose_cmd_wrapper_include = ["config", "pull", "up"]
 compose_cmd_wrapper = """
 [[INFISICAL_RUN]] \

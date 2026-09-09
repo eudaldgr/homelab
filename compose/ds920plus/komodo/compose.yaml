@@ -29,7 +29,7 @@ services:
     restart: unless-stopped
 
   core:
-    image: ghcr.io/moghtech/komodo-core:2.2.0@sha256:7afbcfa99674bf3f51539ec3aa7235795e9b994af9b7099a6c4c654d5d8a5b6b
+    image: ghcr.io/moghtech/komodo-core:2.3.3@sha256:bca73d0eee143066228fb9b80c38a5a2726e573ad2758f7aa92b5c91a8aef1c7
     container_name: komodo_core_1
     init: true
     depends_on:
@@ -70,15 +70,10 @@ services:
     restart: unless-stopped
 
   periphery:
-    build:
-      context: .
-      dockerfile_inline: |
-        FROM ghcr.io/moghtech/komodo-periphery:2.2.0@sha256:7fb1a4807d125ce036a17d37c940b4001402afcaf342a2c720c98d096b1b54da
-        COPY --from=docker.io/infisical/cli:0.43.121@sha256:4fd22fff5878e9313e824ec7360b065c546fe5172f4c641e91220e769fb4687a /bin/infisical /usr/local/bin/infisical
+    build: .
     container_name: komodo_periphery_1
     init: true
     environment:
-      COMPOSE_KOMODO_IMAGE_TAG: latest
       TZ: ${TZ}
       PERIPHERY_ROOT_DIRECTORY: /etc/komodo
       PERIPHERY_CORE_ADDRESS: ws://komodo_core_1:9120

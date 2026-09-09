@@ -10,6 +10,10 @@ run_directory = "compose/ds920plus/newt"
 auto_pull = true
 send_alerts = true
 
+environment = """
+APP_DATA_DIR=[[APP_DATA_DIR]]
+"""
+
 compose_cmd_wrapper_include = ["config", "pull", "up"]
 compose_cmd_wrapper = """
 [[INFISICAL_RUN]] \
