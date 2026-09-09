@@ -1,0 +1,107 @@
+public-resources:
+  synology-calendar:
+    name: synology calendar
+    protocol: http
+    full-domain: calendar.eudald.gr
+
+    targets:
+      - hostname: 127.0.0.1
+        port: 20003
+        method: https
+
+        healthcheck:
+          hostname: 127.0.0.1
+          port: 20003
+          mode: http
+          scheme: https
+          path: "/"
+          method: GET
+
+  synology-contacts:
+    name: synology contacts
+    protocol: http
+    full-domain: contacts.eudald.gr
+
+    targets:
+      - hostname: 127.0.0.1
+        port: 25556
+        method: https
+
+        healthcheck:
+          hostname: 127.0.0.1
+          port: 25556
+          mode: http
+          scheme: https
+          path: "/"
+          method: GET
+
+  synology-drive:
+    name: synology drive
+    protocol: http
+    full-domain: drive.eudald.gr
+
+    targets:
+      - hostname: 127.0.0.1
+        port: 10003
+        method: https
+
+        healthcheck:
+          hostname: 127.0.0.1
+          port: 10003
+          mode: http
+          scheme: https
+          path: "/"
+          method: GET
+
+  synology-drive-client:
+    name: synology drive client
+    protocol: tcp
+    proxy-port: 6690
+
+    targets:
+      - hostname: 127.0.0.1
+        port: 6690
+
+        healthcheck:
+          hostname: 127.0.0.1
+          port: 6690
+          mode: tcp
+
+  synology-dsm:
+    name: synology dsm
+    protocol: http
+    full-domain: nas.eudald.gr
+
+    auth:
+      sso-enabled: true
+
+    targets:
+      - hostname: 127.0.0.1
+        port: 5551
+        method: https
+
+        healthcheck:
+          hostname: 127.0.0.1
+          port: 5551
+          mode: http
+          scheme: https
+          path: "/"
+          method: GET
+
+  synology-photos:
+    name: synology photos
+    protocol: http
+    full-domain: photos.eudald.gr
+
+    targets:
+      - hostname: 127.0.0.1
+        port: 5443
+        method: https
+
+        healthcheck:
+          hostname: 127.0.0.1
+          port: 5443
+          mode: http
+          scheme: https
+          path: "/"
+          method: GET

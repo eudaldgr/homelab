@@ -1,0 +1,25 @@
+[[stack]]
+name = "garage"
+description = "Garage object storage and Garage WebUI"
+deploy = true
+
+[stack.config]
+server_id = "ds920plus"
+linked_repo = "homelab"
+run_directory = "compose/ds920plus/garage"
+auto_pull = true
+send_alerts = true
+ignore_services = ["chown"]
+
+environment = """
+S3_DATA_DIR=[[S3_DATA_DIR]]
+TZ=[[TZ]]
+"""
+
+compose_cmd_wrapper_include = ["config", "pull", "up"]
+compose_cmd_wrapper = """
+[[INFISICAL_RUN]] \
+  --projectId='[[INFISICAL_PROJECT_ID]]' \
+  --env=prod \
+  --path=/compose/ds920plus/s3/garage \
+  --command '[[COMPOSE_COMMAND]]'"""
