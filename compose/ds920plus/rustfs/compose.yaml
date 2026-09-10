@@ -34,7 +34,7 @@ services:
       start_period: 90s
     environment:
       TZ: ${TZ}
-      RUSTFS_SERVER_DOMAINS: "${RUSTFS_HOSTNAME}:9000"
+      RUSTFS_SERVER_DOMAINS: ${RUSTFS_HOSTNAME}
       RUSTFS_CONSOLE_ENABLE: "true"
       RUSTFS_VOLUMES: /data
       RUSTFS_OBS_LOG_DIRECTORY: /logs
