@@ -45,7 +45,7 @@ services:
       S3_REGION: garage
       S3_ENDPOINT_URL: http://app:3900
     ports:
-      - 127.0.0.1:3909:3909
+      - 3909:3909
     tmpfs:
       - /tmp
     restart: unless-stopped
