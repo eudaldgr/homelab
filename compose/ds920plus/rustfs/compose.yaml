@@ -9,22 +9,35 @@ services:
     command: "-R ${PUID}:${PGID} /chown"
 
   app:
-    image: docker.io/rustfs/rustfs:1.0.0-beta.2@sha256:6bd08dc511cebe0a4b5c35c266db465c7eb92cf3df4321c69967be66fe4cb395
+    image: docker.io/rustfs/rustfs:1.0.0-rc.5@sha256:c36b3efea3d1e503f1a2581abd0e7611e0e5820dd30e1850a52384b3fc52bda4
     container_name: rustfs_app_1
     user: "${PUID}:${PGID}"
+    stop_grace_period: 2m
     depends_on:
       chown:
         condition: service_completed_successfully
     healthcheck:
-      test: ["CMD-SHELL", "nc -z 127.0.0.1 9000 || exit 1"]
+      test:
+        [
+          "CMD",
+          "curl",
+          "--fail",
+          "--silent",
+          "--show-error",
+          "--max-time",
+          "3",
+          "http://127.0.0.1:9000/health/ready",
+        ]
       interval: 10s
       timeout: 5s
       retries: 3
       start_period: 90s
     environment:
       TZ: ${TZ}
-      RUSTFS_SERVER_DOMAINS: ${RUSTFS_HOSTNAME}
-      RUSTFS_CONSOLE_ENABLE: true
+      RUSTFS_SERVER_DOMAINS: "${RUSTFS_HOSTNAME}:9000"
+      RUSTFS_CONSOLE_ENABLE: "true"
+      RUSTFS_VOLUMES: /data
+      RUSTFS_OBS_LOG_DIRECTORY: /logs
       RUSTFS_ACCESS_KEY: ${RUSTFS_ACCESS_KEY} # Generate your own access key with `openssl rand -hex 16`
       RUSTFS_SECRET_KEY: ${RUSTFS_SECRET_KEY} # Generate your own secret key with `openssl rand -hex 32`
       # RUSTFS_OBS_ENVIRONMENT: development
