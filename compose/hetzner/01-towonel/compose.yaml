@@ -1,0 +1,44 @@
+---
+name: towonel
+
+services:
+  hub:
+    # renovate: datasource=docker depName=codeberg.org/towonel/towonel-node
+    image: codeberg.org/towonel/towonel-node:1.6.1@sha256:b2bd752a57a1931969be63a09ca7e1fde4c2477046c593ecf15bf2a708fdca5d
+    container_name: towonel-hub
+    user: "10001:10001"
+    environment:
+      RUST_LOG: info
+      TOWONEL_HUB_ALLOW_PRIVILEGED_PORTS: "true"
+      TOWONEL_HUB_ENABLED: "true"
+      TOWONEL_HUB_PUBLIC_URL: https://towonel.eudald.gr
+      TOWONEL_EDGE_ENABLED: "true"
+      TOWONEL_EDGE_ADVERTISED_ADDRESSES: towonel.eudald.gr:443
+      TOWONEL_EDGE_HEALTH_LISTEN_ADDR: 0.0.0.0:9092
+      TOWONEL_EDGE_IROH_PORT: "51820"
+      TOWONEL_EDGE_LISTEN_ADDR: 0.0.0.0:4443
+      # TOWONEL_EDGE_PUBLIC_IPS: 148.113.195.107
+      TOWONEL_EDGE_PROXY_PROTOCOL: "true"
+      TOWONEL_EDGE_REGION: EU
+      TOWONEL_INVITE_HASH_KEY: ${TOWONEL_INVITE_HASH_KEY}
+    expose:
+      - "4443"
+      - "8443"
+    ports:
+      - "51820:51820/udp"
+    volumes:
+      - /opt/towonel/data:/data
+    healthcheck:
+      test:
+        - CMD
+        - curl
+        - -fsS
+        - -o
+        - /dev/null
+        - http://127.0.0.1:8443/v1/health
+    restart: unless-stopped
+
+networks:
+  default:
+    name: edge
+    external: true
