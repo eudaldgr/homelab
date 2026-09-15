@@ -16,9 +16,9 @@ services:
       chown:
         condition: service_completed_successfully
     environment:
-      TZ: ${TZ:?Missing TZ}
-      GARAGE_RPC_SECRET: ${GARAGE_RPC_SECRET:?Missing GARAGE_RPC_SECRET}
-      GARAGE_ADMIN_TOKEN: ${GARAGE_ADMIN_TOKEN:?Missing GARAGE_ADMIN_TOKEN}
+      TZ: ${TZ}
+      GARAGE_RPC_SECRET: ${GARAGE_RPC_SECRET}
+      GARAGE_ADMIN_TOKEN: ${GARAGE_ADMIN_TOKEN}
     healthcheck:
       test: ["CMD", "/usr/bin/garage", "status"]
       interval: 10s
@@ -41,7 +41,7 @@ services:
     environment:
       CONFIG_PATH: /tmp/missing.toml
       API_BASE_URL: http://app:3903
-      API_ADMIN_KEY: ${GARAGE_ADMIN_TOKEN:?Missing GARAGE_ADMIN_TOKEN}
+      API_ADMIN_KEY: ${GARAGE_ADMIN_TOKEN}
       S3_REGION: garage
       S3_ENDPOINT_URL: http://app:3900
     ports:

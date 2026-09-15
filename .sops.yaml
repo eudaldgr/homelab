@@ -1,13 +1,11 @@
 keys:
   - &laptop age1yfrq96mwj6ah0szswj9a8vg8jmyzwl5g6w5u8fh23yg85saxyunss056hg
-  - &ds920plus age175lfmhlkmu8qu07dkxsau62v4vfdczejr66xvf9peg733rrth44shlz5zq
 
 creation_rules:
   - filename_regex: '\.(env|dotenv)$'
     key_groups:
       - age:
         - *laptop
-        - *ds920plus
 
   - path_regex: '.*/secrets\.sops\.ya?ml$'
     key_groups:
