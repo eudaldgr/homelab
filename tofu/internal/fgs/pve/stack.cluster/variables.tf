@@ -25,15 +25,5 @@ variable "dns" {
 variable "time_zone" {
   description = "Zona horaria per als nodes del cluster"
   type        = string
-}
-
-variable "acme_email" {
-  description = "Email for ACME/Let's Encrypt account"
-  type        = string
-}
-
-variable "cloudflare_api_token" {
-  description = "Cloudflare API token for DNS-01 challenge"
-  type        = string
-  sensitive   = true
+  default     = "Europe/Madrid"
 }
