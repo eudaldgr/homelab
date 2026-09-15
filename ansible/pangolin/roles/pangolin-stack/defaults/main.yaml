@@ -6,7 +6,7 @@ pangolin_gerbil_version: "1.4.2@sha256:6d640c114be57435b37b5a042872f116b53e98454
 # renovate: datasource=docker depName=docker.io/library/traefik versioning=docker
 pangolin_traefik_version: "v3.6.16@sha256:f79c88ed5252ae1e31c757a9796d751461ddb502437b8d8526db9e12605a82eb"
 # renovate: datasource=github-tags depName=fosrl/badger
-pangolin_badger_version: "v1.4.1"
+pangolin_badger_version: "v1.7.0"
 # renovate: datasource=docker depName=docker.io/crowdsecurity/crowdsec versioning=docker
 pangolin_crowdsec_version: "v1.7.8@sha256:2f527c9bb8b367120eb08b82890aa912ce96bfa1ada93dda0721700e4b4e0dde"
 # renovate: datasource=github-tags depName=maxlerebourg/crowdsec-bouncer-traefik-plugin
