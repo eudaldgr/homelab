@@ -15,3 +15,4 @@ resources:
   - ./newt/ks.yaml
   - ./omada/ks.yaml
   - ./opnsense-dns/ks.yaml
+  - ./towonel-agent/ks.yaml

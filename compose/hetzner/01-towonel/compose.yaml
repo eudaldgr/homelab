@@ -27,7 +27,7 @@ services:
     ports:
       - "51820:51820/udp"
     volumes:
-      - /opt/towonel/data:/data
+      - /opt/towonel:/data
     healthcheck:
       test:
         - CMD
