@@ -108,7 +108,7 @@ resource "hcloud_server" "homelab" {
     ipv6_enabled = false
   }
 
-  # lifecycle {
-  #   prevent_destroy = true
-  # }
+  lifecycle {
+    prevent_destroy = true
+  }
 }

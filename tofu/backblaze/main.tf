@@ -1,18 +1,3 @@
-terraform {
-  required_version = ">= 1.0.0"
-  required_providers {
-    b2 = {
-      source  = "registry.terraform.io/backblaze/b2"
-      version = "0.13.0"
-    }
-  }
-}
-
-provider "b2" {
-  application_key_id = var.b2_application_key_id
-  application_key    = var.b2_application_key
-}
-
 resource "b2_bucket" "this" {
   for_each = var.buckets
 
@@ -25,6 +10,10 @@ resource "b2_bucket" "this" {
     file_name_prefix              = ""
     days_from_uploading_to_hiding = null
     days_from_hiding_to_deleting  = 1
+  }
+  
+  lifecycle {
+    prevent_destroy = true
   }
 }
 

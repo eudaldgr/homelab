@@ -7,15 +7,6 @@ variable "buckets" {
     capabilities = list(string)
   }))
 
-  default = {
-    velero = {
-      bucket_name  = "homelab-velero-b2"
-      bucket_type  = "allPrivate"
-      key_name     = "velero-b2-key"
-      capabilities = ["listBuckets", "listFiles", "readFiles", "writeFiles", "deleteFiles"]
-    }
-  }
-
   validation {
     condition     = length(var.buckets) > 0
     error_message = "Has de definir com a minim un bucket."
@@ -53,7 +44,7 @@ variable "buckets" {
 variable "b2_endpoint" {
   type        = string
   description = "Endpoint S3 compatible de Backblaze B2."
-  default     = "https://s3.us-west-002.backblazeb2.com"
+  default     = "https://s3.eu-central-003.backblazeb2.com"
 }
 
 variable "b2_application_key_id" {
