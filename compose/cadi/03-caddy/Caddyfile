@@ -5,7 +5,7 @@
 
 	layer4 {
 		:443 {
-			matching_timeout 15s
+      matching_timeout 15s
 			@local tls sni {$VPS_LOCAL_HOSTS}
 			route @local {
 				proxy {
@@ -17,7 +17,7 @@
 			route @tls {
 				proxy {
 					proxy_protocol v2
-					upstream hub:4443
+					upstream towonel-hub:4443
 				}
 			}
 		}
@@ -49,8 +49,18 @@
 			}
 		}
 	}
+
+	log default {
+		output stdout
+		format json
+	}
 }
 
-towonel.eudald.gr {
-	reverse_proxy hub:8443
+twnl.eudald.gr {
+  log
+	reverse_proxy towonel-hub:8443
+}
+
+cadi-doco-cd.eudald.gr {
+	reverse_proxy doco-cd:8880
 }

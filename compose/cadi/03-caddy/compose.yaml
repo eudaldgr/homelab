@@ -1,32 +1,30 @@
 ---
-name: caddy-l4
-
+name: caddy
 services:
-  caddy-l4:
+  app:
     image: ghcr.io/bjw-s-labs/caddy-l4:2.11.4@sha256:f404cca91837bae9a304cf1efbec7da8bbbaa8e00a9cba3060cde99d6a176d81
     container_name: caddy-l4
     environment:
       CADDY_ACME_EMAIL: ${CADDY_ACME_EMAIL}
-      VPS_LOCAL_HOSTS: towonel.eudald.gr
+      VPS_LOCAL_HOSTS: >-
+        twnl.eudald.gr
+        cadi-doco-cd.eudald.gr
     ports:
-      - "80:80"
-      - "443:443"
+      - 80:80
+      - 443:443
     volumes:
-      - data:/data
-      - config:/config
+      - etc:/config
+      - var:/data
     configs:
       - source: caddyfile
         target: /etc/caddy/Caddyfile
     restart: unless-stopped
-
 volumes:
-  data: {}
-  config: {}
-
+  etc:
+  var:
 configs:
   caddyfile:
-    file: ./Caddyfile
-
+    file: ./config/Caddyfile
 networks:
   default:
     name: edge
