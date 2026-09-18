@@ -7,10 +7,12 @@ locals {
 
   # HTTP
   # HTTPS
+  # SSH
   # Synology Drive Client/Server
   public_tcp_ports = [
     80,
     443,
+    22222,
     6690
   ]
   # HTTP/3
@@ -22,7 +24,7 @@ locals {
 }
 
 resource "hcloud_ssh_key" "cadi" {
-  name       = "${var.hostname}-bootstrap"
+  name       = "root@eudald.gr"
   public_key = local.ssh_public_key
   labels     = local.labels
 }

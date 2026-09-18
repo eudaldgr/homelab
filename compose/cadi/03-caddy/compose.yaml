@@ -24,7 +24,7 @@ volumes:
   var:
 configs:
   caddyfile:
-    file: ./config/Caddyfile
+    file: ./Caddyfile
 networks:
   default:
     name: edge

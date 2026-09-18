@@ -15,7 +15,6 @@ terraform {
     region                      = "garage"
     use_path_style              = true
     use_lockfile                = true
-    encrypt                     = true
     skip_credentials_validation = true
     skip_region_validation      = true
   }
