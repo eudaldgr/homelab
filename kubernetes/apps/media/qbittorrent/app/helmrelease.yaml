@@ -16,7 +16,7 @@ spec:
           app:
             image:
               repository: ghcr.io/vegops/qbittorrent
-              tag: 5.2.2-r1@sha256:84527027a9b493d171bd09b0fdba2eb583d3f573cef2578ffafb5d63aa945427
+              tag: 5.2.2-r1@sha256:ae4173bcf0554ae09bcf278fc0ef3d55b57caf90e3db0118974ec554013b40c8
             env:
               TZ: Europe/Madrid
               QBT_WEBUI_PORT: &port 80
