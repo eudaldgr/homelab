@@ -50,7 +50,7 @@ jobs:
         uses: Infisical/secrets-action@6cd3f7c0e4cc0d2395ee4ef414eb6eeb5d3e73db # v1.0.17
         with:
           method: oidc
-          identity-id: ${{ vars.INFISICAL_GITHUB_BOT_IDENTITY_ID }}
+          identity-id: ${{ secrets.INFISICAL_GITHUB_BOT_IDENTITY_ID }}
           domain: https://eu.infisical.com
           project-slug: homelab
           env-slug: prod
