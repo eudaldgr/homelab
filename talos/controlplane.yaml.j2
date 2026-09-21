@@ -35,6 +35,7 @@ certExtraSANs:
   - k8s.eudald.gr
 extraArgs:
   enable-aggregator-routing: "true"
+  feature-gates: HPAScaleToZero=true
 image: registry.k8s.io/kube-apiserver:v1.37.0
 ---
 apiVersion: v1alpha1
@@ -70,6 +71,7 @@ apiVersion: v1alpha1
 kind: KubeControllerManagerConfig
 extraArgs:
   bind-address: 0.0.0.0
+  feature-gates: HPAScaleToZero=true
 image: registry.k8s.io/kube-controller-manager:v1.37.0
 ---
 apiVersion: v1alpha1
@@ -120,4 +122,5 @@ kind: KubeTalosAPIAccessConfig
 allowedRoles:
   - os:admin
 allowedKubernetesNamespaces:
+  - actions-runner-system
   - system-upgrade
