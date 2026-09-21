@@ -18,7 +18,7 @@
       description: "Auto-merge trusted OCI digests",
       matchDatasources: ["docker"],
       matchUpdateTypes: ["digest"],
-      matchPackageNames: ["/home-operations/"],
+      matchPackageNames: ["/vegops/", "/home-operations/"],
       automerge: true,
       automergeType: "pr",
       ignoreTests: false,
