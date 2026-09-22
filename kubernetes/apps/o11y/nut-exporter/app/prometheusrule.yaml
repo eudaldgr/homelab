@@ -1,0 +1,54 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: nut-exporter-rules
+spec:
+  groups:
+    - name: nut-exporter.rules
+      rules:
+        - alert: UPSCommunicationLost
+          expr: absent(up{namespace="o11y", service="nut-exporter"}) or up{namespace="o11y", service="nut-exporter"} == 0
+          for: 3m
+          annotations:
+            summary: >-
+              Prometheus cannot read the UPS through NUT on OPNsense; the one-minute USB recovery watchdog did not restore it
+          labels:
+            severity: critical
+
+        - alert: UPSOnBattery
+          expr: network_ups_tools_ups_status{flag="OB"} == 1
+          for: 1m
+          annotations:
+            summary: >-
+              UPS {{ $labels.ups }} is running on battery
+          labels:
+            severity: critical
+
+        - alert: UPSLowBattery
+          expr: network_ups_tools_ups_status{flag="LB"} == 1
+          for: 30s
+          annotations:
+            summary: >-
+              UPS {{ $labels.ups }} reports a low battery
+          labels:
+            severity: critical
+
+        - alert: UPSBatteryNeedsReplacement
+          expr: network_ups_tools_ups_status{flag="RB"} == 1
+          for: 5m
+          annotations:
+            summary: >-
+              UPS {{ $labels.ups }} reports that its battery needs replacement
+          labels:
+            severity: warning
+
+        - alert: UPSHighLoad
+          expr: network_ups_tools_ups_load > 85
+          for: 5m
+          annotations:
+            summary: >-
+              UPS {{ $labels.ups }} load is above 85 percent
+          labels:
+            severity: warning

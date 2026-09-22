@@ -3,7 +3,7 @@
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDashboard
 metadata:
-  name: smartctl-exporter
+  name: nut-exporter
 spec:
   allowCrossNamespaceImport: true
   instanceSelector:
@@ -12,4 +12,4 @@ spec:
   datasources:
     - datasourceName: prometheus
       inputName: DS_PROMETHEUS
-  url: https://grafana.com/api/dashboards/22604/revisions/3/download
+  url: https://raw.githubusercontent.com/DRuggeri/nut_exporter/v3.3.0/dashboard/dashboard.json

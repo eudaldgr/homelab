@@ -39,7 +39,7 @@ spec:
           limits:
             memory: 8Gi # Required for bootstrap
       storage:
-        devicePathFilter: '^/dev/disk/by-id/ata-(SanDisk_SSD_PLUS_480GB|CT480BX500SSD1)_.*$'
+        devicePathFilter: "^/dev/disk/by-id/ata-(SanDisk_SSD_PLUS_480GB|CT480BX500SSD1)_.*$"
         useAllDevices: false
         useAllNodes: true
     monitoring:
