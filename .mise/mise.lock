@@ -66,27 +66,27 @@ url = "https://github.com/mitsuhiko/minijinja/releases/download/2.24.0/minijinja
 url_api = "https://api.github.com/repos/mitsuhiko/minijinja/releases/assets/511868818"
 
 [[tools.infisical]]
-version = "0.43.129"
+version = "0.43.134"
 backend = "github:Infisical/cli"
-specifiers = ["0.43.129"]
+specifiers = ["v0.43.134"]
 
 [tools.infisical.options]
 asset_pattern = "cli_{{ version }}_{{ os(macos='darwin') }}_{{ arch(x64='amd64') }}.tar.gz"
 
 [tools.infisical."platforms.linux-arm64"]
-checksum = "sha256:37f982f0e213f2c39898001b658e9e4c7986167362a53c6a1419e94977bac897"
-url = "https://github.com/Infisical/cli/releases/download/v0.43.129/cli_0.43.129_linux_arm64.tar.gz"
-url_api = "https://api.github.com/repos/Infisical/cli/releases/assets/543336129"
+checksum = "sha256:7dc7b23453388fc49f638ec0358d315d12d85d4f431dd328524ca0c38d82a20b"
+url = "https://github.com/Infisical/cli/releases/download/v0.43.134/cli_0.43.134_linux_arm64.tar.gz"
+url_api = "https://api.github.com/repos/Infisical/cli/releases/assets/581633939"
 
 [tools.infisical."platforms.linux-x64"]
-checksum = "sha256:b829a04e10f1720b523aa81541f37ab479fbb4027a4a1af219f473d8c509e994"
-url = "https://github.com/Infisical/cli/releases/download/v0.43.129/cli_0.43.129_linux_amd64.tar.gz"
-url_api = "https://api.github.com/repos/Infisical/cli/releases/assets/543336139"
+checksum = "sha256:46eba00a6b29d5ff30a9de67b62aa26c0042c8ad0ca233b5e9a5e516ac44ea52"
+url = "https://github.com/Infisical/cli/releases/download/v0.43.134/cli_0.43.134_linux_amd64.tar.gz"
+url_api = "https://api.github.com/repos/Infisical/cli/releases/assets/581633921"
 
 [tools.infisical."platforms.macos-arm64"]
-checksum = "sha256:b34313e34143b9606dfc13a884660b6d3ec9f7a0351b04ad31a590d145f1059f"
-url = "https://github.com/Infisical/cli/releases/download/v0.43.129/cli_0.43.129_darwin_arm64.tar.gz"
-url_api = "https://api.github.com/repos/Infisical/cli/releases/assets/543330732"
+checksum = "sha256:02299c8ef3581f5b8bc710f018bb61b581ea11c19263b1541b45120f6b63eef2"
+url = "https://github.com/Infisical/cli/releases/download/v0.43.134/cli_0.43.134_darwin_arm64.tar.gz"
+url_api = "https://api.github.com/repos/Infisical/cli/releases/assets/581623304"
 
 [[tools.jq]]
 version = "1.8.2"
@@ -155,21 +155,21 @@ url_api = "https://api.github.com/repos/evilmartians/lefthook/releases/assets/56
 provenance = "github-attestations"
 
 [[tools.node]]
-version = "26.9.0"
+version = "26.10.0"
 backend = "core:node"
-specifiers = ["26.9.0"]
+specifiers = ["26.10.0"]
 
 [tools.node."platforms.linux-arm64"]
-checksum = "sha256:d5077591aa38b48d90bf9b3ac10da8d2f40dce289b20294913c58c19f153eb12"
-url = "https://nodejs.org/dist/v26.9.0/node-v26.9.0-linux-arm64.tar.gz"
+checksum = "sha256:423a41bff8e2a2fa15e702fefe2919ef95823b2378744daccb8439302534b44f"
+url = "https://nodejs.org/dist/v26.10.0/node-v26.10.0-linux-arm64.tar.gz"
 
 [tools.node."platforms.linux-x64"]
-checksum = "sha256:03d9104fc4f19652e74480fed11c023d75981464b7292f21a601c3f95ce7d90d"
-url = "https://nodejs.org/dist/v26.9.0/node-v26.9.0-linux-x64.tar.gz"
+checksum = "sha256:cb5c9ce9c80d7b8821e3a258543c71b939138cf17c74d5cc44bbe85d6dbc5ad8"
+url = "https://nodejs.org/dist/v26.10.0/node-v26.10.0-linux-x64.tar.gz"
 
 [tools.node."platforms.macos-arm64"]
-checksum = "sha256:6f3de7ed853ee283b4bf24b6e426618f1d357401ce5815db1866eb85eb4b05d9"
-url = "https://nodejs.org/dist/v26.9.0/node-v26.9.0-darwin-arm64.tar.gz"
+checksum = "sha256:751fdf7439f115d87ee2a8f3f18c065b6151852068e3e666ac60ac2996f75ac9"
+url = "https://nodejs.org/dist/v26.10.0/node-v26.10.0-darwin-arm64.tar.gz"
 
 [[tools.oxfmt]]
 version = "0.69.0"
