@@ -1,9 +1,0 @@
-[[repo]]
-name = "homelab"
-description = "Repositori principal del homelab"
-
-[repo.config]
-server_id = "ds920plus"
-git_provider = "github.com"
-repo = "eudaldgr/homelab"
-branch = "main"

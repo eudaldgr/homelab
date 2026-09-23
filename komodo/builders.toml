@@ -1,5 +1,0 @@
-[[builder]]
-name = "ds920plus"
-[builder.config]
-type = "Server"
-params.server_id = "ds920plus"

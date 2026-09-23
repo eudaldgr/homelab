@@ -1,2 +1,0 @@
-# Only image-to-image COPY is needed; never send NAS data or secrets to the builder.
-**

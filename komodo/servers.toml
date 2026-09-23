@@ -1,4 +1,0 @@
-[[server]]
-name = "ds920plus"
-[server.config]
-enabled = true
