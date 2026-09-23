@@ -1,6 +1,9 @@
-name: doco-cd-updater
-reference: main
-working_dir: compose/ds920plus/doco-cd
-compose_files:
-  - compose.updater.yaml
+---
+name: doco-cd-updated
+working_dir: ./compose/ds920plus/doco-cd
 force_recreate: true
+reconciliation:
+  enabled: true
+  interval: 3600
+compose_files:
+  - compose.yaml
