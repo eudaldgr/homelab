@@ -44,6 +44,12 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - data:/data
+      - type: bind
+        source: /volume2/docker/doco-cd
+        target: /volume2/docker/doco-cd
+        read_only: true
+        bind:
+          create_host_path: false
     restart: unless-stopped
 volumes:
   data:
