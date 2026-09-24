@@ -20,6 +20,8 @@ spec:
       crashCollector:
         disable: false
       csi:
+        cephfs:
+          kernelMountOptions: ms_mode=prefer-crc
         readAffinity:
           enabled: false # https://github.com/ceph/ceph-csi/issues/5772
       dashboard:
@@ -38,6 +40,21 @@ spec:
         osd:
           limits:
             memory: 8Gi # Required for bootstrap
+      security:
+        cephx:
+          allowedCiphers: [aes256k]
+          daemon:
+            keyRotationPolicy: KeyGeneration
+            keyGeneration: 2
+          csi:
+            keyRotationPolicy: KeyGeneration
+            keyGeneration: 2
+            keepPriorKeyCountMax: 0
+            keyType: aes256k # Talos 1.14+ backports the kernel 7.0 aes256k support
+          rbdMirrorPeer:
+            keyRotationPolicy: KeyGeneration
+            keyGeneration: 2
+            keyType: aes256k
       storage:
         devicePathFilter: "^/dev/disk/by-id/ata-(SanDisk_SSD_PLUS_480GB|CT480BX500SSD1)_.*$"
         useAllDevices: false
