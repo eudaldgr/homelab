@@ -7,6 +7,7 @@
     ansible_user: ubuntu
     ansible_python_interpreter: auto_silent
     host_ssh_port: 22222
+    ansible_port: "{{ bootstrap_ssh_port | default(22) }}"
     infisical_domain: https://eu.infisical.com
     infisical_project: 89d5ec5c-6201-4007-acc8-3f4748228396
     infisical_env: prod
@@ -41,11 +42,11 @@
       changed_when: false
       no_log: true
       loop:
-        - {key: INFISICAL_DOCOCD_CLIENT_ID, path: "{{ infisical_vps_path }}"}
-        - {key: INFISICAL_DOCOCD_CLIENT_SECRET, path: "{{ infisical_vps_path }}"}
-        - {key: DOCOCD_API_SECRET, path: "{{ infisical_vps_path }}"}
-        - {key: DOCOCD_WEBHOOK_SECRET, path: "{{ infisical_vps_path }}"}
-        - {key: CROWDSEC_API_KEY, path: "{{ infisical_vps_path }}"}
+        - { key: INFISICAL_DOCOCD_CLIENT_ID, path: "{{ infisical_vps_path }}" }
+        - { key: INFISICAL_DOCOCD_CLIENT_SECRET, path: "{{ infisical_vps_path }}" }
+        - { key: DOCOCD_API_SECRET, path: "{{ infisical_vps_path }}" }
+        - { key: DOCOCD_WEBHOOK_SECRET, path: "{{ infisical_vps_path }}" }
+        - { key: CROWDSEC_API_KEY, path: "{{ infisical_vps_path }}" }
       register: secrets_raw
       loop_control:
         label: "{{ item.key }}"
@@ -98,19 +99,11 @@
       tags:
         - ssh
       block:
-        - name: ssh | Update ssh socket config
-          ansible.builtin.replace:
-            path: /usr/lib/systemd/system/ssh.socket
-            regexp: "^(ListenStream=.+):\\d+$"
-            replace: "\\1:{{ host_ssh_port }}"
-          notify:
-            - Reload systemd daemon
-            - Restart ssh.socket
-
         - name: ssh | Harden sshd_config
           ansible.builtin.copy:
             dest: /etc/ssh/sshd_config.d/01-hardening.conf
             content: |
+              Port {{ host_ssh_port }}
               PermitRootLogin no
               PasswordAuthentication no
               MaxAuthTries 3
@@ -118,7 +111,26 @@
             owner: root
             group: root
             mode: "0644"
-          notify: Restart ssh.socket
+            validate: /usr/sbin/sshd -t -f %s
+          register: ssh_config
+          changed_when: ssh_config.changed or (ansible_port | int != host_ssh_port | int)
+          notify:
+            - Reload systemd daemon
+            - Restart SSH listener
+
+        - name: ssh | Apply changes before deploying Towonel
+          ansible.builtin.meta: flush_handlers
+
+        - name: ssh | Use management port
+          ansible.builtin.set_fact:
+            ansible_port: "{{ host_ssh_port }}"
+
+        - name: ssh | Reconnect on management port
+          ansible.builtin.meta: reset_connection
+
+        - name: ssh | Wait for management connection
+          ansible.builtin.wait_for_connection:
+            timeout: 60
 
     - name: firewall
       tags:
@@ -350,10 +362,10 @@
       ansible.builtin.systemd:
         daemon_reload: true
 
-    - name: Restart ssh.socket
-      ansible.builtin.service:
-        name: ssh.socket
-        state: restarted
+    - name: Restart SSH listener
+      ansible.builtin.shell: |
+        systemctl stop ssh.service ssh.socket
+        systemctl start ssh.socket ssh.service
 
     - name: Restart crowdsec-firewall-bouncer
       ansible.builtin.service:
