@@ -4,13 +4,10 @@ services:
   app:
     image: ghcr.io/kimdre/doco-cd:0.120.1@sha256:8799df51462a1b2058c60e35d1ce19830cc38afebe99494342e819cdaadad545
     container_name: doco-cd-updater
-    env_file:
-      - /volume2/docker/doco-cd/compose.env
     environment:
       DEPLOY_CONFIG_BASE_DIR: ./compose/ds920plus
       HTTP_PORT: 8881
       LOG_LEVEL: info
-      PASS_ENV: "true"
       POLL_CONFIG: |-
         - url: https://github.com/eudaldgr/homelab.git
           reference: main
