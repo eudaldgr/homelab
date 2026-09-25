@@ -18,7 +18,7 @@ spec:
           app:
             image:
               repository: ghcr.io/vegops/radarr
-              tag: 6.3.0.10514-r0@sha256:d5fc671c54929ae18154d23b2c3b09ee943c0058d1e35fcd541f742b3f8b5c48
+              tag: 6.4.4.10685-r0@sha256:671aa73fdab98fdeafbac0f9b0221c63e0935e1d0b2b42f1a7962e97bd8900a4
             env:
               RADARR__APP__INSTANCENAME: Radarr
               RADARR__APP__THEME: dark
