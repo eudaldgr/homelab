@@ -8,6 +8,7 @@ resources:
   - ./cilium/ks.yaml
   - ./coredns/ks.yaml
   - ./intel-gpu-resource-driver/ks.yaml
+  - ./ocharted/ks.yaml
   - ./reloader/ks.yaml
   - ./snapshot-controller/ks.yaml
   - ./spegel/ks.yaml
