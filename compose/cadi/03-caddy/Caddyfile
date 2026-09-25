@@ -56,7 +56,7 @@
 	}
 }
 
-twnl.eudald.gr {
+twnl.eudald.gr, towonel.eudald.gr {
   log
 	reverse_proxy towonel-hub:8443
 }
