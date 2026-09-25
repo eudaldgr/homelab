@@ -66,7 +66,7 @@ kind: Service
 metadata:
   name: kube-api
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: k8s.eudald.gr
+    external-dns.kubernetes.io/hostname: k8s.eudald.gr
     lbipam.cilium.io/ips: 10.1.42.50
 spec:
   type: LoadBalancer
