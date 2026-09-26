@@ -9,7 +9,7 @@ services:
     command: "-R 65532:65532 /chown"
 
   app:
-    image: ghcr.io/vegops/garage:2.3.0-r0@sha256:3183e3452f605e669e4aa88e1a1442a0e4f325418762c4cb82e4a3c3e0a4808a
+    image: ghcr.io/vegops/garage:2.3.0-r0@sha256:f2acc76349e8d1390bd94c9700071366cded2b600c1f4ef53f8996192a364a47
     container_name: garage_app_1
     user: 65532:65532
     depends_on:
