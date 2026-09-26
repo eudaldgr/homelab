@@ -33,7 +33,7 @@ services:
     restart: unless-stopped
 
   webui:
-    image: ghcr.io/vegops/garage-webui:1.1.0-r0@sha256:668e60b8a0de38c21ff918b4e7f63b4d36c22769c0d4d3c7a705217a6f9fc1be
+    image: ghcr.io/vegops/garage-webui:1.1.0-r0@sha256:e6abe2dd3a3b59b28c0ed59b865d30e9907d1f8da6c0ccf3096f34b411b70c5e
     container_name: garage_webui_1
     depends_on:
       app:
