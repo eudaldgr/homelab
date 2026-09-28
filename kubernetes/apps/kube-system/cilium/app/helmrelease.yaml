@@ -22,7 +22,7 @@ spec:
     bgpControlPlane:
       enabled: true
     cgroup:
-      autoMount:
+      automount:
         enabled: false
       hostRoot: /sys/fs/cgroup
     cni:
@@ -30,7 +30,7 @@ spec:
     dashboards:
       enabled: true
     # devices: eth0
-    enableIPv4BIGTCP: false
+    enableIPv4BIGTCP: true
     endpointRoutes:
       enabled: true
     envoy:
