@@ -82,10 +82,32 @@ spec:
     route:
       app:
         hostnames:
+          - "{{ .Release.Name }}.eudald.gr"
           - bitwarden.eudald.gr
         parentRefs:
           - name: envoy-internal
             namespace: network
+      external:
+        hostnames:
+          - "{{ .Release.Name }}.eudald.gr"
+          - bitwarden.eudald.gr
+        parentRefs:
+          - name: envoy-external
+            namespace: network
+        rules:
+          - matches:
+              - path:
+                  type: PathPrefix
+                  value: /admin
+            filters:
+              - type: ExtensionRef
+                extensionRef:
+                  group: gateway.envoyproxy.io
+                  kind: HTTPRouteFilter
+                  name: vaultwarden-admin-not-found
+          - backendRefs:
+              - identifier: app
+                port: *port
     persistence:
       config:
         existingClaim: "{{ .Release.Name }}"
