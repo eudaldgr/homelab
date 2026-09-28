@@ -75,6 +75,8 @@ spec:
         hostnames:
           - "{{ .Release.Name }}.eudald.gr"
         parentRefs:
+          - name: envoy-external
+            namespace: network
           - name: envoy-internal
             namespace: network
     persistence:

@@ -67,6 +67,7 @@ spec:
     route:
       app:
         hostnames:
+          - "{{ .Release.Name }}.eudald.gr"
           - pdf.eudald.gr
         parentRefs:
           - name: envoy-external

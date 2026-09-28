@@ -85,6 +85,7 @@ spec:
     route:
       app:
         hostnames:
+          - "{{ .Release.Name }}.eudald.gr"
           - searx.eudald.gr
         parentRefs:
           - name: envoy-external
