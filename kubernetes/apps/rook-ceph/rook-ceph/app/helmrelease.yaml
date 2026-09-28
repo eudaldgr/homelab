@@ -10,6 +10,10 @@ spec:
     name: rook-ceph
   interval: 1h
   values:
+    csi:
+      cephcsi:
+        # v3.16.3 upgrades the embedded Ceph client to v20.2.4 for AES256K support.
+        tag: v3.16.3
     image:
       repository: ghcr.io/rook/ceph
     monitoring:
