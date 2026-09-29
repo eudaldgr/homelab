@@ -65,8 +65,6 @@ spec:
           initialDelaySeconds: 10
           timeoutSeconds: 5
     triggerLoopOnEvent: true
-    extraArgs:
-      - --gateway-name=envoy-internal
     policy: sync
     registry: noop
     sources:
