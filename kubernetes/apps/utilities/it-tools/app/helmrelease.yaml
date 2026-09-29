@@ -68,8 +68,6 @@ spec:
           - "{{ .Release.Name }}.eudald.gr"
           - tools.eudald.gr
         parentRefs:
-          - name: envoy-internal
-            namespace: network
           - name: envoy-external
             namespace: network
     persistence:

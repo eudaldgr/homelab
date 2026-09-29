@@ -80,13 +80,6 @@ spec:
           http:
             port: *port
     route:
-      app:
-        hostnames:
-          - "{{ .Release.Name }}.eudald.gr"
-          - bitwarden.eudald.gr
-        parentRefs:
-          - name: envoy-internal
-            namespace: network
       external:
         hostnames:
           - "{{ .Release.Name }}.eudald.gr"
