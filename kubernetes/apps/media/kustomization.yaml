@@ -8,6 +8,7 @@ components:
 
 resources:
   - ./namespace.yaml
+  - ./autobrr/ks.yaml
   - ./configarr/ks.yaml
   - ./lidarr/ks.yaml
   - ./plex/ks.yaml
