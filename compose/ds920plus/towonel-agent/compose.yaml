@@ -1,0 +1,27 @@
+---
+name: towonel-agent
+services:
+  app:
+    image: codeberg.org/towonel/towonel-agent:1.11.0@sha256:f2e0d2bba2a30b85def3e7b6c110a74ad23c6be31697516225a42a8c999712c9
+    environment:
+      RUST_LOG: info
+      TOWONEL_INVITE_TOKEN: ${TOWONEL_INVITE_TOKEN}
+      TOWONEL_AGENT_HEALTH_LISTEN_ADDR: 127.0.0.1:19090
+      TOWONEL_AGENT_SERVICES: |
+        [
+          {"hostname":"calendar.eudald.gr","origin":"127.0.0.1:20003","proxy_protocol":"none"},
+          {"hostname":"contacts.eudald.gr","origin":"127.0.0.1:25556","proxy_protocol":"none"},
+          {"hostname":"drive.eudald.gr","origin":"127.0.0.1:10003","proxy_protocol":"none"},
+          {"hostname":"photos.eudald.gr","origin":"127.0.0.1:5443","proxy_protocol":"none"}
+        ]
+      TOWONEL_AGENT_TCP_SERVICES: |
+        [
+          {"name":"synology-drive-client","origin":"127.0.0.1:6690","listen_port":6690,"proxy_protocol":"none"}
+        ]
+    network_mode: host
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped

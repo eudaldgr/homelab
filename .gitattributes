@@ -10,7 +10,3 @@
 *.yml linguist-detectable linguist-language=YAML
 *.yaml linguist-detectable linguist-language=YAML
 *.yaml.j2 linguist-detectable linguist-language=YAML
-
-**/*.env filter=sops
-**/secrets.sops.yaml filter=sops
-**/variables.auto.pkrvars.hcl filter=sops
