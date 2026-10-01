@@ -1,5 +1,5 @@
+---
 name: garage
-
 services:
   chown:
     image: ghcr.io/vegops/chown:latest
@@ -7,7 +7,6 @@ services:
     volumes:
       - ${S3_DATA_DIR}/garage:/chown
     command: "-R 65532:65532 /chown"
-
   app:
     image: ghcr.io/vegops/garage:2.3.0-r0@sha256:3183e3452f605e669e4aa88e1a1442a0e4f325418762c4cb82e4a3c3e0a4808a
     container_name: garage_app_1
@@ -31,7 +30,6 @@ services:
     ports:
       - 9000:3900
     restart: unless-stopped
-
   webui:
     image: ghcr.io/vegops/garage-webui:1.1.0-r0@sha256:668e60b8a0de38c21ff918b4e7f63b4d36c22769c0d4d3c7a705217a6f9fc1be
     container_name: garage_webui_1
@@ -42,7 +40,7 @@ services:
       CONFIG_PATH: /tmp/missing.toml
       API_BASE_URL: http://app:3903
       API_ADMIN_KEY: ${GARAGE_ADMIN_TOKEN}
-      S3_REGION: garage
+      S3_REGION: eu-south-0
       S3_ENDPOINT_URL: http://app:3900
     ports:
       - 9001:3909
