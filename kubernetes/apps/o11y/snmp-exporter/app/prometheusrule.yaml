@@ -1,0 +1,34 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: snmp-exporter-rules
+spec:
+  groups:
+    - name: synology-dashboard.rules
+      rules:
+        # Original dashboards query these lookup labels as info metrics.
+        - record: ifName
+          expr: ifOperStatus{job="synology"} * 0 + 1
+        - record: hrStorageDescr
+          expr: hrStorageSize{job="synology"} * 0 + 1
+    - name: snmp-exporter.rules
+      rules:
+        - alert: SynologyRAIDUnhealthy
+          expr: raidStatus{job="synology"} == 11 or raidStatus{job="synology"} == 12
+          annotations:
+            summary: >-
+              Synology {{ $labels.instance }} RAID {{ $labels.raidName }} is degraded or crashed
+          for: 5m
+          labels:
+            severity: critical
+
+        - alert: SynologyDiskUnhealthy
+          expr: diskStatus{job="synology"} >= 4
+          annotations:
+            summary: >-
+              Synology {{ $labels.instance }} disk {{ $labels.diskID }} has failed
+          for: 5m
+          labels:
+            severity: critical
