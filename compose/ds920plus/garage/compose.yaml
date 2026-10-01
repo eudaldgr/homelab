@@ -29,7 +29,7 @@ services:
       - ${S3_DATA_DIR}/garage/etc:/garage/etc
       - ${S3_DATA_DIR}/garage/var:/garage/var
     ports:
-      - 3900:3900
+      - 9000:3900
     restart: unless-stopped
 
   webui:
@@ -45,7 +45,7 @@ services:
       S3_REGION: garage
       S3_ENDPOINT_URL: http://app:3900
     ports:
-      - 3909:3909
+      - 9001:3909
     tmpfs:
       - /tmp
     restart: unless-stopped

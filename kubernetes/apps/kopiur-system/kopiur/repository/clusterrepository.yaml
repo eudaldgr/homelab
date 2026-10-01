@@ -15,7 +15,7 @@ spec:
           namespace: kopiur-system
       bucket: kopiur
       endpoint: ds920plus.lan.eudald.gr:9000
-      region: cat-emp-01
+      region: eu-south-0
       tls:
         disableTls: true
   encryption:

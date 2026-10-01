@@ -48,6 +48,6 @@ services:
       - ${S3_DATA_DIR}/rustfs/data:/data
       - ${S3_DATA_DIR}/rustfs/logs:/logs
     ports:
-      - 9000:9000
-      - 9001:9001
+      - 19000:9000
+      - 19001:9001
     restart: unless-stopped
