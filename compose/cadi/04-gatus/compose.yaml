@@ -1,0 +1,29 @@
+---
+name: gatus
+services:
+  gatus:
+    image: ghcr.io/twin/gatus:v5.37.0@sha256:094eb186e55235db367e90e9d56140e5897b7044c41de23cde4cc18e6da1242e
+    container_name: gatus
+    restart: unless-stopped
+    environment:
+      GATUS_DELAY_START_SECONDS: 5
+      GATUS_CONFIG_PATH: /config
+      GATUS_WEB_PORT: 8080
+      PUSHOVER_TOKEN: ${GATUS_PUSHOVER_TOKEN}
+      PUSHOVER_USER_KEY: ${GATUS_PUSHOVER_KEY}
+      REMOTE_STATUS_HOSTNAME: status.eudald.gr
+      REMOTE_HEARTBEAT_TOKEN: ${GATUS_REMOTE_HEARTBEAT_TOKEN}
+    volumes:
+      - gatus-config:/config
+    configs:
+      - source: gatus_config
+        target: /config/config.yaml
+volumes:
+  gatus-config:
+configs:
+  gatus_config:
+    file: ./config/config.yaml
+networks:
+  default:
+    name: edge
+    external: true

@@ -1,0 +1,11 @@
+---
+endpoints:
+  - name: cadi | ping
+    group: vps
+    url: icmp://46.224.183.10
+    interval: 1m
+    ui:
+      hide-url: true
+      hide-hostname: true
+    conditions:
+      - "[CONNECTED] == true"

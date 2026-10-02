@@ -10,6 +10,7 @@ services:
         twnl.eudald.gr
         towonel.eudald.gr
         cadi-doco-cd.eudald.gr
+        cadi-gatus.eudald.gr
     ports:
       - 80:80
       - 443:443
