@@ -8,7 +8,7 @@ services:
       - ${S3_DATA_DIR}/garage:/chown
     command: "-R 65532:65532 /chown"
   app:
-    image: ghcr.io/vegops/garage:2.3.0-r0@sha256:3183e3452f605e669e4aa88e1a1442a0e4f325418762c4cb82e4a3c3e0a4808a
+    image: ghcr.io/vegops/garage:2.3.0-r0@sha256:da845e3fd7995d992332e2cff107d5ef04d3ef8a5be693887d30665ee526c626
     container_name: garage_app_1
     user: 65532:65532
     command: ["server"]
