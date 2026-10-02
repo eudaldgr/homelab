@@ -21,6 +21,9 @@ spec:
       existingSecret: konflate-webhook-token-secret
     httpRoute:
       enabled: true
+      annotations:
+        gatus.home-operations.com/endpoint: |-
+          conditions: ["[STATUS] == 200"]
       parentRefs:
         - name: envoy-external
           namespace: network

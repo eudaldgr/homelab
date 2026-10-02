@@ -15,7 +15,7 @@ alerting:
 
 endpoints:
   - name: status page
-    group: cadi
+    group: home
     url: https://${REMOTE_STATUS_HOSTNAME}
     interval: 1m
     ui:
@@ -28,7 +28,7 @@ endpoints:
 
 external-endpoints:
   - name: heartbeat
-    group: cadi
+    group: home
     token: ${REMOTE_HEARTBEAT_TOKEN}
     heartbeat:
       interval: 5m

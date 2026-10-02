@@ -54,10 +54,10 @@ spec:
         - httpConfig:
             bearerTokenSecret:
               name: alertmanager-secret
-              key: CADI_HEARTBEAT_TOKEN
+              key: CADI_HOME_HEARTBEAT_TOKEN
           urlSecret:
             name: alertmanager-secret
-            key: CADI_HEARTBEAT_URL
+            key: CADI_HOME_HEARTBEAT_URL
     - name: pushover
       pushoverConfigs:
         - html: true

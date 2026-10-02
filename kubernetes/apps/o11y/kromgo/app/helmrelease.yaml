@@ -73,6 +73,10 @@ spec:
           colorExpr: 'colorScale(result, [15552000.0, 31104000.0], ["green", "orange", "red"])'
     httpRoute:
       enabled: true
+      annotations:
+        gatus.home-operations.com/endpoint: |-
+          conditions: ["[STATUS] == 200"]
+          path: /healthz
       parentRefs:
         - name: envoy-external
           namespace: network
