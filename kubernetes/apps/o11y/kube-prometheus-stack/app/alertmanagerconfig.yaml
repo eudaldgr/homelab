@@ -31,7 +31,7 @@ spec:
       - "alertname"
       - "cluster"
       - "job"
-    groupInterval: 10m
+    groupInterval: 5m
     groupWait: 1m
 
   inhibitRules:

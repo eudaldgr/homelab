@@ -8,9 +8,17 @@ _GitOps-managed home infrastructure powered by Talos, Kubernetes, OpenTofu, Flux
 
 <div align="center">
 
+[![Status-Page](https://kromgo.eudald.gr/badges/home_status_page)](https://status.eudald.gr)&nbsp;&nbsp;
+[![Alertmanager](https://kromgo.eudald.gr/badges/home_heartbeat)](https://cadi-gatus.eudald.gr)
+
+</div>
+
+<div align="center">
+
 [![Talos](https://kromgo.eudald.gr/badges/talos_version)](https://talos.dev)&nbsp;&nbsp;
 [![Kubernetes](https://kromgo.eudald.gr/badges/kubernetes_version)](https://kubernetes.io)&nbsp;&nbsp;
-[![Flux](https://kromgo.eudald.gr/badges/flux_version)](https://fluxcd.io)
+[![Flux](https://kromgo.eudald.gr/badges/flux_version)](https://fluxcd.io)&nbsp;&nbsp;
+[![Renovate](https://img.shields.io/github/actions/workflow/status/eudaldgr/homelab/renovate.yaml?branch=main&label&logo=renovate&color=blue)](https://github.com/eudaldgr/homelab/actions/workflows/renovate.yaml)
 
 </div>
 
@@ -22,7 +30,8 @@ _GitOps-managed home infrastructure powered by Talos, Kubernetes, OpenTofu, Flux
 [![Memory](https://kromgo.eudald.gr/badges/cluster_memory_usage)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
 [![UPS Load](https://kromgo.eudald.gr/badges/ups_load)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
 [![Age](https://kromgo.eudald.gr/badges/cluster_birth_age)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
-[![Uptime](https://kromgo.eudald.gr/badges/cluster_uptime_age)](https://github.com/home-operations/kromgo)
+[![Uptime](https://kromgo.eudald.gr/badges/cluster_uptime_age)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
+[![Alerts](https://kromgo.eudald.gr/badges/cluster_alert_count)](https://github.com/home-operations/kromgo)
 
 </div>
 
