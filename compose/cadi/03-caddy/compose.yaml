@@ -2,7 +2,7 @@
 name: caddy
 services:
   app:
-    image: ghcr.io/bjw-s-labs/caddy-l4:2.11.4@sha256:f404cca91837bae9a304cf1efbec7da8bbbaa8e00a9cba3060cde99d6a176d81
+    image: ghcr.io/bjw-s-labs/caddy-l4:2.11.6@sha256:39266cdf49942464783ad4bc03ae6aa0e4da62dbe8e8258b12566c886ebd4502
     container_name: caddy-l4
     environment:
       CADDY_ACME_EMAIL: ${CADDY_ACME_EMAIL}
