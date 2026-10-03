@@ -10,12 +10,13 @@ components:
 resources:
   - ./namespace.yaml
   - ./blackbox-exporter/ks.yaml
-  - ./grafana-operator/ks.yaml
   - ./gatus/ks.yaml
+  - ./grafana-operator/ks.yaml
   - ./kromgo/ks.yaml
   - ./kube-prometheus-stack/ks.yaml
   - ./nut-exporter/ks.yaml
   - ./prometheus-adapter/ks.yaml
+  - ./silence-operator/ks.yaml
   - ./smartctl-exporter/ks.yaml
   - ./snmp-exporter/ks.yaml
   - ./victoria-logs/ks.yaml
