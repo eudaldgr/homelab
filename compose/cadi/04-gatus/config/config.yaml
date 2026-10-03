@@ -35,6 +35,8 @@ external-endpoints:
     alerts:
       - type: pushover
 
+metrics: true
+
 storage:
   type: sqlite
   caching: true
