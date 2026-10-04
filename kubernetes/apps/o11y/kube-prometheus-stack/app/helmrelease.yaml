@@ -35,6 +35,18 @@ spec:
               resources:
                 requests:
                   storage: 1Gi
+    kubeApiServer:
+      serviceMonitor:
+        metricRelabelings:
+          # Drop high cardinality labels
+          - action: drop
+            sourceLabels:
+              - "__name__"
+            regex: (apiserver|etcd|rest_client)_request(|_sli|_slo)_duration_seconds_bucket
+          - action: drop
+            sourceLabels:
+              - "__name__"
+            regex: (apiserver_response_sizes_bucket|apiserver_watch_events_sizes_bucket)
     kubeEtcd:
       service:
         selector:
@@ -67,7 +79,7 @@ spec:
         storageSpec:
           volumeClaimTemplate:
             spec:
-              storageClassName: ceph-block
+              storageClassName: miroir-slow-local
               resources:
                 requests:
                   storage: 50Gi
