@@ -1,0 +1,64 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: pocket-id-operator
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: pocket-id-operator
+  interval: 1h
+  values:
+    # Deprecated top-level instance (defaults to enabled) — configured under pocket-id-instance instead
+    instance:
+      enabled: false
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+      prometheusRule:
+        enabled: true
+      dashboard:
+        enabled: true
+        grafanaDashboard:
+          instanceSelector:
+            matchLabels:
+              dashboards: grafana
+    operator:
+      timezone: Europe/Madrid
+    pocket-id-instance:
+      instance:
+        enabled: true
+        name: pocket-id
+        serviceMonitor:
+          enabled: true
+        spec:
+          appUrl: https://auth.eudald.gr
+          encryptionKey:
+            valueFrom:
+              secretKeyRef:
+                name: pocket-id-secret
+                key: ENCRYPTION_KEY
+          persistence:
+            enabled: true
+            existingClaim: pocket-id
+          podSecurityContext:
+            runAsNonRoot: true
+            runAsUser: 65532
+            runAsGroup: 65532
+            fsGroup: 65532
+            fsGroupChangePolicy: OnRootMismatch
+          metrics:
+            enabled: true
+          route:
+            enabled: true
+            annotations:
+              gatus.home-operations.com/endpoint: |-
+                conditions: ["[STATUS] == 200"]
+            parentRefs:
+              - name: envoy-external
+                namespace: network
+          analyticsDisabled: true
+          versionCheckDisabled: true
+          timezone: Europe/Madrid
