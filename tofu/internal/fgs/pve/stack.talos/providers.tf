@@ -14,7 +14,7 @@ terraform {
     profile                     = "garage"
     bucket                      = "tofu"
     key                         = "internal/fgs/pve/stack.talos.tfstate"
-    region                      = "garage"
+    region                      = "eu-south-0"
     use_path_style              = true
     use_lockfile                = true
     encrypt                     = true

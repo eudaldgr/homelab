@@ -12,7 +12,7 @@ terraform {
     profile                     = "garage"
     bucket                      = "tofu"
     key                         = "hetzner/cadi.tfstate"
-    region                      = "garage"
+    region                      = "eu-south-0"
     use_path_style              = true
     use_lockfile                = true
     skip_credentials_validation = true
