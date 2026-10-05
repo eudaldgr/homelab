@@ -30,6 +30,7 @@ services:
       - ${S3_DATA_DIR}/garage/var:/garage/var
     ports:
       - 9000:3900
+      - 9002:3903
     restart: unless-stopped
   webui:
     image: ghcr.io/vegops/garage-webui:1.1.0-r0@sha256:ad8dceb1dd9aed71f7bcefa502da3f2c25aaac98611428ae795ae031bdff1803
