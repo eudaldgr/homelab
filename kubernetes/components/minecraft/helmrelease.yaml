@@ -1,0 +1,119 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: ${APP}
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: ${APP}
+  interval: 1h
+  values:
+    controllers:
+      minecraft:
+        type: statefulset
+        containers:
+          app:
+            image:
+              repository: docker.io/itzg/minecraft-server
+              tag: 2026.9.2-java25@sha256:de5d1b1a83eba576f6c8a688fac2a3523ce457724cdebc8ea48d7818b74cdf6e
+            env:
+              TZ: Europe/Madrid
+              EULA: "TRUE"
+              TYPE: PAPER
+              VERSION: ${MINECRAFT_VERSION:=26.1.2}
+              MEMORY: ${MINECRAFT_MEMORY:=4G}
+              USE_AIKAR_FLAGS: true
+              # geyserUdpPort: each world listens Bedrock on its own port of the shared LoadBalancer IP
+              JVM_OPTS: -DGeyser.PrintSecureChatInformation=false -DgeyserUdpPort=${MINECRAFT_BEDROCK_PORT}
+              SERVER_NAME: ${MINECRAFT_NAME}
+              MOTD: ${MINECRAFT_MOTD:=Survival • Java & Bedrock}
+              MODE: ${MINECRAFT_MODE:=survival}
+              DIFFICULTY: ${MINECRAFT_DIFFICULTY:=normal}
+              ONLINE_MODE: true
+              ENFORCE_SECURE_PROFILE: false
+              MAX_PLAYERS: 10
+              PVP: true
+              SPAWN_PROTECTION: 10
+              VIEW_DISTANCE: 16
+              SIMULATION_DISTANCE: 10
+              PLAYER_IDLE_TIMEOUT: 30
+              ENABLE_STATUS: true
+              PLUGINS: |-
+                https://download.geysermc.org/v2/projects/geyser/versions/latest/builds/latest/downloads/spigot
+                https://download.geysermc.org/v2/projects/floodgate/versions/latest/builds/latest/downloads/spigot
+                https://github.com/EssentialsX/Essentials/releases/download/2.22.0/EssentialsX-2.22.0.jar
+                https://github.com/EssentialsX/Essentials/releases/download/2.22.0/EssentialsXChat-2.22.0.jar
+                https://github.com/EssentialsX/Essentials/releases/download/2.22.0/EssentialsXSpawn-2.22.0.jar
+                https://github.com/MilkBowl/Vault/releases/download/1.7.3/Vault.jar
+              MODRINTH_PROJECTS: |-
+                fastasyncworldedit
+                luckperms
+                multiverse-core
+                multiverse-signportals
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: &javaPort 25565
+                  periodSeconds: 30
+                  failureThreshold: 3
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: *javaPort
+                  periodSeconds: 10
+                  failureThreshold: 3
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: *javaPort
+                  periodSeconds: 10
+                  failureThreshold: 60
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities: { drop: ["ALL"] }
+            resources:
+              requests:
+                cpu: 250m
+                memory: ${MINECRAFT_MEMORY_REQUEST:=4Gi}
+              limits:
+                memory: ${MINECRAFT_MEMORY_LIMIT:=6Gi}
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile: { type: RuntimeDefault }
+    service:
+      app:
+        annotations:
+          mc-router.itzg.me/externalServerName: ${MINECRAFT_HOSTNAME}
+        ports:
+          minecraft:
+            port: *javaPort
+      bedrock:
+        type: LoadBalancer
+        annotations:
+          lbipam.cilium.io/ips: ${MINECRAFT_LB_IP:=10.1.42.157}
+          lbipam.cilium.io/sharing-key: minecraft
+          external-dns.kubernetes.io/hostname: ${MINECRAFT_HOSTNAME}
+          external-dns.kubernetes.io/target: ${MINECRAFT_LB_IP:=10.1.42.157}
+        ports:
+          bedrock:
+            port: ${MINECRAFT_BEDROCK_PORT}
+            protocol: UDP
+    persistence:
+      data:
+        existingClaim: ${APP}
+        globalMounts:
+          - path: /data
