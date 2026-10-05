@@ -1,0 +1,38 @@
+---
+name: doco-cd-updater
+services:
+  app:
+    image: ghcr.io/kimdre/doco-cd:0.123.0@sha256:11b474122ed530614cbe4cb8390f94b646d3fc8ba40d74c0f0b7f55a8ca719f8
+    container_name: doco-cd-updater
+    environment:
+      DEPLOY_CONFIG_BASE_DIR: ./compose/cadi
+      HTTP_PORT: 8881
+      LOG_LEVEL: info
+      POLL_CONFIG: |-
+        - url: https://github.com/eudaldgr/homelab.git
+          reference: main
+          interval: 3600
+          target: updater
+      SCHEDULER_ENABLED: "false"
+      TZ: Europe/Madrid
+    healthcheck:
+      test:
+        - CMD
+        - /doco-cd
+        - healthcheck
+      start_period: 15s
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - data:/data
+      - type: bind
+        source: /opt/doco-cd
+        target: /opt/doco-cd
+        read_only: true
+        bind:
+          create_host_path: false
+    restart: unless-stopped
+volumes:
+  data:

@@ -1,0 +1,9 @@
+---
+name: doco-cd
+working_dir: ./compose/cadi/doco-cd
+force_recreate: true
+reconciliation:
+  enabled: true
+  interval: 3600
+compose_files:
+  - compose.main.yaml
