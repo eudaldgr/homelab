@@ -15,7 +15,7 @@ services:
     pid: host
     read_only: true
     volumes:
-      - /:/host/root:ro,rslave
+      - /:/host/root:ro
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
     restart: unless-stopped
