@@ -199,9 +199,9 @@
             group: root
             mode: "0755"
 
-        - name: doco-cd | Copy compose app file
+        - name: doco-cd | Copy bootstrap compose file
           ansible.builtin.copy:
-            src: "{{ playbook_dir }}/../../compose/cadi/.doco-cd/compose.app.yaml"
+            src: "{{ playbook_dir }}/../../compose/cadi/doco-cd/compose.main.yaml"
             dest: "{{ dococd_config_dir }}/compose.yaml"
             owner: root
             group: root
@@ -219,7 +219,7 @@
           no_log: true
           loop:
             - name: .env
-              content: "INFISICAL_CLIENT_ID={{ infisical_dococd_client_id }}"
+              content: "SECRET_PROVIDER_CLIENT_ID={{ infisical_dococd_client_id }}"
             - name: infisical_client_secret
               content: "{{ infisical_dococd_client_secret }}"
             - name: api_secret
