@@ -54,7 +54,7 @@ jobs:
           domain: https://eu.infisical.com
           project-slug: homelab
           env-slug: prod
-          secret-path: /github/corn-fakes
+          secret-path: /kubernetes/github-bot
           export-type: env
 
       - name: Generate Token
