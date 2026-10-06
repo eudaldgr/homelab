@@ -25,6 +25,8 @@ services:
     ports:
       - "22:22"
       - "6690:6690"
+      - "25565:25565" # Minecraft Java → mc-router
+      - "19132:19132/udp" # Minecraft Bedrock (fc)
       - "51820:51820/udp"
     volumes:
       - /opt/towonel:/data

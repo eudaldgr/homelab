@@ -45,6 +45,14 @@ spec:
                 [
                   {"hostname":"*.eudald.gr","origin":"envoy-external.network.svc.cluster.local:443"}
                 ]
+              TOWONEL_AGENT_TCP_SERVICES: |
+                [
+                  {"name":"minecraft-java","origin":"mc-router-app.games.svc.cluster.local:25565","listen_port":25565,"proxy_protocol":"none"}
+                ]
+              TOWONEL_AGENT_UDP_SERVICES: |
+                [
+                  {"name":"minecraft-fc-bedrock","origin":"minecraft-fc-bedrock.games.svc.cluster.local:19132","listen_port":19132}
+                ]
               TOWONEL_INVITE_TOKEN:
                 valueFrom:
                   secretKeyRef:

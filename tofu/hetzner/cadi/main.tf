@@ -7,18 +7,22 @@ locals {
 
   # HTTP
   # HTTPS
-  # SSH
   # Synology Drive Client/Server
+  # SSH
+  # Minecraft Java
   public_tcp_ports = [
     80,
     443,
+    6690,
     22222,
-    6690
+    25565
   ]
   # HTTP/3
+  # Minecraft Bedrock (fc)
   # WireGuard
   public_udp_ports = [
     443,
+    19132,
     51820
   ]
 }

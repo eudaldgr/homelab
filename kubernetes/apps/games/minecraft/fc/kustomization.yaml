@@ -2,4 +2,17 @@
 # yaml-language-server: $schema=https://json.schemastore.org/kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-resources: []
+resources:
+  - ./dnsendpoint.yaml
+  - ./helmrelease.yaml
+  - ./ocirepository.yaml
+configMapGenerator:
+  - name: minecraft-fc-configmap
+    files:
+      - geyser-config.yml=./resources/geyser-config.yml
+      - luckperms-config.yml=./resources/luckperms-config.yml
+      - luckperms-group-admin.yml=./resources/luckperms-group-admin.yml
+      - luckperms-group-default.yml=./resources/luckperms-group-default.yml
+      - paper-world-defaults.yml=./resources/paper-world-defaults.yml
+generatorOptions:
+  disableNameSuffixHash: true

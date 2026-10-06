@@ -3,16 +3,18 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: ${APP}
+  name: minecraft-fc
 spec:
   chartRef:
     kind: OCIRepository
-    name: ${APP}
+    name: minecraft-fc
   interval: 1h
   values:
     controllers:
       minecraft:
         type: statefulset
+        annotations:
+          reloader.stakater.com/auto: "true"
         containers:
           app:
             image:
@@ -22,16 +24,20 @@ spec:
               TZ: Europe/Madrid
               EULA: "TRUE"
               TYPE: PAPER
-              VERSION: ${MINECRAFT_VERSION:=26.1.2}
-              MEMORY: ${MINECRAFT_MEMORY:=4G}
+              VERSION: 26.2
+              MEMORY: 4G
               USE_AIKAR_FLAGS: true
-              # geyserUdpPort: each world listens Bedrock on its own port of the shared LoadBalancer IP
-              JVM_OPTS: -DGeyser.PrintSecureChatInformation=false -DgeyserUdpPort=${MINECRAFT_BEDROCK_PORT}
-              SERVER_NAME: ${MINECRAFT_NAME}
-              MOTD: ${MINECRAFT_MOTD:=Survival • Java & Bedrock}
-              MODE: ${MINECRAFT_MODE:=survival}
-              DIFFICULTY: ${MINECRAFT_DIFFICULTY:=normal}
+              # Each world listens Bedrock on its own UDP port of the shared LoadBalancer IP
+              JVM_OPTS: -DGeyser.PrintSecureChatInformation=false -DgeyserUdpPort=19132
+              SERVER_NAME: fc
+              MOTD: Survival • Java & Bedrock
+              MODE: survival
+              DIFFICULTY: normal
               ONLINE_MODE: true
+              OPS: eudaldgr
+              # Bedrock (Floodgate) players: add them in-game with `fwhitelist add <gamertag>`
+              WHITELIST: eudaldgr
+              ENFORCE_WHITELIST: true
               ENFORCE_SECURE_PROFILE: false
               MAX_PLAYERS: 10
               PVP: true
@@ -40,12 +46,14 @@ spec:
               SIMULATION_DISTANCE: 10
               PLAYER_IDLE_TIMEOUT: 30
               ENABLE_STATUS: true
+              # Plugin/Paper configs from git (/plugins, /config) always win over the copies in /data
+              SYNC_SKIP_NEWER_IN_DESTINATION: false
               PLUGINS: |-
                 https://download.geysermc.org/v2/projects/geyser/versions/latest/builds/latest/downloads/spigot
                 https://download.geysermc.org/v2/projects/floodgate/versions/latest/builds/latest/downloads/spigot
-                https://github.com/EssentialsX/Essentials/releases/download/2.22.0/EssentialsX-2.22.0.jar
-                https://github.com/EssentialsX/Essentials/releases/download/2.22.0/EssentialsXChat-2.22.0.jar
-                https://github.com/EssentialsX/Essentials/releases/download/2.22.0/EssentialsXSpawn-2.22.0.jar
+                https://ci.ender.zone/job/EssentialsX/1832/artifact/jars/EssentialsX-2.22.1-dev+27-e70bdb8.jar
+                https://ci.ender.zone/job/EssentialsX/1832/artifact/jars/EssentialsXChat-2.22.1-dev+27-e70bdb8.jar
+                https://ci.ender.zone/job/EssentialsX/1832/artifact/jars/EssentialsXSpawn-2.22.1-dev+27-e70bdb8.jar
                 https://github.com/MilkBowl/Vault/releases/download/1.7.3/Vault.jar
               MODRINTH_PROJECTS: |-
                 fastasyncworldedit
@@ -83,9 +91,9 @@ spec:
             resources:
               requests:
                 cpu: 250m
-                memory: ${MINECRAFT_MEMORY_REQUEST:=4Gi}
+                memory: 4Gi
               limits:
-                memory: ${MINECRAFT_MEMORY_LIMIT:=6Gi}
+                memory: 6Gi
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true
@@ -97,23 +105,42 @@ spec:
     service:
       app:
         annotations:
-          mc-router.itzg.me/externalServerName: ${MINECRAFT_HOSTNAME}
+          mc-router.itzg.me/externalServerName: fc.mc.eudald.gr
         ports:
           minecraft:
             port: *javaPort
       bedrock:
         type: LoadBalancer
         annotations:
-          lbipam.cilium.io/ips: ${MINECRAFT_LB_IP:=10.1.42.157}
+          lbipam.cilium.io/ips: 10.1.42.157
           lbipam.cilium.io/sharing-key: minecraft
-          external-dns.kubernetes.io/hostname: ${MINECRAFT_HOSTNAME}
-          external-dns.kubernetes.io/target: ${MINECRAFT_LB_IP:=10.1.42.157}
+          external-dns.kubernetes.io/hostname: fc.mc.eudald.gr
+          external-dns.kubernetes.io/target: 10.1.42.157
         ports:
           bedrock:
-            port: ${MINECRAFT_BEDROCK_PORT}
+            port: 19132
             protocol: UDP
     persistence:
       data:
-        existingClaim: ${APP}
+        existingClaim: "{{ .Release.Name }}"
         globalMounts:
           - path: /data
+      config-files:
+        type: configMap
+        name: minecraft-fc-configmap
+        globalMounts:
+          - path: /plugins/Geyser-Spigot/config.yml
+            subPath: geyser-config.yml
+            readOnly: true
+          - path: /plugins/LuckPerms/config.yml
+            subPath: luckperms-config.yml
+            readOnly: true
+          - path: /plugins/LuckPerms/yaml-storage/groups/admin.yml
+            subPath: luckperms-group-admin.yml
+            readOnly: true
+          - path: /plugins/LuckPerms/yaml-storage/groups/default.yml
+            subPath: luckperms-group-default.yml
+            readOnly: true
+          - path: /config/paper-world-defaults.yml
+            subPath: paper-world-defaults.yml
+            readOnly: true

@@ -152,6 +152,11 @@
               port: 443
             - name: Synology Drive
               port: 6690
+            - name: Minecraft Java
+              port: 25565
+            - name: Minecraft Bedrock (fc)
+              port: 19132
+              protocol: udp
             - name: towonel-iroh
               port: 51820
               protocol: udp
