@@ -1,0 +1,93 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: mc-router
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: mc-router
+  interval: 1h
+  values:
+    controllers:
+      mc-router:
+        pod:
+          automountServiceAccountToken: true
+        containers:
+          app:
+            image:
+              repository: ghcr.io/itzg/mc-router
+              tag: 1.47.2@sha256:64ae69eaa7a6800a79bbf962f027f4020878efa25183359115bc7f6ee569c36e
+            env:
+              API_BINDING: :8080
+              IN_KUBE_CLUSTER: true
+              KUBE_NAMESPACE:
+                valueFrom:
+                  fieldRef:
+                    fieldPath: metadata.namespace
+              METRICS_BACKEND: prometheus
+              PORT: &port 25565
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: *port
+                  periodSeconds: 10
+              readiness: *probes
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 128Mi
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        seccompProfile: { type: RuntimeDefault }
+    service:
+      app:
+        type: LoadBalancer
+        annotations:
+          lbipam.cilium.io/ips: 10.1.42.157
+          lbipam.cilium.io/sharing-key: minecraft
+          external-dns.kubernetes.io/hostname: mc.eudald.gr
+          external-dns.kubernetes.io/target: 10.1.42.157
+        ports:
+          minecraft:
+            port: *port
+      metrics:
+        ports:
+          metrics:
+            port: 8080
+    serviceMonitor:
+      app:
+        service:
+          identifier: metrics
+        endpoints:
+          - port: metrics
+            path: /metrics
+    rbac:
+      roles:
+        mc-router:
+          type: Role
+          rules:
+            - apiGroups: [""]
+              resources: ["services"]
+              verbs: ["watch", "list"]
+      bindings:
+        mc-router:
+          type: RoleBinding
+          roleRef:
+            identifier: mc-router
+          subjects:
+            - identifier: mc-router
+    serviceAccount:
+      mc-router: {}

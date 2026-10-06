@@ -1,0 +1,28 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: minecraft-fc
+spec:
+  components:
+    - ../../../../components/kopiur/backup
+    - ../../../../components/minecraft
+  interval: 1h
+  path: ./kubernetes/apps/games/minecraft/fc
+  postBuild:
+    substitute:
+      APP: minecraft-fc
+      KOPIUR_CAPACITY: 10Gi
+      KOPIUR_PGID: "1000"
+      KOPIUR_PUID: "1000"
+      MINECRAFT_NAME: fc
+      MINECRAFT_HOSTNAME: fc.mc.eudald.gr
+      MINECRAFT_BEDROCK_PORT: "19132"
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: games
+  wait: false
