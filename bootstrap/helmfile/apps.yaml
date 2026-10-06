@@ -1,43 +1,110 @@
 ---
 # yaml-language-server: $schema=https://json.schemastore.org/helmfile
 
-# One-time bootstrap releases. Flux takes ownership of these releases after the
-# FluxInstance starts reconciling the matching HelmRelease resources in Git.
+# Bootstraps core applications that provide a minimal runtime base for the
+# cluster. These releases are installed first so the cluster has the resources
+# Flux needs before its own reconciliation begins.
+#
+# After this bootstrap phase, Flux is ready to take over management of the
+# application stack and continue reconciling downstream state.
 
 helmDefaults:
   cleanupOnFail: true
-  createNamespace: true
   forceConflicts: true
-  timeout: 600
   wait: true
   waitForJobs: true
+
+bases:
+  - default.yaml
+
+defaultInherit: default
 
 repositories:
   - name: infisical
     url: https://dl.cloudsmith.io/public/infisical/helm-charts/helm/charts/
 
 releases:
+  - name: cilium
+    namespace: kube-system
+    hooks:
+      - # Wait for CRDs to be available
+        command: kubectl
+        args:
+          - wait
+          - --for=create
+          - crd/ciliumbgpadvertisements.cilium.io
+          - crd/ciliumbgpclusterconfigs.cilium.io
+          - crd/ciliumbgppeerconfigs.cilium.io
+          - crd/ciliumloadbalancerippools.cilium.io
+          - --timeout=2m
+        events:
+          - postsync
+        showlogs: true
+      - # Apply Resources
+        command: kubectl
+        args:
+          - apply
+          - --namespace={{ .Release.Namespace }}
+          - --server-side
+          - --force-conflicts
+          - --filename=../../kubernetes/apps/{{ .Release.Namespace }}/{{ .Release.Name }}/app/networking.yaml
+        events:
+          - postsync
+        showlogs: true
+
+  - name: coredns
+    namespace: kube-system
+    needs:
+      - kube-system/cilium
+
+  - name: spegel
+    namespace: kube-system
+    needs:
+      - kube-system/coredns
+
+  - name: cert-manager
+    namespace: cert-manager
+    needs:
+      - kube-system/spegel
+
   - name: infisical-operator
     namespace: infisical-system
+    # Infisical publishes a classic Helm repository (no OCIRepository to read the chart from)
     chart: 'infisical/{{ (fromYaml (readFile "../../kubernetes/apps/infisical-system/infisical-operator/app/helmrelease.yaml")).spec.chart.spec.chart }}'
     version: '{{ (fromYaml (readFile "../../kubernetes/apps/infisical-system/infisical-operator/app/helmrelease.yaml")).spec.chart.spec.version }}'
-    values:
-      - ./templates/values.yaml.gotmpl
+    hooks:
+      - # Wait for CRDs to be available
+        command: kubectl
+        args:
+          - wait
+          - --for=create
+          - crd/infisicalauths.secrets.infisical.com
+          - crd/infisicalconnections.secrets.infisical.com
+          - --timeout=2m
+        events:
+          - postsync
+        showlogs: true
+      - # Apply Resources
+        command: kubectl
+        args:
+          - apply
+          - --namespace={{ .Release.Namespace }}
+          - --server-side
+          - --force-conflicts
+          - --filename=../../kubernetes/apps/{{ .Release.Namespace }}/infisical/app/connection.yaml
+          - --filename=../../kubernetes/apps/{{ .Release.Namespace }}/infisical/app/auth.yaml
+        events:
+          - postsync
+        showlogs: true
+    needs:
+      - cert-manager/cert-manager
 
   - name: flux-operator
     namespace: flux-system
-    chart: '{{ (fromYaml (readFile "../../kubernetes/apps/flux-system/flux-operator/app/ocirepository.yaml")).spec.url }}'
-    version: '{{ (fromYaml (readFile "../../kubernetes/apps/flux-system/flux-operator/app/ocirepository.yaml")).spec.ref.tag }}'
     needs:
       - infisical-system/infisical-operator
-    values:
-      - ./templates/values.yaml.gotmpl
 
   - name: flux-instance
     namespace: flux-system
-    chart: '{{ (fromYaml (readFile "../../kubernetes/apps/flux-system/flux-instance/app/ocirepository.yaml")).spec.url }}'
-    version: '{{ (fromYaml (readFile "../../kubernetes/apps/flux-system/flux-instance/app/ocirepository.yaml")).spec.ref.tag }}'
     needs:
       - flux-system/flux-operator
-    values:
-      - ./templates/values.yaml.gotmpl
