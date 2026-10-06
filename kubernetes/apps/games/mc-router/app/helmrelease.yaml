@@ -33,8 +33,9 @@ spec:
                 enabled: true
                 custom: true
                 spec:
-                  tcpSocket:
-                    port: *port
+                  httpGet:
+                    path: /routes
+                    port: 8080
                   periodSeconds: 10
               readiness: *probes
             securityContext:
