@@ -1,13 +1,17 @@
+# Trash
+.DS_Store
+Thumbs.db
+
+# Other files
 .claude/
 .private/
 .pytest_cache/
+.terraform/
 .venv/
 *.crt
 *.env
 *.iso
 *.key
 .decrypted~*
-.DS_Store
-Thumbs.db
 kubeconfig
 talosconfig

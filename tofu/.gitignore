@@ -1,4 +1,0 @@
-# Ignore OpenTofu generated output files
-**/output
-.terraform/
-.terraform.lock.hcl
