@@ -22,6 +22,8 @@ spec:
             env:
               TZ: Europe/Madrid
               TAUTULLI_HTTP_BASE_URL: https://tautulli.eudald.gr
+              # Behind envoy: honour X-Forwarded-Proto so redirects stay on https
+              TAUTULLI_HTTP_PROXY: 1
               TAUTULLI_HTTP_PORT: &port 80
             envFrom:
               - secretRef:
