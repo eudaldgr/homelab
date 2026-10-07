@@ -33,7 +33,7 @@ spec:
                 custom: true
                 spec:
                   httpGet:
-                    path: /healthz
+                    path: /manifest.json
                     port: &port 8123
                   periodSeconds: 10
                   timeoutSeconds: 5
@@ -84,8 +84,8 @@ spec:
           gatus.home-operations.com/endpoint: |-
             conditions: ["[STATUS] == 200"]
         hostnames:
-          - "{{ .Release.Name }}.eudald.gr"
           - hass.eudald.gr
+          - "{{ .Release.Name }}.eudald.gr"
         parentRefs:
           - name: envoy-external
             namespace: network
