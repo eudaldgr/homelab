@@ -85,8 +85,8 @@ spec:
     route:
       app:
         hostnames:
-          - "{{ .Release.Name }}.eudald.gr"
           - searx.eudald.gr
+          - "{{ .Release.Name }}.eudald.gr"
         parentRefs:
           - name: envoy-external
             namespace: network

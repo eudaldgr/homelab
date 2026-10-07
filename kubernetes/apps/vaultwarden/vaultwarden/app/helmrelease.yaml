@@ -86,8 +86,8 @@ spec:
             path: /alive
             conditions: ["[STATUS] == 200"]
         hostnames:
-          - "{{ .Release.Name }}.eudald.gr"
           - bitwarden.eudald.gr
+          - "{{ .Release.Name }}.eudald.gr"
         parentRefs:
           - name: envoy-external
             namespace: network

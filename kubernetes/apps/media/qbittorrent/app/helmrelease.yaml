@@ -80,8 +80,8 @@ spec:
     route:
       app:
         hostnames:
-          - "{{ .Release.Name }}.eudald.gr"
           - torrent.eudald.gr
+          - "{{ .Release.Name }}.eudald.gr"
         parentRefs:
           - name: envoy-internal
             namespace: network

@@ -116,8 +116,8 @@ spec:
     route:
       app:
         hostnames:
-          - "{{ .Release.Name }}.eudald.gr"
           - status.eudald.gr
+          - "{{ .Release.Name }}.eudald.gr"
         parentRefs:
           - name: envoy-external
             namespace: network
