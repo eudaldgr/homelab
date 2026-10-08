@@ -66,6 +66,9 @@ spec:
             "ips": ["10.1.60.20/24"],
             "mac": "02:7e:06:c2:7c:e3"
           }]
+      dnsConfig:
+        searches:
+          - lan.eudald.gr
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000

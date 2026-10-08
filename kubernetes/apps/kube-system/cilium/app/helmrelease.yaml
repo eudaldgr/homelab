@@ -18,6 +18,7 @@ spec:
       datapathMode: veth # netkit unsupported by kata-containers: https://github.com/kata-containers/kata-containers/issues/12159
       masquerade: true
       preallocateMaps: true
+      vlanBypass: [50, 60]
     bpfClockProbe: true
     bgpControlPlane:
       enabled: true
