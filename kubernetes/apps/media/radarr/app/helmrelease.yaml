@@ -26,6 +26,7 @@ spec:
               RADARR__AUTH__REQUIRED: DisabledForLocalAddresses
               RADARR__LOG__DBENABLED: "False"
               RADARR__LOG__LEVEL: info
+              RADARR__SERVER__ALLOWEDHOSTS: radarr.eudald.gr,radarr.media.svc.cluster.local
               RADARR__SERVER__PORT: &port 80
               RADARR__UPDATE__BRANCH: develop
               TZ: Europe/Madrid
@@ -78,11 +79,31 @@ spec:
             port: *port
     route:
       app:
+        forceRename: "{{ .Release.Name }}"
         hostnames:
           - "{{ .Release.Name }}.eudald.gr"
         parentRefs:
-          - name: envoy-internal
+          - name: envoy-external
             namespace: network
+      api:
+        annotations:
+          gatus.home-operations.com/enabled: "false"
+        hostnames:
+          - "{{ .Release.Name }}.eudald.gr"
+        parentRefs:
+          - name: envoy-external
+            namespace: network
+        rules:
+          - matches:
+              - path:
+                  type: PathPrefix
+                  value: /api
+              - path:
+                  type: PathPrefix
+                  value: /feed
+            backendRefs:
+              - identifier: app
+                port: *port
     persistence:
       config:
         existingClaim: "{{ .Release.Name }}"

@@ -64,7 +64,7 @@ spec:
           timezone: Europe/Madrid
           ui:
             appName: Pocket ID
-            sessionDuration: 60
+            sessionDuration: 1440
             homePageUrl: /settings/apps
             accentColor: default
             disableAnimations: false

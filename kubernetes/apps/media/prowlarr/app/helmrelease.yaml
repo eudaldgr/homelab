@@ -26,6 +26,7 @@ spec:
               PROWLARR__AUTH__REQUIRED: DisabledForLocalAddresses
               PROWLARR__LOG__DBENABLED: "False"
               PROWLARR__LOG__LEVEL: info
+              PROWLARR__SERVER__ALLOWEDHOSTS: prowlarr.eudald.gr,prowlarr.media.svc.cluster.local
               PROWLARR__SERVER__PORT: &port 80
               PROWLARR__UPDATE__BRANCH: develop
               TZ: Europe/Madrid
@@ -78,11 +79,31 @@ spec:
             port: *port
     route:
       app:
+        forceRename: "{{ .Release.Name }}"
         hostnames:
           - "{{ .Release.Name }}.eudald.gr"
         parentRefs:
-          - name: envoy-internal
+          - name: envoy-external
             namespace: network
+      api:
+        annotations:
+          gatus.home-operations.com/enabled: "false"
+        hostnames:
+          - "{{ .Release.Name }}.eudald.gr"
+        parentRefs:
+          - name: envoy-external
+            namespace: network
+        rules:
+          - matches:
+              - path:
+                  type: PathPrefix
+                  value: /api
+              - path:
+                  type: RegularExpression
+                  value: ^/[0-9]+/(api|download)(/.*)?$
+            backendRefs:
+              - identifier: app
+                port: *port
     persistence:
       config:
         existingClaim: "{{ .Release.Name }}"
