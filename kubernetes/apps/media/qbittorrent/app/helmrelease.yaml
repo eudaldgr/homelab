@@ -81,9 +81,8 @@ spec:
       app:
         hostnames:
           - torrent.eudald.gr
-          - "{{ .Release.Name }}.eudald.gr"
         parentRefs:
-          - name: envoy-internal
+          - name: envoy-external
             namespace: network
         rules:
           - backendRefs:

@@ -3,7 +3,7 @@
 apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: SecurityPolicy
 metadata:
-  name: ${APP}
+  name: ${SSO_APP:=${APP}}
 spec:
   targetRefs:
     - group: gateway.networking.k8s.io
@@ -13,10 +13,10 @@ spec:
     provider:
       issuer: https://auth.eudald.gr
     clientIDRef:
-      name: ${APP}-oidc
+      name: ${SSO_APP:=${APP}}-oidc
     clientSecret:
-      name: ${APP}-oidc
-    redirectURL: https://${APP}.eudald.gr/oauth2/callback
+      name: ${SSO_APP:=${APP}}-oidc
+    redirectURL: https://${SSO_APP:=${APP}}.eudald.gr/oauth2/callback
     logoutPath: /oauth2/logout
     scopes:
       - openid
