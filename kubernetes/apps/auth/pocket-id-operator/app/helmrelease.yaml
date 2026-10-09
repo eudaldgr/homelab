@@ -73,8 +73,20 @@ spec:
             allowOwnAccountEdit: true
             requireUserEmail: true
             emailsVerified: false
-            signupDefaultUserGroupIds: []
+            signupDefaultUserGroupIds:
+              - 028f8327-06e1-4ba4-bff6-4ab9cbd3b00e # users
           webauthn:
             userVerification: required
             allowSyncedPasskeys: true
             authenticatorAttachment: any
+          emailNotifications:
+            loginNotification: true
+            oneTimeAccessAsAdmin: true
+            oneTimeAccessAsUnauthenticated: true
+            apiKeyExpiration: true
+            verification: true
+          smtp:
+            host: smtp-relay.default.svc.cluster.local
+            port: 25
+            tls: none
+            from: noreply@eudald.gr
