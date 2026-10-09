@@ -1,0 +1,21 @@
+---
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDOIDCClient
+metadata:
+  name: ${APP}
+spec:
+  launchUrl: https://${APP}.eudald.gr
+  callbackUrls:
+    - https://${APP}.eudald.gr/oauth2/callback
+  logoutCallbackUrls:
+    - https://${APP}.eudald.gr
+  skipConsent: true
+  allowedUserGroups:
+    - name: ${SSO_GROUP:=admins}
+      namespace: auth
+  secret:
+    name: ${APP}-oidc
+    # Key names expected by Envoy Gateway's SecurityPolicy
+    keys:
+      clientID: client-id
+      clientSecret: client-secret

@@ -6,3 +6,14 @@ metadata:
 spec:
   name: users
   friendlyName: Users
+---
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDUserGroup
+metadata:
+  name: admins
+spec:
+  name: admins
+  friendlyName: Admins
+  users:
+    usernames:
+      - eudaldgr
