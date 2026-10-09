@@ -6,6 +6,7 @@ resources:
   - ./helmrelease.yaml
   - ./infisicalstaticsecret.yaml
   - ./ocirepository.yaml
+  - ./securitypolicy.yaml
 generatorOptions:
   disableNameSuffixHash: true
   annotations:
