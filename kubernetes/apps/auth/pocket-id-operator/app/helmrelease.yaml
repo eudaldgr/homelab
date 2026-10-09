@@ -62,3 +62,19 @@ spec:
           analyticsDisabled: true
           versionCheckDisabled: true
           timezone: Europe/Madrid
+          ui:
+            appName: Pocket ID
+            sessionDuration: 60
+            homePageUrl: /settings/apps
+            accentColor: default
+            disableAnimations: false
+          userManagement:
+            allowUserSignups: withToken
+            allowOwnAccountEdit: true
+            requireUserEmail: true
+            emailsVerified: false
+            signupDefaultUserGroupIds: []
+          webauthn:
+            userVerification: required
+            allowSyncedPasskeys: true
+            authenticatorAttachment: any

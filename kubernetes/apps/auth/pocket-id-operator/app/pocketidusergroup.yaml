@@ -1,0 +1,8 @@
+---
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDUserGroup
+metadata:
+  name: users
+spec:
+  name: users
+  friendlyName: Users
