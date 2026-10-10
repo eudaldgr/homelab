@@ -6,16 +6,19 @@ metadata:
 spec:
   launchUrl: https://${SSO_APP:=${APP}}.eudald.gr
   callbackUrls:
-    - https://${SSO_APP:=${APP}}.eudald.gr/oauth2/callback
+    - https://${SSO_APP:=${APP}}.eudald.gr${SSO_CALLBACK:=/oauth2/callback}
   logoutCallbackUrls:
     - https://${SSO_APP:=${APP}}.eudald.gr
   skipConsent: true
+  pkceEnabled: true
+  logo:
+    nameOverride: ${SSO_LOGO:=${APP}}
   allowedUserGroups:
     - name: ${SSO_GROUP:=admins}
       namespace: auth
   secret:
     name: ${SSO_APP:=${APP}}-oidc
-    # Key names expected by Envoy Gateway's SecurityPolicy
+    # Key names expected by Envoy Gateway's SecurityPolicy (also read by apps doing native OIDC)
     keys:
       clientID: client-id
       clientSecret: client-secret
