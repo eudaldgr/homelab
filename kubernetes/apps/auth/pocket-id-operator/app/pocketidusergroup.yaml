@@ -2,14 +2,6 @@
 apiVersion: pocketid.internal/v1alpha1
 kind: PocketIDUserGroup
 metadata:
-  name: users
-spec:
-  name: users
-  friendlyName: Users
----
-apiVersion: pocketid.internal/v1alpha1
-kind: PocketIDUserGroup
-metadata:
   name: admins
 spec:
   name: admins
@@ -17,3 +9,19 @@ spec:
   users:
     usernames:
       - eudaldgr
+---
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDUserGroup
+metadata:
+  name: family
+spec:
+  name: family
+  friendlyName: Family
+---
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDUserGroup
+metadata:
+  name: relatives
+spec:
+  name: relatives
+  friendlyName: Relatives
