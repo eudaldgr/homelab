@@ -1,0 +1,29 @@
+{
+  "trash_id": "local-radarr-not-spanish-or-catalan",
+  "trash_scores": {
+    "default": -10000
+  },
+  "trash_description": "Language: Prefer X but i'll take Y",
+  "name": "Language: Not Spanish or Catalan",
+  "includeCustomFormatWhenRenaming": false,
+  "specifications": [
+    {
+      "name": "Not Spanish",
+      "implementation": "LanguageSpecification",
+      "negate": true,
+      "required": true,
+      "fields": {
+        "value": 3
+      }
+    },
+    {
+      "name": "Not Catalan",
+      "implementation": "LanguageSpecification",
+      "negate": true,
+      "required": true,
+      "fields": {
+        "value": 38
+      }
+    }
+  ]
+}
