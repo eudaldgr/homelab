@@ -12,5 +12,6 @@ resources:
   - ./actual/ks.yaml
   - ./bentopdf/ks.yaml
   - ./it-tools/ks.yaml
+  - ./memos/ks.yaml
   - ./searxng/ks.yaml
   - ./smtp-relay/ks.yaml
